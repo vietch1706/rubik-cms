@@ -1,0 +1,45 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('blogs', function (Blueprint $table) {
+            $table->increments('id')->unsigned();
+            $table->integer('employee_id')->unsigned()
+                ->comment('References the employee who authored the blog post.');
+            $table->string('title', 50);
+            $table->string('slug', 50)
+                ->comment('Slug from Title');
+            $table->tinyInteger('topic')->default(0)
+                ->comment('Represents the topic category or classification.');
+            $table->text('content');
+            $table->string('image', 100)->nullable();
+            $table->dateTime('date');
+            $table->timestamps();
+            $table->foreign('employee_id')
+                ->references('id')
+                ->on('employees')
+                ->onDelete('cascade');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('blogs');
+    }
+};
