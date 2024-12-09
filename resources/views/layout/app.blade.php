@@ -167,8 +167,9 @@
                 <div class="sidebar" id="usersSidebar" style="display: none;">
                     @endif
                     <a href="{{ route('customers') }} "
-                       @if(Request::route()->getName() == 'customers') class="active-sideitem" @endif>Customers</a>
-                    <a href="">Employees</a>
+                       @if(Request::is('admin/users/customers/*', 'admin/users/customers')) class="active-sideitem" @endif>Customers</a>
+                    <a href="{{ route('employees') }}"
+                       @if(Request::is('admin/users/employees/*', 'admin/users/employees')) class="active-sideitem" @endif>Employees</a>
                     <a href="">Roles</a>
                     <a href="">Permissions</a>
                 </div>

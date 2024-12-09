@@ -127,21 +127,19 @@
         }
     </style>
 
-    <form method="POST" action="{{ route('customers.update', ['id' => $customers['id']]) }}"
-          enctype="multipart/form-data">
+    <form method="POST" action="{{ route('customers.store') }}" enctype="multipart/form-data">
         @csrf
-        @method('put')
         <div class="row">
             <div class="col-md-6 mb-3 ">
                 <label class="form-label">First Name <span class="required"> * </span></label>
-                <input type="text" class="form-control" name="first_name" value="{{ $customers['first_name'] }}">
+                <input type="text" class="form-control" name="first_name" value="{{ old('first_name') }}">
                 @error('first_name')
                 <span class="text-danger error">{{ $errors->first('first_name') }}</span>
                 @enderror
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Last Name <span class="required"> * </span></label>
-                <input type="text" class="form-control" name="last_name" value="{{ $customers['last_name'] }}">
+                <input type="text" class="form-control" name="last_name" value="{{ old('last_name') }}">
                 @error('last_name')
                 <span class="text-danger error">{{ $errors->first('last_name') }}</span>
                 @enderror
@@ -152,7 +150,7 @@
                 <label class="form-label">Type <span class="required"> * </span></label>
                 <select class="form-select" name="type">
                     @foreach($types as $key => $type)
-                        <option value="{{$key}}" @if($key == $customers['type']) selected @endif>
+                        <option value="{{$key}}" @if($key == old('type')) selected @endif>
                             {{$type}}
                         </option>
                     @endforeach
@@ -162,7 +160,7 @@
                 <label class="form-label">Gender <span class="required"> * </span></label>
                 <select class="form-select" name="gender">
                     @foreach($genders as $key => $gender)
-                        <option value="{{$key}}" @if($key == $customers['gender']) selected @endif>
+                        <option value="{{$key}}" @if($key == old('gender')) selected @endif>
                             {{ $gender }}
                         </option>
                     @endforeach
@@ -172,14 +170,14 @@
         <div class="row">
             <div class="col-md-6 mb-3 ">
                 <label class="form-label">Phone <span class="required"> * </span></label>
-                <input type="text" class="form-control" name="phone" value="{{ $customers['phone'] }}">
+                <input type="number" class="form-control" name="phone" value="{{ old('phone') }}">
                 @error('phone')
                 <span class="text-danger error">{{ $errors->first('phone') }}</span>
                 @enderror
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Email <span class="required"> * </span></label>
-                <input type="email" class="form-control" name="email" value="{{ $customers['email'] }}">
+                <input type="email" class="form-control" name="email" value="{{ old('email') }}">
                 @error('email')
                 <span class="text-danger error">{{ $errors->first('email') }}</span>
                 @enderror
@@ -197,8 +195,7 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Identity Number<span class="required"> * </span> </label>
-                <input type="text" class="form-control" name="identity_number"
-                       value=" {{ $customers['identity_number'] }}">
+                <input type="number" class="form-control" name="identity_number" value=" {{ old('identity_number') }}">
                 @error('identity_number')
                 <span class="text-danger error">{{ $errors->first('identity_number') }}</span>
                 @enderror
@@ -207,7 +204,7 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">Address</label>
-                <input type="text" class="form-control" name="address" value="{{ $customers['address'] }}">
+                <input type="text" class="form-control" name="address" value="{{ old('address') }}">
                 @error('address')
                 <span class="text-danger error">{{ $errors->first('address') }}</span>
                 @enderror
@@ -225,7 +222,7 @@
                 <label class="form-label">Is Activated</label>
                 <select class="form-select" name="is_activated" id="isActivated">
                     @foreach($isActivateds as $key => $isActivated)
-                        <option value="{{$key}}" @if($key == $customers['is_activated']) selected @endif>
+                        <option value="{{$key}}">
                             {{ $isActivated }}
                         </option>
                     @endforeach
@@ -234,7 +231,7 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label">Activated At</label>
                 <input class="form-control" type="datetime-local" name="activated_at" id="activatedAt"
-                       value="{{ $customers['activated_at'] }}">
+                       value="{{ old('activated_at') }}">
                 @error('activated_at')
                 <span class="text-danger error">{{ $errors->first('activated_at') }}</span>
                 @enderror
@@ -252,8 +249,8 @@
     <script>
         @if (Session::has('success'))
         Swal.fire(
-            'Created',
             '{{ Session::get('success') }}',
+            '',
             'success'
         );
         @endif

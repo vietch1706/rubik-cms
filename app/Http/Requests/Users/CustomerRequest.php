@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Users;
 
+use App\Models\Users\Customers;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -29,11 +30,13 @@ class CustomerRequest extends FormRequest
             $emailRule = ['required', 'email', 'unique:users,email'];
             $phoneRule = ['required', 'numeric', 'unique:users,phone'];
             $identityRule = ['required', 'numeric', 'unique:users,identity'];
-        } elseif (request()->routeIs('users.update')) {
+        } elseif (request()->routeIs('customers.update')) {
+            $customer = Customers::find($this->id);
+            $userID = $customer->users()->first()->id;
             $passwordRule = 'sometimes';
-            $emailRule = ['required', 'email', Rule::unique('users')->ignore($this->id)];
-            $phoneRule = ['required', 'numeric', Rule::unique('users')->ignore($this->id)];
-            $identityRule = ['required', 'numeric', Rule::unique('users')->ignore($this->id)];
+            $emailRule = ['required', 'email', Rule::unique('users')->ignore($userID)];
+            $phoneRule = ['required', 'numeric', Rule::unique('users')->ignore($userID)];
+            $identityRule = ['required', 'numeric', Rule::unique('users')->ignore($userID)];
 
         }
         return [

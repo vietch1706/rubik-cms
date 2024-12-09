@@ -307,12 +307,12 @@
     <script type="text/javascript">
         @if (Session::has('success'))
         Swal.fire(
-            'Created',
             '{{ Session::get('success') }}',
+            '',
             'success'
         );
         @endif
-            
+
         $(function (e) {
             $('input[name="ids"]').click(function (e) {
                 e.stopPropagation();
@@ -363,7 +363,9 @@
                                 );
                                 $.each(selectedIds, function (key, val) {
                                     $('#delete-id-' + val).remove();
-                                })
+                                });
+                                window.location.reload();
+
                             },
                             error: function () {
                                 Swal.fire(

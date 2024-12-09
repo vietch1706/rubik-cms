@@ -249,8 +249,8 @@
     <script>
         @if (Session::has('success'))
         Swal.fire(
-            'Created',
             '{{ Session::get('success') }}',
+            '',
             'success'
         );
         @endif

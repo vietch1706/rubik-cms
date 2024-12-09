@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Catalogs\ProductsController;
 use App\Http\Controllers\Users\CustomersController;
 use App\Http\Controllers\Users\EmployeesController;
 use Illuminate\Support\Facades\Route;
@@ -33,8 +34,21 @@ Route::prefix('/admin')->group(function () {
         });
         Route::prefix('/employees')->group(function () {
             Route::get('/', [EmployeesController::class, 'index'])->name('employees');
+            Route::get('/create', [EmployeesController::class, 'create'])->name('employees.create');
+            Route::post('/create', [EmployeesController::class, 'store'])->name('employees.store');
+            Route::get('/edit/{id}', [EmployeesController::class, 'edit'])->name('employees.edit');
+            Route::put('/edit/{id}', [EmployeesController::class, 'update'])->name('employees.update');
+            Route::delete('/delete', [EmployeesController::class, 'destroy'])->name('employees.destroy');
         });
     });
-    Route::prefix('/products')->group(function () {
+    Route::prefix('/catalogs')->group(function () {
+        Route::prefix('/products')->group(function () {
+            Route::get('/', [ProductsController::class, 'index'])->name('products');
+            Route::get('/create', [ProductsController::class, 'create'])->name('products.create');
+            Route::post('/create', [ProductsController::class, 'store'])->name('products.store');
+            Route::get('/edit/{id}', [ProductsController::class, 'edit'])->name('products.edit');
+            Route::put('/edit/{id}', [ProductsController::class, 'update'])->name('products.update');
+            Route::delete('/delete', [ProductsController::class, 'destroy'])->name('products.destroy');
+        });
     });
 });

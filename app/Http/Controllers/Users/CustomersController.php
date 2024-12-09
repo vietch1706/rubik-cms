@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use function gettype;
+use function redirect;
+use function time;
 
 class CustomersController extends Controller
 {
@@ -43,7 +45,7 @@ class CustomersController extends Controller
             $customerSchema = new CustomerSchema($customer);
             $customers[$key] = $customerSchema->convertData();
         }
-        return view('admin.customers.list', [
+        return view('users.customers.list', [
             'customers' => $customers,
         ]);
     }
@@ -57,7 +59,7 @@ class CustomersController extends Controller
     function create()
     {
         //
-        return view('admin.customers.create', [
+        return view('users.customers.create', [
             'genders' => $this->users->getGenderOptions(),
             'isActivateds' => $this->users->getIsActivatedOptions(),
             'types' => $this->customers->getTypeOptions(),
@@ -104,11 +106,10 @@ class CustomersController extends Controller
             throw new \Exception($e->getMessage());
         }
         if ($request->input('action') === 'save_and_close') {
-            return redirect()->route('customers')->with('success', 'Customer saved and closed successfully!');
+            return redirect()->route('customers')->with('success', 'Created Successfully!');
         } else {
             return back()->with('success', 'Created Successfully!');
         }
-
     }
 
     /**
@@ -135,7 +136,7 @@ class CustomersController extends Controller
         //
         $customers = $this->customers->find($id);
         $customerSchema = new CustomerSchema($customers);
-        return view('admin.customers.edit', [
+        return view('users.customers.edit', [
             'customers' => $customerSchema->convertData(),
             'genders' => $this->users->getGenderOptions(),
             'isActivateds' => $this->users->getIsActivatedOptions(),
@@ -151,9 +152,44 @@ class CustomersController extends Controller
      * @return \Illuminate\Http\Response
      */
     public
-    function update(Request $request, $id)
+    function update(CustomerRequest $request, $id)
     {
         //
+        $customer = $this->customers->find($id);
+        $user = $customer->users()->first();
+        $avatarPath = null;
+        if ($request->input('password')) {
+            $user->password = Hash::make($request->input('password'));
+        }
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->storeAs(
+                'avatars',
+                time() . '.' . $request->file('image')->getClientOriginalExtension(),
+                'public'
+            );
+        }
+        try {
+            $user->first_name = $request->input('first_name');
+            $user->last_name = $request->input('last_name');
+            $user->gender = $request->input('gender');
+            $user->phone = $request->input('phone');
+            $user->email = $request->input('email');
+            $user->address = $request->input('address');
+            $user->avatar = $avatarPath;
+            $user->is_activated = $request->input('is_activated');
+            $user->activated_at = $request->input('activated_at');
+            $user->save();
+            $customer->identity_number = $request->input('identity_number');
+            $customer->type = $request->input('type');
+            $customer->save();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+        if ($request->input('action') === 'save_and_close') {
+            return redirect()->route('customers')->with('success', 'Update Successfully!');
+        } else {
+            return back()->with('success', 'Update Successfully!');
+        }
     }
 
     /**
