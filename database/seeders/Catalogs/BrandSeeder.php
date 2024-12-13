@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders\Catalog;
+namespace Database\Seeders\Catalogs;
 
 use App\Models\Catalog\Brands;
 use Illuminate\Database\Seeder;

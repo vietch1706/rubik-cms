@@ -3,35 +3,72 @@
 namespace App\Http\Controllers\Catalogs;
 
 use App\Http\Controllers\Controller;
+use App\Models\Catalog\Brands;
+use App\Models\Catalog\Categories;
+use App\Models\Catalog\Products;
+use App\Schema\ProductSchema;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use function view;
 
 class ProductsController extends Controller
 {
+
+    private Products $products;
+    private Categories $categories;
+    private Brands $brands;
+
+    public function __construct(
+        Products   $product,
+        Categories $category,
+        Brands     $brand,
+    )
+    {
+        $this->products = $product;
+        $this->categories = $category;
+        $this->brands = $brand;
+    }
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
         //
+        $products = $this->products->paginate(13);
+        foreach ($products as $key => $product) {
+            $productSchema = new ProductSchema($product);
+            $products[$key] = $productSchema->convertData();
+        }
+//        dd($products);
+        return view('catalogs.products.list', [
+            'products' => $products,
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
         //
+        $categories = $this->categories->pluck('name', 'id');
+        $brands = $this->brands->pluck('name', 'id');
+        return view('catalogs.products.create', [
+            'categories' => $categories,
+            'brands' => $brands,
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -41,8 +78,8 @@ class ProductsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return Response
      */
     public function show($id)
     {
@@ -52,8 +89,8 @@ class ProductsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return Response
      */
     public function edit($id)
     {
@@ -63,9 +100,9 @@ class ProductsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int $id
+     * @return Response
      */
     public function update(Request $request, $id)
     {
@@ -75,8 +112,8 @@ class ProductsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return Response
      */
     public function destroy($id)
     {

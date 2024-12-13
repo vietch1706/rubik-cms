@@ -1,21 +1,6 @@
 @extends('layout.app')
 @section('content')
     <style>
-        /*.table {*/
-        /*    display: block;*/
-        /*    white-space: nowrap;*/
-        /*    height: 70vh;*/
-        /*}*/
-
-        /*div.scroll-row {*/
-        /*    overflow-x: scroll;*/
-        /*    width: 100em;*/
-        /*}*/
-
-        /*.hover-pointer {*/
-        /*    cursor: pointer;*/
-        /*}*/
-
         /* General Styling */
         body {
             font-family: 'Arial', sans-serif;
@@ -86,7 +71,6 @@
         }
 
         .table thead th {
-            position: sticky;
             top: 0;
             z-index: 2;
             text-align: left;
@@ -281,7 +265,11 @@
                             {{ $customer['address'] }}
                         </td>
                         <td>
-                            {{ $customer['avatar'] }}
+                            @if($customer['avatar'])
+                                <img src="{{ url($customer['avatar']) }}"
+                                     alt="{{ str_replace('/storage/avatars/', '', $customer['avatar']) }}" width="75"
+                                     height="50">
+                            @endif
                         </td>
                         <td class=" h-100 {{ $class = $customer['is_activated'] != 0 ? 'text-success' : 'text-danger' }}">
                             <i class="fa-solid fa-circle"></i>

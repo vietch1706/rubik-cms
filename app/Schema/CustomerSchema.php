@@ -3,8 +3,6 @@
 namespace App\Schema;
 
 use App\Models\Users\Customers;
-use App\Models\Users\Employees;
-use App\Models\Users\Users;
 
 class CustomerSchema
 {
@@ -20,7 +18,7 @@ class CustomerSchema
 
     public function convertData()
     {
-        $user = $this->customers->users()->first();
+        $user = $this->customers->users;
         return [
             'id' => $this->customers->id,
             'user_id' => $user->id,
@@ -30,7 +28,7 @@ class CustomerSchema
             'phone' => $user->phone,
             'email' => $user->email,
             'identity_number' => $this->customers->identity_number,
-            'type' => $this->customers->type,
+            'type' => $this->customers->textType,
             'address' => $user->address,
             'avatar' => $user->avatar,
             'password' => $user->password,

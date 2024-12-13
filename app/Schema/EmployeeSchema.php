@@ -18,7 +18,7 @@ class EmployeeSchema
 
     public function convertData()
     {
-        $user = $this->employees->users()->first();
+        $user = $this->employees->users;
         return [
             'id' => $this->employees->id,
             'user_id' => $user->id,

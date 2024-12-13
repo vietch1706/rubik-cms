@@ -16,7 +16,7 @@
     <link rel="manifest" href="{{ asset('img/site.webmanifest') }}">
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet"/>
 
     <style>
         body {
@@ -129,7 +129,8 @@
                                 <a class="dropdown-item" href="{{ route('customers') }}" data-target="usersSidebar">Customers</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="#" data-target="usersSidebar">Employees</a></li>
+                                <a class="dropdown-item" href="{{ route('employees') }}" data-target="usersSidebar">Employees</a>
+                            </li>
                             <li>
                                 <a class="dropdown-item" href="#" data-target="usersSidebar">Roles</a>
                             </li>
@@ -141,13 +142,34 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="productsDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-cogs"></i> Products
+                            <i class="fa-solid fa-box"></i> Products
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="productsDropdown">
-                            <li><a class="dropdown-item" href="#" data-target="productsSidebar">Products</a></li>
-                            <li><a class="dropdown-item" href="#" data-target="productsSidebar">Brands</a></li>
-                            <li><a class="dropdown-item" href="#" data-target="productsSidebar">Categories</a></li>
-                            <li><a class="dropdown-item" href="#" data-target="productsSidebar">Distributor</a></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('products') }}" data-target="productsSidebar">Products</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('brands') }}" data-target="productsSidebar">Brands</a>
+
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('categories') }}" data-target="productsSidebar">Categories</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('distributors') }}"
+                                   data-target="productsSidebar">Distributors</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="transactionsDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-list-check"></i> Transactions
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="transactionsDropdown">
+                            <li>
+                                <a class="dropdown-item" href="#" data-target="transactionsSidebar">Orders</a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -161,57 +183,62 @@
             </div>
         </div>
     </nav>
-    @if (Request::is('admin/users/*'))
-        <div class="sidebar" id="usersSidebar" style="display: block;">
-            @else
-                <div class="sidebar" id="usersSidebar" style="display: none;">
-                    @endif
-                    <a href="{{ route('customers') }} "
-                       @if(Request::is('admin/users/customers/*', 'admin/users/customers')) class="active-sideitem" @endif>Customers</a>
-                    <a href="{{ route('employees') }}"
-                       @if(Request::is('admin/users/employees/*', 'admin/users/employees')) class="active-sideitem" @endif>Employees</a>
-                    <a href="">Roles</a>
-                    <a href="">Permissions</a>
-                </div>
-                <div class="sidebar" id="productsSidebar" style="display: none;">
-                    <a href="#">Products</a>
-                    <a href="#">Brands</a>
-                    <a href="#">Categories</a>
-                    <a href="#">Distributor</a>
-                </div>
-                <div class="main-content" style="margin-left: 250px; padding: 25px 25px">
-                    @yield('content')
-                </div>
-                @else
-                    <div class="main-content" style="margin: 0; padding: 0">
-                        @yield('content')
-                    </div>
-                @endif
 
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-                        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-                        crossorigin="anonymous"></script>
-                <script>
-                    function toggleSidebar(targetId) {
-                        const sidebar = document.getElementById(targetId);
-                        const mainContent = document.querySelector('.main-content');
+    <div class="sidebar" id="usersSidebar" @if (Request::is('admin/users/*')) style="display: block;"
+         @else style="display: none;" @endif>
+        <a href="{{ route('customers') }}"
+           @if(Request::is('admin/users/customers/*', 'admin/users/customers')) class="active-sideitem" @endif>Customers</a>
+        <a href="{{ route('customers') }}" @class(['active-sideitem' => Request::is('admin/users/customers/*', 'admin/users/customers')])>Customers</a>
+        <a href="{{ route('employees') }}"
+           @if(Request::is('admin/users/employees/*', 'admin/users/employees')) class="active-sideitem" @endif>Employees</a>
+        <a href="">Roles</a>
+        <a href="">Permissions</a>
+    </div>
+    <div class="sidebar" id="productsSidebar" @if (Request::is('admin/catalogs/*')) style="display: block;"
+         @else style="display: none;" @endif>
+        <a href="{{ route('products') }}"
+           @if(Request::is('admin/catalogs/products/*', 'admin/catalogs/products')) class="active-sideitem" @endif>Products</a>
+        <a href="{{ route('brands') }}"
+           @if(Request::is('admin/catalogs/brands/*', 'admin/catalogs/brands')) class="active-sideitem" @endif>Brands</a>
+        <a href="{{ route('categories') }}"
+           @if(Request::is('admin/catalogs/categories/*', 'admin/catalogs/categories')) class="active-sideitem" @endif>Categories</a>
+        <a href="{{ route('distributors') }}"
+           @if(Request::is('admin/catalogs/distributors/*', 'admin/catalogs/distributors')) class="active-sideitem" @endif>Distributors</a>
+    </div>
+    <div class="main-content" style="margin-left: 250px; padding: 25px 25px">
+        @yield('content')
+    </div>
+@else
+    <div class="main-content" style="margin: 0; padding: 0">
+        @yield('content')
+    </div>
+@endif
 
-                        document.querySelectorAll('.sidebar').forEach((el) => {
-                            el.style.display = 'none';
-                        });
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function toggleSidebar(targetId) {
+        const sidebar = document.getElementById(targetId);
+        const mainContent = document.querySelector('.main-content');
 
-                        if (sidebar) {
-                            sidebar.style.display = 'block';
-                            mainContent.classList.add('with-sidebar');
-                        }
-                    }
+        document.querySelectorAll('.sidebar').forEach((el) => {
+            el.style.display = 'none';
+        });
 
-                    document.querySelectorAll('.dropdown-item').forEach((item) => {
-                        item.addEventListener('click', function (e) {
-                            const targetId = e.target.getAttribute('data-target');
-                            toggleSidebar(targetId);
-                        });
-                    });
-                </script>
+        if (sidebar) {
+            sidebar.style.display = 'block';
+            mainContent.classList.add('with-sidebar');
+        }
+    }
+
+    document.querySelectorAll('.dropdown-item').forEach((item) => {
+        item.addEventListener('click', function (e) {
+            const targetId = e.target.getAttribute('data-target');
+            toggleSidebar(targetId);
+        });
+    });
+</script>
 </body>
 </html>

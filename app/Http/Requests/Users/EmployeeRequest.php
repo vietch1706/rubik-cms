@@ -28,26 +28,26 @@ class EmployeeRequest extends FormRequest
     public function rules()
     {
         if (request()->routeIs('employees.store')) {
-            $passwordRule = ['required', 'min:6'];
-            $emailRule = ['required', 'email', 'unique:users,email'];
-            $phoneRule = ['required', 'numeric', 'unique:users,phone'];
+            $passwordRule = 'required|min:6';
+            $emailRule = 'required|email|unique:users,email';
+            $phoneRule = 'required|numeric|unique:users,phone';
         } elseif (request()->routeIs('employees.update')) {
             $employee = Employees::find($this->id);
             $userID = $employee->users()->first()->id;
             $passwordRule = 'sometimes';
-            $emailRule = ['required', 'email', Rule::unique('users')->ignore($userID)];
-            $phoneRule = ['required', 'numeric', Rule::unique('users')->ignore($userID)];
-
+            $emailRule = 'required|email|unique:users,email,' . $userID;
+            $phoneRule = 'required|numeric|unique:users,phone,' . $userID;
         }
+
         return [
-            'first_name' => ['required'],
-            'last_name' => ['required'],
-            'email' => [$emailRule],
-            'phone' => [$phoneRule],
-            'salary' => ['numeric', 'min:1'],
-            'gender' => ['numeric'],
-            'password' => [$passwordRule, 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'],
-//            'avatar' => ['nullable', 'mimes:jpg,jpeg,png', 'max:2048']
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => $emailRule,
+            'phone' => $phoneRule,
+            'salary' => 'numeric|min:1',
+            'gender' => 'numeric',
+            'password' => $passwordRule . '|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
+            // 'avatar' => 'nullable|mimes:jpg,jpeg,png|max:2048'
         ];
     }
 

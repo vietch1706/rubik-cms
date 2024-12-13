@@ -2,11 +2,27 @@
 
 namespace App\Http\Controllers\Catalogs;
 
+use App\Helper\Helper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Catalogs\CategoryRequest;
+use App\Models\Catalog\Categories;
+use App\Schema\BrandSchema;
+use App\Schema\CategorySchema;
 use Illuminate\Http\Request;
+use function back;
+use function dd;
+use function redirect;
+use function view;
 
 class CategoriesController extends Controller
 {
+    private Categories $categories;
+
+    public function __construct(Categories $category)
+    {
+        $this->categories = $category;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,6 +31,14 @@ class CategoriesController extends Controller
     public function index()
     {
         //
+        $categories = $this->categories->paginate(13);
+        foreach ($categories as $key => $category) {
+            $categorySchema = new CategorySchema($category);
+            $categories[$key] = $categorySchema->convertData();
+        }
+        return view('catalogs.categories.list', [
+            'categories' => $categories,
+        ]);
     }
 
     /**
@@ -25,23 +49,41 @@ class CategoriesController extends Controller
     public function create()
     {
         //
+        $categories = $this->categories->pluck('name', 'id');
+        return view('catalogs.categories.create', [
+            'categories' => $categories,
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
         //
+        $category = new $this->categories;
+        try {
+            $category->parent_id = $request->input('parent_id');
+            $category->name = $request->input('name');
+            $category->slug = $request->input('slug');
+            $category->save();
+            if ($request->input('action') === 'save_and_close') {
+                return redirect()->route('categories')->with('success', 'Created Successfully!');
+            }
+            return back()->with('success', 'Created Successfully!');
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -52,30 +94,52 @@ class CategoriesController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
         //
+        $parentCategories = $this->categories->pluck('name', 'id');
+        $categories = $this->categories->find($id);
+        $categorySchema = new CategorySchema($categories);
+        return view('catalogs.categories.edit', [
+            'parentCategories' => $parentCategories,
+            'categories' => $categorySchema->convertData(),
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CategoryRequest $request, $id)
     {
         //
+        $category = $this->categories->find($id);
+        try {
+            $category->parent_id = $request->input('parent_id');
+            $category->name = $request->input('name');
+            $category->slug = $request->input('slug');
+            $category->save();
+            if ($request->input('action') === 'save_and_close') {
+                return redirect()->route('categories')->with('success', 'Updated Successfully!');
+            }
+            return back()->with('success', 'Updated Successfully!');
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+
+
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

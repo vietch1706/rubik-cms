@@ -1,7 +1,6 @@
 @extends('layout.app')
 @section('content')
     <style>
-        /* General Styling */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f9fafc;
@@ -174,108 +173,67 @@
 
     </style>
     <div class="action-buttons">
-        <a href="{{ route('employees.create') }}" class="btn btn-primary">Create</a>
+        <a href="{{ route('categories.create') }}" class="btn btn-primary">Create</a>
         <button id="delete-record" class="btn btn-danger">Delete Selected</button>
     </div>
     <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover ">
+        <table class="table table-bordered table-striped table-hover">
             <thead>
             <tr class="text-nowrap col-md">
                 <th scope="col" class="px-3">
                     <input type="checkbox" name="" id="select-all-ids">
                 </th>
-                <th scope="col" class="pe-5">
+                <th scope="col" class="pe-5 ">
                     ID
                 </th>
-                <th scope="col" class="pe-5">
-                    First Name
+                <th scope="col" class="pe-5 col-3">
+                    Parent Category
                 </th>
-                <th scope="col" class="pe-5">
-                    Last Name
+                <th scope="col" class="pe-5 col-3">
+                    Name
                 </th>
-                <th scope="col" class="pe-5">
-                    Gender
+                <th scope="col" class="pe-5 col-3">
+                    Slug
                 </th>
-                <th scope="col" class="pe-5">
-                    Phone
-                </th>
-                <th scope="col" class="pe-5">
-                    Email
-                </th>
-                <th scope="col" class="pe-5">
-                    Salary (million)
-                </th>
-                <th scope="col" class="pe-5">
-                    Address
-                </th>
-                <th scope="col" class="pe-5">
-                    Avatar
-                </th>
-                <th scope="col" class="pe-5">
-                    Is Activated
-                </th>
-                <th scope="col" class="pe-5">
-                    Activated At
-                </th>
-                <th scope="col" class="pe-5">
+                <th scope="col" class="pe-5 col-3">
                     Created At
                 </th>
-                <th scope="col" class="pe-5">
+                <th scope="col" class="pe-5 col-3">
                     Updated At
                 </th>
             </tr>
             </thead>
             <tbody>
-            @if(!empty($employees))
-                @foreach($employees as $employee)
-                    <tr class="text-nowrap hover-pointer" id="delete-id-{{$employee['id']}}"
-                        onclick="window.location='{{ route('employees.edit', $employee['id']) }}'">
+            @if(!empty($categories))
+                @foreach($categories as $category)
+                    <tr class="text-nowrap hover-pointer" id="delete-id-{{ $category['id'] }}"
+                        onclick="window.location='{{ route('categories.edit', $category['id']) }}'">
                         <td class="text-center">
-                            <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $employee['user_id'] }}">
+                            <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $category['id'] }}">
                         </td>
                         <td>
-                            {{ $employee['id'] }}
+                            {{ $category['id'] }}
+                        </td>
+                        @if($category['parent_category'])
+                            <td>
+                                {{ current($category['parent_category']) }}
+                            </td>
+                        @else
+                            <td>
+
+                            </td>
+                        @endif
+                        <td>
+                            {{ $category['name'] }}
                         </td>
                         <td>
-                            {{ $employee['first_name'] }}
+                            {{ $category['slug'] }}
                         </td>
                         <td>
-                            {{ $employee['last_name'] }}
+                            {{ $category['created_at'] }}
                         </td>
                         <td>
-                            {{ $employee['gender'] }}
-                        </td>
-                        <td>
-                            {{ $employee['phone'] }}
-                        </td>
-                        <td>
-                            {{ $employee['email'] }}
-                        </td>
-                        <td>
-                            {{ $employee['salary'] }}
-                        </td>
-                        <td>
-                            {{ $employee['address'] }}
-                        </td>
-                        <td>
-                            @if($employee['avatar'])
-                                <img src="{{ url($employee['avatar']) }}"
-                                     alt="{{ str_replace('/storage/avatars/', '', $employee['avatar']) }}" width="75"
-                                     height="50">
-                            @endif
-                        </td>
-                        <td class=" h-100 {{ $class = $employee['is_activated'] != 0 ? 'text-success' : 'text-danger' }}">
-                            <i class="fa-solid fa-circle"></i>
-                            {{ $employee['is_activated'] != 0 ? 'Activated' : 'Inactive' }}
-                        </td>
-                        <td>
-                            {{ $employee['activated_at'] }}
-                        </td>
-                        <td>
-                            {{ $employee['created_at'] }}
-                        </td>
-                        <td>
-                            {{ $employee['updated_at'] }}
+                            {{ $category['updated_at'] }}
                         </td>
                     </tr>
                 @endforeach
@@ -283,7 +241,7 @@
             </tbody>
         </table>
     </div>
-    <div class="pagination-container">{{$employees->links()}}</div>
+    <div class="pagination-container">{{$categories->links()}}</div>
     <script src="{{ asset('/js/jquery.js') }}"></script>
     <script type="text/javascript">
         @if (Session::has('success'))
@@ -313,7 +271,7 @@
                 if (selectedIds.length === 0) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'No Customers Selected',
+                        title: 'No Categories Selected',
                         text: 'Please select at least one customer to delete.',
                     });
                     return;
@@ -330,7 +288,7 @@
                     if (result.isConfirmed) {
                         // Perform delete action here
                         $.ajax({
-                            url: "{{ route('employees.destroy') }}",
+                            url: "{{ route('categories.destroy') }}",
                             type: "DELETE",
                             data: {
                                 ids: selectedIds,
@@ -339,18 +297,19 @@
                             success: function (response) {
                                 Swal.fire(
                                     'Deleted!',
-                                    'Your selected employees have been deleted.',
+                                    'Your selected categories have been deleted.',
                                     'success'
                                 );
                                 $.each(selectedIds, function (key, val) {
                                     $('#delete-id-' + val).remove();
                                 });
                                 window.location.reload();
+
                             },
                             error: function () {
                                 Swal.fire(
                                     'Error!',
-                                    'There was a problem deleting the employees.',
+                                    'There was a problem deleting the categories.',
                                     'error'
                                 );
                             }

@@ -1,7 +1,6 @@
 @extends('layout.app')
 @section('content')
     <style>
-        /* General Styling */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f9fafc;
@@ -174,108 +173,73 @@
 
     </style>
     <div class="action-buttons">
-        <a href="{{ route('employees.create') }}" class="btn btn-primary">Create</a>
+        <a href="{{ route('distributors.create') }}" class="btn btn-primary">Create</a>
         <button id="delete-record" class="btn btn-danger">Delete Selected</button>
     </div>
     <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover ">
+        <table class="table table-bordered table-striped table-hover">
             <thead>
             <tr class="text-nowrap col-md">
                 <th scope="col" class="px-3">
                     <input type="checkbox" name="" id="select-all-ids">
                 </th>
-                <th scope="col" class="pe-5">
+                <th scope="col" class="pe-5 ">
                     ID
                 </th>
-                <th scope="col" class="pe-5">
-                    First Name
+                <th scope="col" class="pe-5 col-3">
+                    Name
                 </th>
-                <th scope="col" class="pe-5">
-                    Last Name
-                </th>
-                <th scope="col" class="pe-5">
-                    Gender
-                </th>
-                <th scope="col" class="pe-5">
-                    Phone
-                </th>
-                <th scope="col" class="pe-5">
-                    Email
-                </th>
-                <th scope="col" class="pe-5">
-                    Salary (million)
-                </th>
-                <th scope="col" class="pe-5">
+                <th scope="col" class="pe-5 col-3">
                     Address
                 </th>
-                <th scope="col" class="pe-5">
-                    Avatar
+                <th scope="col" class="pe-5 col-3">
+                    Country
                 </th>
-                <th scope="col" class="pe-5">
-                    Is Activated
+                <th scope="col" class="pe-5 col-3">
+                    Phone
                 </th>
-                <th scope="col" class="pe-5">
-                    Activated At
+                <th scope="col" class="pe-5 col-3">
+                    Email
                 </th>
-                <th scope="col" class="pe-5">
+                <th scope="col" class="pe-5 col-3">
                     Created At
                 </th>
-                <th scope="col" class="pe-5">
+                <th scope="col" class="pe-5 col-3">
                     Updated At
                 </th>
             </tr>
             </thead>
             <tbody>
-            @if(!empty($employees))
-                @foreach($employees as $employee)
-                    <tr class="text-nowrap hover-pointer" id="delete-id-{{$employee['id']}}"
-                        onclick="window.location='{{ route('employees.edit', $employee['id']) }}'">
+            @if(!empty($distributors))
+                @foreach($distributors as $distributor)
+                    <tr class="text-nowrap hover-pointer" id="delete-id-{{ $distributor['id'] }}"
+                        onclick="window.location='{{ route('distributors.edit', $distributor['id']) }}'">
                         <td class="text-center">
-                            <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $employee['user_id'] }}">
+                            <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $distributor['id'] }}">
                         </td>
                         <td>
-                            {{ $employee['id'] }}
+                            {{ $distributor['id'] }}
                         </td>
                         <td>
-                            {{ $employee['first_name'] }}
+                            {{ $distributor['name'] }}
                         </td>
                         <td>
-                            {{ $employee['last_name'] }}
+                            {{ $distributor['address'] }}
                         </td>
                         <td>
-                            {{ $employee['gender'] }}
+                            {{ $distributor['country'] }}
                         </td>
                         <td>
-                            {{ $employee['phone'] }}
+                            {{ $distributor['phone'] }}
                         </td>
                         <td>
-                            {{ $employee['email'] }}
+                            {{ $distributor['email'] }}
                         </td>
                         <td>
-                            {{ $employee['salary'] }}
+                            {{ $distributor['created_at'] }}
                         </td>
                         <td>
-                            {{ $employee['address'] }}
-                        </td>
-                        <td>
-                            @if($employee['avatar'])
-                                <img src="{{ url($employee['avatar']) }}"
-                                     alt="{{ str_replace('/storage/avatars/', '', $employee['avatar']) }}" width="75"
-                                     height="50">
-                            @endif
-                        </td>
-                        <td class=" h-100 {{ $class = $employee['is_activated'] != 0 ? 'text-success' : 'text-danger' }}">
-                            <i class="fa-solid fa-circle"></i>
-                            {{ $employee['is_activated'] != 0 ? 'Activated' : 'Inactive' }}
-                        </td>
-                        <td>
-                            {{ $employee['activated_at'] }}
-                        </td>
-                        <td>
-                            {{ $employee['created_at'] }}
-                        </td>
-                        <td>
-                            {{ $employee['updated_at'] }}
+                            {{ $distributor['updated_at'] }}
                         </td>
                     </tr>
                 @endforeach
@@ -283,7 +247,7 @@
             </tbody>
         </table>
     </div>
-    <div class="pagination-container">{{$employees->links()}}</div>
+    <div class="pagination-container">{{$distributors->links()}}</div>
     <script src="{{ asset('/js/jquery.js') }}"></script>
     <script type="text/javascript">
         @if (Session::has('success'))
@@ -313,7 +277,7 @@
                 if (selectedIds.length === 0) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'No Customers Selected',
+                        title: 'No Distributors Selected',
                         text: 'Please select at least one customer to delete.',
                     });
                     return;
@@ -330,7 +294,7 @@
                     if (result.isConfirmed) {
                         // Perform delete action here
                         $.ajax({
-                            url: "{{ route('employees.destroy') }}",
+                            url: "{{ route('distributors.destroy') }}",
                             type: "DELETE",
                             data: {
                                 ids: selectedIds,
@@ -339,18 +303,19 @@
                             success: function (response) {
                                 Swal.fire(
                                     'Deleted!',
-                                    'Your selected employees have been deleted.',
+                                    'Your selected distributors have been deleted.',
                                     'success'
                                 );
                                 $.each(selectedIds, function (key, val) {
                                     $('#delete-id-' + val).remove();
                                 });
                                 window.location.reload();
+
                             },
                             error: function () {
                                 Swal.fire(
                                     'Error!',
-                                    'There was a problem deleting the employees.',
+                                    'There was a problem deleting the distributors.',
                                     'error'
                                 );
                             }

@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Users\Users;
-use Database\Seeders\Catalog\BrandSeeder;
-use Database\Seeders\Catalog\CategorySeeder;
-use Database\Seeders\Catalog\DistributorSeeder;
+use Database\Seeders\Catalogs\BrandSeeder;
+use Database\Seeders\Catalogs\CategorySeeder;
+use Database\Seeders\Catalogs\DistributorSeeder;
 use Database\Seeders\Admin\RoleSeeder;
 use Database\Seeders\Users\CustomerSeeder;
 use Database\Seeders\Users\UserSeeder;

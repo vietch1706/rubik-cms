@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Users;
 
+use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\CustomerRequest;
 use App\Models\Users\Customers;
@@ -9,9 +10,8 @@ use App\Models\Users\Users;
 use App\Schema\CustomerSchema;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use function gettype;
+use function back;
 use function redirect;
 use function time;
 
@@ -19,6 +19,7 @@ class CustomersController extends Controller
 {
     private Customers $customers;
     private Users $users;
+    public const PAGE_LIMIT = 15;
 
     public function __construct(
         Customers $customer,
@@ -38,9 +39,11 @@ class CustomersController extends Controller
     function index()
     {
         //
-        $customers = $this->customers->whereHas('users', function ($query) {
-            return $query->whereNot('deleted_at', '!=', null);
-        })->paginate(13);
+        $customers = $this->customers
+            ->whereHas('users', function ($query) {
+                return $query->whereNot('deleted_at', '!=', null);
+            })
+            ->paginate(self::PAGE_LIMIT);
         foreach ($customers as $key => $customer) {
             $customerSchema = new CustomerSchema($customer);
             $customers[$key] = $customerSchema->convertData();
@@ -77,14 +80,6 @@ class CustomersController extends Controller
         //
         $user = new $this->users;
         $customer = new $this->customers;
-        $avatarPath = null;
-        if ($request->hasFile('avatar')) {
-            $avatarPath = $request->file('avatar')->storeAs(
-                'avatars',
-                time() . '.' . $request->file('image')->getClientOriginalExtension(),
-                'public'
-            );
-        }
         try {
             $user->role_id = $this->users::ROLE_CUSTOMER;
             $user->first_name = $request->input('first_name');
@@ -93,22 +88,22 @@ class CustomersController extends Controller
             $user->phone = $request->input('phone');
             $user->email = $request->input('email');
             $user->address = $request->input('address');
-            $user->avatar = $avatarPath;
+            $user->avatar = Helper::setStoragePath('avatars', $request->file('avatar'));
             $user->password = Hash::make($request->input('password'));
             $user->is_activated = $request->input('is_activated');
             $user->activated_at = $request->input('activated_at');
             $user->save();
+
             $customer->user_id = $user->id;
             $customer->identity_number = $request->input('identity_number');
             $customer->type = $request->input('type');
             $customer->save();
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
-        if ($request->input('action') === 'save_and_close') {
-            return redirect()->route('customers')->with('success', 'Created Successfully!');
-        } else {
+            if ($request->input('action') === 'save_and_close') {
+                return redirect()->route('customers')->with('success', 'Created Successfully!');
+            }
             return back()->with('success', 'Created Successfully!');
+        } catch (\Exception $e) {
+            throw new \Exception(['error' => $e->getMessage()]);
         }
     }
 
@@ -118,8 +113,7 @@ class CustomersController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public
-    function show($id)
+    public function show($id)
     {
         //
     }
@@ -130,8 +124,7 @@ class CustomersController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public
-    function edit($id)
+    public function edit($id)
     {
         //
         $customers = $this->customers->find($id);
@@ -151,22 +144,13 @@ class CustomersController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public
-    function update(CustomerRequest $request, $id)
+    public function update(CustomerRequest $request, $id)
     {
         //
         $customer = $this->customers->find($id);
         $user = $customer->users()->first();
-        $avatarPath = null;
         if ($request->input('password')) {
             $user->password = Hash::make($request->input('password'));
-        }
-        if ($request->hasFile('avatar')) {
-            $avatarPath = $request->file('avatar')->storeAs(
-                'avatars',
-                time() . '.' . $request->file('image')->getClientOriginalExtension(),
-                'public'
-            );
         }
         try {
             $user->first_name = $request->input('first_name');
@@ -175,21 +159,22 @@ class CustomersController extends Controller
             $user->phone = $request->input('phone');
             $user->email = $request->input('email');
             $user->address = $request->input('address');
-            $user->avatar = $avatarPath;
+            $user->avatar = Helper::setStoragePath('avatars', $request->file('avatar'));
             $user->is_activated = $request->input('is_activated');
             $user->activated_at = $request->input('activated_at');
             $user->save();
             $customer->identity_number = $request->input('identity_number');
             $customer->type = $request->input('type');
             $customer->save();
+            if ($request->input('action') === 'save_and_close') {
+                return redirect()->route('customers')->with('success', 'Update Successfully!');
+            }
+            return back()->with('success', 'Created Successfully!');
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
-        if ($request->input('action') === 'save_and_close') {
-            return redirect()->route('customers')->with('success', 'Update Successfully!');
-        } else {
-            return back()->with('success', 'Update Successfully!');
-        }
+
+
     }
 
     /**
@@ -198,8 +183,7 @@ class CustomersController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public
-    function destroy(Request $request)
+    public function destroy(Request $request)
     {
         //
         $ids = $request->ids;

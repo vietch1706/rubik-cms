@@ -17,9 +17,10 @@ return new class extends Migration {
             $table->tinyInteger('category_id')->unsigned();
             $table->tinyInteger('brand_id')->unsigned();
             $table->string('name', 50);
+            $table->string('slug', 50)->unique();
+            $table->string('sku', 20)->unique();
             $table->date('release_date');
             $table->smallInteger('weight');
-            $table->boolean('type');
             $table->boolean('magnetic')->default(false);
             $table->integer('price')->unsigned()->comment('Unit of money is million');
             $table->smallInteger('box_weight');

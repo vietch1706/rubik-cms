@@ -47,12 +47,12 @@ class Users extends Authenticatable
 
     public function customers()
     {
-        return $this->belongsTo(Customers::class, 'user_id', 'id');
+        return $this->hasOne(Customers::class, 'user_id', 'id');
     }
 
     public function employees()
     {
-        return $this->belongsTo(Employees::class, 'user_id', 'id');
+        return $this->hasOne(Employees::class, 'user_id', 'id');
     }
 
     public function getGenderOptions()
@@ -93,4 +93,5 @@ class Users extends Authenticatable
             }
         );
     }
+
 }

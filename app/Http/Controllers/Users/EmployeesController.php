@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Users;
 
+use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\EmployeeRequest;
 use App\Models\Users\Employees;
@@ -21,6 +22,7 @@ class EmployeesController extends Controller
 {
     private Employees $employees;
     private Users $users;
+    public const PAGE_LIMIT = 15;
 
     public function __construct(
         Employees $employee,
@@ -41,7 +43,7 @@ class EmployeesController extends Controller
         //
         $employees = $this->employees->whereHas('users', function ($query) {
             return $query->whereNot('deleted_at', '!=', null);
-        })->paginate(13);
+        })->paginate(self::PAGE_LIMIT);
         foreach ($employees as $key => $employee) {
             $employeeSchema = new EmployeeSchema($employee);
             $employees[$key] = $employeeSchema->convertData();
@@ -76,14 +78,6 @@ class EmployeesController extends Controller
         //
         $user = new $this->users;
         $employee = new $this->employees;
-        $avatarPath = null;
-        if ($request->hasFile('avatar')) {
-            $avatarPath = $request->file('avatar')->storeAs(
-                'avatars',
-                time() . '.' . $request->file('image')->getClientOriginalExtension(),
-                'public'
-            );
-        }
         try {
             $user->role_id = $this->users::ROLE_EMPLOYEE;
             $user->first_name = $request->input('first_name');
@@ -92,7 +86,7 @@ class EmployeesController extends Controller
             $user->phone = $request->input('phone');
             $user->email = $request->input('email');
             $user->address = $request->input('address');
-            $user->avatar = $avatarPath;
+            $user->avatar = Helper::setStoragePath('avatars', $request->file('avatar'));
             $user->password = Hash::make($request->input('password'));
             $user->is_activated = $request->input('is_activated');
             $user->activated_at = $request->input('activated_at');
@@ -100,13 +94,12 @@ class EmployeesController extends Controller
             $employee->user_id = $user->id;
             $employee->type = $request->input('salary');
             $employee->save();
+            if ($request->input('action') === 'save_and_close') {
+                return redirect()->route('employees')->with('success', 'Created Successfully!');
+            }
+            return back()->with('success', 'Created Successfully!');
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
-        }
-        if ($request->input('action') === 'save_and_close') {
-            return redirect()->route('employees')->with('success', 'Created Successfully!');
-        } else {
-            return back()->with('success', 'Created Successfully!');
         }
     }
 
@@ -151,16 +144,8 @@ class EmployeesController extends Controller
         //
         $employee = $this->employees->find($id);
         $user = $employee->users()->first();
-        $avatarPath = null;
         if ($request->input('password')) {
             $user->password = Hash::make($request->input('password'));
-        }
-        if ($request->hasFile('avatar')) {
-            $avatarPath = $request->file('avatar')->storeAs(
-                'avatars',
-                time() . '.' . $request->file('image')->getClientOriginalExtension(),
-                'public'
-            );
         }
         try {
             $user->first_name = $request->input('first_name');
@@ -169,19 +154,18 @@ class EmployeesController extends Controller
             $user->phone = $request->input('phone');
             $user->email = $request->input('email');
             $user->address = $request->input('address');
-            $user->avatar = $avatarPath;
+            $user->avatar = Helper::setStoragePath('avatars', $request->file('avatar'));
             $user->is_activated = $request->input('is_activated');
             $user->activated_at = $request->input('activated_at');
             $user->save();
             $employee->salary = $request->input('salary');
             $employee->save();
+            if ($request->input('action') === 'save_and_close') {
+                return redirect()->route('employees')->with('success', 'Update Successfully!');
+            }
+            return back()->with('success', 'Update Successfully!');
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
-        }
-        if ($request->input('action') === 'save_and_close') {
-            return redirect()->route('employees')->with('success', 'Update Successfully!');
-        } else {
-            return back()->with('success', 'Update Successfully!');
         }
     }
 
