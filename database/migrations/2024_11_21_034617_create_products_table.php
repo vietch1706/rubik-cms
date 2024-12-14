@@ -22,10 +22,10 @@ return new class extends Migration {
             $table->date('release_date');
             $table->smallInteger('weight');
             $table->boolean('magnetic')->default(false);
-            $table->integer('price')->unsigned()->comment('Unit of money is million');
+            $table->integer('price')->unsigned()
+                ->comment('Unit of money is million');
             $table->smallInteger('box_weight');
-            $table->tinyInteger('quantity');
-            $table->string('unit', 10);
+            $table->smallInteger('quantity');
             $table->string('image', 100)->nullable();
             $table->timestamps();
             $table->foreign('category_id')

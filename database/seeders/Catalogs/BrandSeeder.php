@@ -2,7 +2,7 @@
 
 namespace Database\Seeders\Catalogs;
 
-use App\Models\Catalog\Brands;
+use App\Models\Catalogs\Brands;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use function strtolower;

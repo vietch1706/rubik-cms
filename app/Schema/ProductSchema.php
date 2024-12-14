@@ -3,7 +3,7 @@
 namespace App\Schema;
 
 
-use App\Models\Catalog\Products;
+use App\Models\Catalogs\Products;
 
 class ProductSchema
 {
@@ -40,7 +40,7 @@ class ProductSchema
             'sku' => $this->products->sku,
             'release_date' => $this->products->release_date,
             'weight' => $this->products->weight,
-            'magnetic' => $this->products->magnetic,
+            'magnetic' => $this->products->textMagnetic,
             'price' => $this->products->price,
             'box_weight' => $this->products->box_weight,
             'quantity' => $this->products->quantity,

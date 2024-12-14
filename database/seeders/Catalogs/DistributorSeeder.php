@@ -2,7 +2,7 @@
 
 namespace Database\Seeders\Catalogs;
 
-use App\Models\Catalog\Distributors;
+use App\Models\Catalogs\Distributors;
 use Illuminate\Database\Seeder;
 
 class DistributorSeeder extends Seeder

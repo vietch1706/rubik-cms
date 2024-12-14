@@ -2,7 +2,7 @@
 
 namespace App\Schema;
 
-use App\Models\Catalog\Distributors;
+use App\Models\Catalogs\Distributors;
 
 class DistributorSchema
 {

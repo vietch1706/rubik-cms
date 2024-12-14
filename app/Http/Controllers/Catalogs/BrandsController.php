@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Catalogs;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalogs\BrandRequest;
-use App\Models\Catalog\Brands;
+use App\Models\Catalogs\Brands;
 use App\Schema\BrandSchema;
 use App\Schema\CustomerSchema;
 use Illuminate\Http\Request;
@@ -17,6 +17,7 @@ use function view;
 class BrandsController extends Controller
 {
     private Brands $brands;
+    public const PAGE_LIMIT = 20;
 
     public function __construct(Brands $brand)
     {
@@ -31,7 +32,7 @@ class BrandsController extends Controller
     public function index()
     {
         //
-        $brands = $this->brands->paginate(13);
+        $brands = $this->brands->paginate(self::PAGE_LIMIT);
         foreach ($brands as $key => $brand) {
             $brandSchema = new BrandSchema($brand);
             $brands[$key] = $brandSchema->convertData();

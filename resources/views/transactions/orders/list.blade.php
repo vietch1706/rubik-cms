@@ -1,9 +1,8 @@
 @extends('layout.app')
 @section('content')
-{{--    <link rel="stylesheet" href="{{ asset('css/list.css') }}">--}}
     <div class="container">
         <div class="action-buttons">
-            <a href="{{ route('customers.create') }}" class="btn btn-primary">Create</a>
+            <a href="{{ route('orders.create') }}" class="btn btn-primary">Create</a>
             <button id="delete-record" class="btn btn-danger">Delete Selected</button>
         </div>
         <div class="table-responsive">
@@ -17,38 +16,19 @@
                         ID
                     </th>
                     <th scope="col" class="pe-5">
-                        First Name
+                        Distributor
                     </th>
                     <th scope="col" class="pe-5">
-                        Last Name
+                        Employee
                     </th>
                     <th scope="col" class="pe-5">
-                        Gender
+                        Date
                     </th>
                     <th scope="col" class="pe-5">
-                        Phone
+                        Status
                     </th>
                     <th scope="col" class="pe-5">
-                        Email
-                    </th>
-                    <th scope="col" class="pe-5">
-                        Identity Number
-                    </th>
-                    <th scope="col" class="pe-5">
-                        Type
-                    </th>
-
-                    <th scope="col" class="pe-5">
-                        Address
-                    </th>
-                    <th scope="col" class="pe-5">
-                        Avatar
-                    </th>
-                    <th scope="col" class="pe-5">
-                        Is Activated
-                    </th>
-                    <th scope="col" class="pe-5">
-                        Activated At
+                        Note
                     </th>
                     <th scope="col" class="pe-5">
                         Created At
@@ -59,69 +39,55 @@
                 </tr>
                 </thead>
                 <tbody>
-                @if(!empty($customers))
-                    @foreach($customers as $customer)
-                        <tr class="text-nowrap hover-pointer" id="delete-id-{{$customer['id']}}"
-                            onclick="window.location='{{ route('customers.edit', $customer['id']) }}'">
-                            <td class="text-center">
-                                <input type="checkbox" name="ids" class="checkbox-ids"
-                                       value="{{ $customer['user_id'] }}">
-                            </td>
+                @foreach($orders as $order)
+                    <tr class="text-nowrap hover-pointer" id="delete-id-{{$order['id']}}"
+                        onclick="window.location='{{ route('orders.edit', $order['id']) }}'">
+                        <td class="text-center">
+                            <input type="checkbox" name="ids" class="checkbox-ids"
+                                   value="{{ $order['id'] }}">
+                        </td>
+                        <td>
+                            {{ $order['id'] }}
+                        </td>
+                        @if($order['distributor'])
                             <td>
-                                {{ $customer['id'] }}
+                                {{ current($order['distributor']) }}
                             </td>
+                        @else
                             <td>
-                                {{ $customer['first_name'] }}
+
                             </td>
+                        @endif
+                        @if($order['employee'])
                             <td>
-                                {{ $customer['last_name'] }}
+                                {{ current($order['employee']) }}
                             </td>
+                        @else
                             <td>
-                                {{ $customer['gender'] }}
+
                             </td>
-                            <td>
-                                {{ $customer['phone'] }}
-                            </td>
-                            <td>
-                                {{ $customer['email'] }}
-                            </td>
-                            <td>
-                                {{ $customer['identity_number'] }}
-                            </td>
-                            <td>
-                                {{ $customer['type'] }}
-                            </td>
-                            <td>
-                                {{ $customer['address'] }}
-                            </td>
-                            <td>
-                                @if($customer['avatar'])
-                                    <img src="{{ url($customer['avatar']) }}"
-                                         alt="{{ str_replace('/storage/avatars/', '', $customer['avatar']) }}"
-                                         width="75"
-                                         height="50">
-                                @endif
-                            </td>
-                            <td class=" h-100 {{ $class = $customer['is_activated'] != 0 ? 'text-success' : 'text-danger' }}">
-                                <i class="fa-solid fa-circle"></i>
-                                {{ $customer['is_activated'] != 0 ? 'Activated' : 'Inactive' }}
-                            </td>
-                            <td>
-                                {{ $customer['activated_at'] }}
-                            </td>
-                            <td>
-                                {{ $customer['created_at'] }}
-                            </td>
-                            <td>
-                                {{ $customer['updated_at'] }}
-                            </td>
-                        </tr>
-                    @endforeach
-                @endif
+                        @endif
+                        <td>
+                            {{ $order['date'] }}
+                        </td>
+                        <td>
+                            {{ $order['status'] }}
+                        </td>
+                        <td>
+                            {{ $order['note'] }}
+                        </td>
+                        <td>
+                            {{ $order['created_at'] }}
+                        </td>
+                        <td>
+                            {{ $order['updated_at'] }}
+                        </td>
+                    </tr>
+                @endforeach
                 </tbody>
             </table>
         </div>
-        <div class="pagination-container">{{$customers->links()}}</div>
+        <div class="pagination-container">{{$orders->links()}}</div>
     </div>
     <script src="{{ asset('/js/jquery.js') }}"></script>
     <script type="text/javascript">
@@ -152,7 +118,7 @@
                 if (selectedIds.length === 0) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'No Customers Selected',
+                        title: 'No Orders Selected',
                         text: 'Please select at least one customer to delete.',
                     });
                     return;
@@ -169,7 +135,7 @@
                     if (result.isConfirmed) {
                         // Perform delete action here
                         $.ajax({
-                            url: "{{ route('customers.destroy') }}",
+                            url: "{{ route('orders.destroy') }}",
                             type: "DELETE",
                             data: {
                                 ids: selectedIds,
@@ -178,7 +144,7 @@
                             success: function (response) {
                                 Swal.fire(
                                     'Deleted!',
-                                    'Your selected customers have been deleted.',
+                                    'Your selected orders have been deleted.',
                                     'success'
                                 );
                                 $.each(selectedIds, function (key, val) {
@@ -190,7 +156,7 @@
                             error: function () {
                                 Swal.fire(
                                     'Error!',
-                                    'There was a problem deleting the customers.',
+                                    'There was a problem deleting the orders.',
                                     'error'
                                 );
                             }

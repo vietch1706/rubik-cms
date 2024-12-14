@@ -2,7 +2,7 @@
 
 namespace App\Schema;
 
-use App\Models\Catalog\Categories;
+use App\Models\Catalogs\Categories;
 
 class CategorySchema
 {

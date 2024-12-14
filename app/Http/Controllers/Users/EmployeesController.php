@@ -22,7 +22,7 @@ class EmployeesController extends Controller
 {
     private Employees $employees;
     private Users $users;
-    public const PAGE_LIMIT = 15;
+    public const PAGE_LIMIT = 20;
 
     public function __construct(
         Employees $employee,

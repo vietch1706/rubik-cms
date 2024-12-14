@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Catalogs;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalogs\DistributorRequest;
-use App\Models\Catalog\Categories;
-use App\Models\Catalog\Distributors;
+use App\Models\Catalogs\Categories;
+use App\Models\Catalogs\Distributors;
 use App\Schema\BrandSchema;
 use App\Schema\CategorySchema;
 use App\Schema\DistributorSchema;
@@ -18,6 +18,7 @@ use function view;
 class DistributorsController extends Controller
 {
     private Distributors $distributors;
+    public const PAGE_LIMIT = 20;
 
     public function __construct(Distributors $distributor)
     {
@@ -32,7 +33,7 @@ class DistributorsController extends Controller
     public function index()
     {
         //
-        $distributors = $this->distributors->paginate(13);
+        $distributors = $this->distributors->paginate(self::PAGE_LIMIT);
         foreach ($distributors as $key => $distributor) {
             $distributorSchema = new DistributorSchema($distributor);
             $distributors[$key] = $distributorSchema->convertData();
@@ -59,7 +60,7 @@ class DistributorsController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(DistributorRequest $request)
     {
         //
         $distributor = new $this->distributors;

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Catalogs;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalogs\CategoryRequest;
-use App\Models\Catalog\Categories;
+use App\Models\Catalogs\Categories;
 use App\Schema\BrandSchema;
 use App\Schema\CategorySchema;
 use Illuminate\Http\Request;
@@ -17,6 +17,7 @@ use function view;
 class CategoriesController extends Controller
 {
     private Categories $categories;
+    public const PAGE_LIMIT = 20;
 
     public function __construct(Categories $category)
     {
@@ -31,7 +32,7 @@ class CategoriesController extends Controller
     public function index()
     {
         //
-        $categories = $this->categories->paginate(13);
+        $categories = $this->categories->paginate(self::PAGE_LIMIT);
         foreach ($categories as $key => $category) {
             $categorySchema = new CategorySchema($category);
             $categories[$key] = $categorySchema->convertData();

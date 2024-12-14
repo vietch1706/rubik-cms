@@ -19,7 +19,7 @@ class CustomersController extends Controller
 {
     private Customers $customers;
     private Users $users;
-    public const PAGE_LIMIT = 15;
+    public const PAGE_LIMIT = 20;
 
     public function __construct(
         Customers $customer,
@@ -35,8 +35,7 @@ class CustomersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public
-    function index()
+    public function index()
     {
         //
         $customers = $this->customers

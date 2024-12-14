@@ -14,94 +14,15 @@
     <link rel="icon" type="image/x-icon" sizes="32x32" href="{{ asset('img/favicon-32x32.ico') }}">
     <link rel="icon" type="image/x-icon" sizes="16x16" href="{{ asset('img/favicon-16x16.ico') }}">
     <link rel="manifest" href="{{ asset('img/site.webmanifest') }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/list.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/form.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet"/>
+          href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"/>
 
-    <style>
-        body {
-            background-color: #eff1f6;
-            color: #4c4f69;
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
 
-        .navbar {
-            background-color: #fafafc;
-            color: #4c4f69;
-        }
-
-        .navbar a, .navbar .nav-link {
-            color: #4c4f69;
-        }
-
-        .sidebar {
-            height: 100vh;
-            width: 250px;
-            position: fixed;
-            left: 0;
-            background-color: #e8e9f3;
-            overflow-y: auto;
-            transition: 0.3s;
-            display: none;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            padding: 20px 0;
-        }
-
-        .active-sideitem {
-            background-color: #ffe6fe;
-            border-bottom-right-radius: 45%;
-            border-top-right-radius: 45%;
-            margin-right: 5px;
-            display: inline-block;
-        }
-
-        .sidebar a {
-            padding: 10px 20px;
-            display: block;
-            font-size: 16px;
-            color: #4c4f69;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .sidebar a:hover {
-            color: #c79c6e;
-        }
-
-        .sidebar a.active {
-            background-color: #ffe6fe;
-            color: #c79c6e;
-            border-radius: 0 20px 20px 0;
-        }
-
-        .main-content {
-            margin-left: 0;
-            padding: 20px;
-            transition: margin-left 0.3s;
-        }
-
-        .main-content.with-sidebar {
-            margin-left: 250px;
-        }
-
-        .dropdown-item {
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                position: absolute;
-                z-index: 1000;
-                width: 100%;
-            }
-
-            .main-content.with-sidebar {
-                margin-left: 0;
-            }
-        }
-    </style>
 </head>
 <body>
 @if(Request::route()->getName() != 'login')
@@ -168,7 +89,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="transactionsDropdown">
                             <li>
-                                <a class="dropdown-item" href="#" data-target="transactionsSidebar">Orders</a>
+                                <a class="dropdown-item" href="{{ route('orders') }}" data-target="transactionsSidebar">Orders</a>
                             </li>
                         </ul>
                     </li>
@@ -205,7 +126,12 @@
         <a href="{{ route('distributors') }}"
            @if(Request::is('admin/catalogs/distributors/*', 'admin/catalogs/distributors')) class="active-sideitem" @endif>Distributors</a>
     </div>
-    <div class="main-content" style="margin-left: 250px; padding: 25px 25px">
+    <div class="sidebar" id="transactionsSidebar" @if (Request::is('admin/transactions/*')) style="display: block;"
+         @else style="display: none;" @endif>
+        <a href="{{ route('orders') }}"
+           @if(Request::is('admin/transactions/orders/*', 'admin/transactions/orders')) class="active-sideitem" @endif>Orders</a>
+    </div>
+    <div class="main-content" style="margin: 60px 0 0 250px; padding: 25px 25px">
         @yield('content')
     </div>
 @else
@@ -213,11 +139,11 @@
         @yield('content')
     </div>
 @endif
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     function toggleSidebar(targetId) {
         const sidebar = document.getElementById(targetId);

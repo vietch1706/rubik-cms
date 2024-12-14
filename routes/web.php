@@ -6,6 +6,7 @@ use App\Http\Controllers\Catalogs\BrandsController;
 use App\Http\Controllers\Catalogs\CategoriesController;
 use App\Http\Controllers\Catalogs\DistributorsController;
 use App\Http\Controllers\Catalogs\ProductsController;
+use App\Http\Controllers\Transactions\OrdersController;
 use App\Http\Controllers\Users\CustomersController;
 use App\Http\Controllers\Users\EmployeesController;
 use Illuminate\Support\Facades\Route;
@@ -103,6 +104,15 @@ Route::group([
         'prefix' => 'transactions',
         'middleware' => ['isLogin'],
     ], function () {
-
+        Route::group([
+            'prefix' => 'orders'
+        ], function () {
+            Route::get('/', [OrdersController::class, 'index'])->name('orders');
+            Route::get('/create', [OrdersController::class, 'create'])->name('orders.create');
+            Route::post('/create', [OrdersController::class, 'store'])->name('orders.store');
+            Route::get('/edit/{id}', [OrdersController::class, 'edit'])->name('orders.edit');
+            Route::put('/edit/{id}', [OrdersController::class, 'update'])->name('orders.update');
+            Route::delete('/delete', [OrdersController::class, 'destroy'])->name('orders.destroy');
+        });
     });
 });
