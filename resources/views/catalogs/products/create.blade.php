@@ -13,8 +13,7 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Slug <span class="required"> * </span></label>
-                <input type="text" class="form-control" id="slug" name="slug" readonly
-                       value="{{ old('slug') }}">
+                <input type="text" class="form-control" id="slug" name="slug" value="{{ old('slug') }}">
                 @error('slug')
                 <span class="text-danger error">{{ $errors->first('slug') }}</span>
                 @enderror
@@ -59,11 +58,17 @@
                 @enderror
             </div>
             <div class="col-md-6 mb-3">
-                <label class="form-label">Release Date <span class="required"> * </span></label>
-                <input class="form-control" type="datetime-local" name="release_date"
-                       value="{{ old('release_date') }}">
-                @error('release_date')
-                <span class="text-danger error">{{ $errors->first('release_date') }}</span>
+                <label class="form-label">Distributor <span class="required"> * </span></label>
+                <select class="form-control select2" name="distributor_id">
+                    <option value="">Select Distributor</option>
+                    @foreach($distributors as $key => $distributor)
+                        <option value="{{$key}}" @if($key == old('distributor_id')) selected @endif>
+                            {{ $distributor }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('distributor_id')
+                <span class="text-danger error">{{ $errors->first('distributor_id') }}</span>
                 @enderror
             </div>
         </div>
@@ -110,6 +115,26 @@
                     @endforeach
                 </select>
             </div>
+            <div class="col-md-6 mb-3 ">
+                <label class="form-label">Status</label>
+                <select class="form-select" name="status">
+                    @foreach($statuses as $key => $status)
+                        <option value="{{$key}}">
+                            {{ $status }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3 ">
+                <label class="form-label">Release Date <span class="required"> * </span></label>
+                <input class="form-control" type="datetime-local" name="release_date"
+                       value="{{ old('release_date') }}">
+                @error('release_date')
+                <span class="text-danger error">{{ $errors->first('release_date') }}</span>
+                @enderror
+            </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Image </label>
                 <input class="form-control" type="file" accept="image/png, image/jpeg, image/jpg" name="image">
@@ -118,7 +143,6 @@
                 @enderror
             </div>
         </div>
-
         <input type="hidden" name="action" id="actionType" value="save">
         <button type="submit" class="btn btn-primary me-3">Save</button>
         <button type="submit" class="btn btn-secondary me-3" onclick="setAction('save_and_close')">Save and Close

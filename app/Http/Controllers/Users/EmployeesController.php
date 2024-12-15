@@ -11,6 +11,7 @@ use App\Schema\CustomerSchema;
 use App\Schema\EmployeeSchema;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use function back;
 use function redirect;
@@ -78,6 +79,7 @@ class EmployeesController extends Controller
         //
         $user = new $this->users;
         $employee = new $this->employees;
+        DB::beginTransaction();
         try {
             $user->role_id = $this->users::ROLE_EMPLOYEE;
             $user->first_name = $request->input('first_name');
@@ -94,11 +96,13 @@ class EmployeesController extends Controller
             $employee->user_id = $user->id;
             $employee->type = $request->input('salary');
             $employee->save();
+            DB::commit();
             if ($request->input('action') === 'save_and_close') {
                 return redirect()->route('employees')->with('success', 'Created Successfully!');
             }
             return back()->with('success', 'Created Successfully!');
         } catch (\Exception $e) {
+            DB::rollBack();
             throw new \Exception($e->getMessage());
         }
     }

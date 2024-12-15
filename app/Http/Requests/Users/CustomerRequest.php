@@ -47,7 +47,7 @@ class CustomerRequest extends FormRequest
             'type' => 'required',
             'gender' => 'numeric',
             'password' => $passwordRule . '|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
-            // 'avatar' => 'nullable|mimes:jpg,jpeg,png|max:2048'
+             'avatar' => 'nullable|mimes:jpg,jpeg,png|max:2048'
         ];
     }
 

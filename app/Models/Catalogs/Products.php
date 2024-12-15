@@ -14,6 +14,8 @@ class Products extends Model
     public const MAGNETIC_YES = 1;
     public const MAGNETIC_NO = 0;
 
+    public const STATUS_AVAILABLE = 1;
+    public const STATUS_UNAVAILABLE = 0;
 
     public $timestamps = true;
     protected $table = 'products';
@@ -32,6 +34,7 @@ class Products extends Model
     protected $attributes = [
         'magnetic' => self::MAGNETIC_NO,
         'quantity' => 0,
+        'status' => self::STATUS_AVAILABLE,
     ];
 
     protected static function booted()
@@ -45,7 +48,7 @@ class Products extends Model
 
     public function distributors()
     {
-        return $this->belongsToMany(Products::class, 'distributors_products', 'product_id', 'id');
+        return $this->belongsToMany(Distributors::class, 'distributors_products', 'product_id', 'distributor_id')->withPivot('price');
     }
 
     public function getMagneticOptions()
@@ -53,6 +56,14 @@ class Products extends Model
         return [
             self::MAGNETIC_NO => 'No',
             self::MAGNETIC_YES => 'Yes',
+        ];
+    }
+
+    public function getStatusOptions()
+    {
+        return [
+            self::STATUS_AVAILABLE => 'Available',
+            self::STATUS_UNAVAILABLE => 'Unavailable',
         ];
     }
 
@@ -74,5 +85,10 @@ class Products extends Model
                 self::MAGNETIC_NO => 'No',
             },
         );
+    }
+
+    public static function getProductByDistributorId($id)
+    {
+        dd(Products::with('distributors')->where('distributors.id', $id)->get());
     }
 }

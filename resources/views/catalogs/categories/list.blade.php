@@ -1,6 +1,6 @@
 @extends('layout.app')
 @section('content')
-{{--    <link rel="stylesheet" href="{{ asset('css/list.css') }}">--}}
+    {{--    <link rel="stylesheet" href="{{ asset('css/list.css') }}">--}}
     <div class="action-buttons">
         <a href="{{ route('categories.create') }}" class="btn btn-primary">Create</a>
         <button id="delete-record" class="btn btn-danger">Delete Selected</button>
@@ -16,10 +16,10 @@
                     ID
                 </th>
                 <th scope="col" class="pe-5 col-3">
-                    Parent Category
+                    Name
                 </th>
                 <th scope="col" class="pe-5 col-3">
-                    Name
+                    Parent Category
                 </th>
                 <th scope="col" class="pe-5 col-3">
                     Slug
@@ -43,6 +43,12 @@
                         <td>
                             {{ $category['id'] }}
                         </td>
+                        <td>
+                            {{ $category['name'] }}
+                        </td>
+                        <td>
+                            {{ $category['slug'] }}
+                        </td>
                         @if($category['parent_category'])
                             <td>
                                 {{ current($category['parent_category']) }}
@@ -52,12 +58,6 @@
 
                             </td>
                         @endif
-                        <td>
-                            {{ $category['name'] }}
-                        </td>
-                        <td>
-                            {{ $category['slug'] }}
-                        </td>
                         <td>
                             {{ $category['created_at'] }}
                         </td>

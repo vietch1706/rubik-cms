@@ -26,6 +26,7 @@ return new class extends Migration {
                 ->comment('Unit of money is million');
             $table->smallInteger('box_weight');
             $table->smallInteger('quantity');
+            $table->boolean('status')->default(true);
             $table->string('image', 100)->nullable();
             $table->timestamps();
             $table->foreign('category_id')

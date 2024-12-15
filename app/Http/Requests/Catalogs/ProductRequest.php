@@ -27,6 +27,7 @@ class ProductRequest extends FormRequest
             'name' => 'required',
             'brand_id' => 'required',
             'category_id' => 'required',
+            'distributor_id' => 'required',
             'slug' => 'required',
             'sku' => 'required',
             'price' => 'required|numeric',

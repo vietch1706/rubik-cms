@@ -10,6 +10,7 @@ use App\Models\Users\Users;
 use App\Schema\CustomerSchema;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use function back;
 use function redirect;
@@ -79,6 +80,7 @@ class CustomersController extends Controller
         //
         $user = new $this->users;
         $customer = new $this->customers;
+        DB::beginTransaction();
         try {
             $user->role_id = $this->users::ROLE_CUSTOMER;
             $user->first_name = $request->input('first_name');
@@ -97,11 +99,13 @@ class CustomersController extends Controller
             $customer->identity_number = $request->input('identity_number');
             $customer->type = $request->input('type');
             $customer->save();
+            DB::commit();
             if ($request->input('action') === 'save_and_close') {
                 return redirect()->route('customers')->with('success', 'Created Successfully!');
             }
             return back()->with('success', 'Created Successfully!');
         } catch (\Exception $e) {
+            DB::rollBack();
             throw new \Exception(['error' => $e->getMessage()]);
         }
     }

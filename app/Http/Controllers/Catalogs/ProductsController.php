@@ -7,11 +7,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalogs\ProductRequest;
 use App\Models\Catalogs\Brands;
 use App\Models\Catalogs\Categories;
+use App\Models\Catalogs\Distributors;
 use App\Models\Catalogs\Products;
 use App\Schema\ProductSchema;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use function back;
 use function redirect;
 use function view;
@@ -22,17 +24,20 @@ class ProductsController extends Controller
     private Products $products;
     private Categories $categories;
     private Brands $brands;
+    private Distributors $distributors;
     public const PAGE_LIMIT = 20;
 
     public function __construct(
-        Products   $product,
-        Categories $category,
-        Brands     $brand,
+        Products     $product,
+        Categories   $category,
+        Brands       $brand,
+        Distributors $distributor
     )
     {
         $this->products = $product;
         $this->categories = $category;
         $this->brands = $brand;
+        $this->distributors = $distributor;
     }
 
     /**
@@ -64,10 +69,13 @@ class ProductsController extends Controller
         //
         $categories = $this->categories->pluck('name', 'id');
         $brands = $this->brands->pluck('name', 'id');
+        $distributors = $this->distributors->pluck('name', 'id');
         return view('catalogs.products.create', [
             'categories' => $categories,
             'brands' => $brands,
+            'distributors' => $distributors,
             'magnetics' => $this->products->getMagneticOptions(),
+            'statuses' => $this->products->getStatusOptions(),
         ]);
     }
 
@@ -80,6 +88,7 @@ class ProductsController extends Controller
     public function store(ProductRequest $request)
     {
         //
+        DB::beginTransaction();
         try {
             $product = new $this->products;
             $product->name = $request->input('name');
@@ -95,11 +104,15 @@ class ProductsController extends Controller
             $product->quantity = $request->input('quantity');
             $product->image = Helper::setStoragePath('img', $request->file('image'));
             $product->save();
+            $distributor = $this->distributors->find($request->input('distributor_id'));
+            $distributor->products()->attach([$product->id], ['price' => $request->input('price')]);
+            DB::commit();
             if ($request->input('action') === 'save_and_close') {
                 return redirect()->route('products')->with('success', 'Created Successfully!');
             }
             return back()->with('success', 'Created Successfully!');
         } catch (Exception $e) {
+            DB::rollBack();
             throw new Exception($e->getMessage());
         }
     }

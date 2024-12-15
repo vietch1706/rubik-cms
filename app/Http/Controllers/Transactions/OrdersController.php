@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Catalogs\Distributors;
 use App\Models\Transactions\Orders;
 use App\Models\Users\Employees;
-use App\Models\Users\Users;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use function view;
 
 class OrdersController extends Controller
@@ -52,10 +52,10 @@ class OrdersController extends Controller
     public function create()
     {
         //
-        $employees = $this->employees->with('users')->get()->pluck('users.fullName', 'id');
+//        $employees = $this->employees->with('users')->get()->pluck('users.fullName', 'id');
         $distributors = $this->distributors->pluck('name', 'id');
         return view('transactions.orders.create', [
-            'employees' => $employees,
+            'current_employee' => Auth::user()->fullName,
             'distributors' => $distributors,
         ]);
     }

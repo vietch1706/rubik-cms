@@ -16,8 +16,7 @@
         <div class="row">
             <div class="col mb-3">
                 <label class="form-label">Slug <span class="required"> * </span></label>
-                <input type="text" class="form-control" id="slug" name="slug" readonly
-                       value="{{ old('slug') }}">
+                <input type="text" class="form-control" id="slug" name="slug" value="{{ old('slug') }}">
                 @error('slug')
                 <span class="text-danger error">{{ $errors->first('slug') }}</span>
                 @enderror

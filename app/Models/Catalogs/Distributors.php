@@ -20,6 +20,6 @@ class Distributors extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Distributors::class, 'distributors_products', 'distributor_id', 'id');
+        return $this->belongsToMany(Products::class, 'distributors_products', 'distributor_id', 'product_id')->withPivot('price');
     }
 }
