@@ -73,18 +73,18 @@
                         </td>
                         <td @class([
                                 'h-100',
-                                'text-success' => $order['status'] === 1,
-                                'text-primary' => $order['status'] === 2,
-                                'text-warning' => $order['status'] === 3,
-                                'text-danger' => !in_array($order['status'], [1, 2, 3]),
+                                'text-primary' => $order['status'] === 0,
+                                'text-warning' => $order['status'] === 1,
+                                'text-success' => $order['status'] === 2,
+                                'text-danger' => !in_array($order['status'], [0, 1, 2 ]),
                             ])>
                             <i class="fa-solid fa-circle"></i>
                             {{
-                               $order['status'] === 1 ? 'Completed' :
-                               ($order['status'] === 2 ? 'Processing' :
-                               ($order['status'] === 3 ? 'Pending' :
-                               'Canceled'))
-                           }}
+                                $order['status'] === 0 ? 'Pending' :
+                                ($order['status'] === 1 ? 'Processing' :
+                                ($order['status'] === 2 ? 'Completed' :
+                                'Canceled'))
+                            }}
                         </td>
                         <td>
                             {{ $order['note'] }}

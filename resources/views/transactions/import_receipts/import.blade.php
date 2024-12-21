@@ -1,8 +1,7 @@
-@php use App\Http\Controllers\Transactions\OrdersController;use App\Models\Catalogs\Products;use App\Models\Transactions\Orders;use Illuminate\Support\Facades\Session; @endphp
+@php use Illuminate\Support\Facades\Session; @endphp
 @extends('layout.app')
 @section('content')
     <style>
-
         .container-fluid {
             padding: 1rem;
         }
@@ -73,20 +72,17 @@
         a.link-secondary:hover {
             text-decoration: underline;
         }
-
-        .text-muted {
-            color: var(--latte-muted);
-        }
     </style>
     <div class="container-fluid m-0">
         <div class="card bg-light mt-3">
             <div class="card-header">
-                Laravel 5.7 Import Export Excel to database Example
+                Import Data Form
             </div>
             <div class="card-body">
-                <form action="" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('receipts.import') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <input type="file" name="file" class="form-control">
+                    <label for="csv_file" class="form-label">Choose CSV file</label>
+                    <input type="file" class="form-control" name="csv_file" accept=".csv" required>
                     <br>
                     <button type="submit" class="btn btn-primary me-3">Import</button>
                     <button type="submit" class="btn btn-secondary me-3" onclick="setAction('save_and_close')">

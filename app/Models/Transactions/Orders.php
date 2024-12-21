@@ -31,9 +31,7 @@ class Orders extends Model
     {
         return [
             self::STATUS_PENDING => 'Pending',
-            self::STATUS_PROCESSING => 'Processing',
-            self::STATUS_COMPLETED => 'Completed',
-            self::STATUS_CANCELED => 'Canceled',
+            self::STATUS_PROCESSING => 'Processing'
         ];
     }
 

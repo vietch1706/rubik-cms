@@ -1,7 +1,6 @@
-@php use App\Http\Controllers\Transactions\OrdersController;use App\Models\Catalogs\Products;use App\Models\Transactions\Orders;use Illuminate\Support\Facades\Session; @endphp
 @extends('layout.app')
 @section('content')
-    <form method="POST" action="{{ route('orders.store') }}" enctype="multipart/form-data" id="orderForm">
+    <form enctype="multipart/form-data">
         @csrf
         <div class="row">
             <div class="col-md-6 mb-3">
@@ -10,7 +9,7 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Distributor </label>
-                <input type="text" class="form-control" value="{{ current($orders['employee']) }}" readonly>
+                <input type="text" class="form-control" value="{{ current($orders['distributor']) }}" readonly>
             </div>
         </div>
         <div class="row">
@@ -21,10 +20,10 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label">Status </label>
                 <input type="text" class="form-control" value="{{
-                               $orders['status'] === 1 ? 'Completed' :
-                               ($orders['status'] === 2 ? 'Processing' :
-                               ($orders['status'] === 3 ? 'Pending' :
-                               'Canceled'))
+                                $orders['status'] === 0 ? 'Pending' :
+                                ($orders['status'] === 1 ? 'Processing' :
+                                ($orders['status'] === 2 ? 'Completed' :
+                                'Canceled'))
                            }}" readonly>
             </div>
         </div>

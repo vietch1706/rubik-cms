@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Transactions;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transactions\OrderRequest;
 use App\Models\Catalogs\Distributors;
+use App\Models\Transactions\ImportReceipts;
 use App\Models\Transactions\OrderDetails;
 use App\Models\Transactions\Orders;
 use App\Schema\OrderDetailSchema;
@@ -24,16 +25,19 @@ class OrdersController extends Controller
     private Orders $orders;
     private OrderDetails $orderDetails;
     private Distributors $distributors;
+    private ImportReceipts $importReceipts;
 
     public function __construct(
-        Orders       $order,
-        OrderDetails $orderDetail,
-        Distributors $distributor
+        Orders         $order,
+        OrderDetails   $orderDetail,
+        Distributors   $distributor,
+        ImportReceipts $importReceipt
     )
     {
         $this->orders = $order;
         $this->orderDetails = $orderDetail;
         $this->distributors = $distributor;
+        $this->importReceipts = $importReceipt;
     }
 
     /**
@@ -93,6 +97,13 @@ class OrdersController extends Controller
             $orders->status = $request->input('status');
             $orders->note = $request->input('note');
             $orders->save();
+            if ($orders->status == $this->orders::STATUS_PROCESSING) {
+                $importReceipt = new $this->importReceipts;
+                $importReceipt->order_id = $orders->id;
+                $importReceipt->date = $request->input('date');
+                $importReceipt->status = $this->importReceipts::STATUS_PENDING;
+                $importReceipt->save();
+            }
             foreach ($products as $product) {
                 $orderDetails = new $this->orderDetails;
                 $orderDetails->order_id = $orders->id;
@@ -123,13 +134,7 @@ class OrdersController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return Response
-     */
-    public function edit($id)
+    public function preview($id)
     {
         //
         $orders = $this->orders->find($id);

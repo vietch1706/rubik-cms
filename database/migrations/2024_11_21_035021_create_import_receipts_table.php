@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->increments('id')->unsigned();
             $table->integer('order_id')->unsigned()
                 ->comment('Linking to a specific purchase order.');
-            $table->integer('employee_id')->unsigned()
+            $table->integer('employee_id')->unsigned()->nullable()
                 ->comment('Employee who created the inventory receipt for the order.');
             $table->dateTime('date');
             $table->boolean('status')->default(0);
