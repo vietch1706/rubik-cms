@@ -14,8 +14,9 @@ return new class extends Migration {
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('user_id')->unsigned();
-            $table->integer('salary')->comment('Unit of money is million');
+            $table->integer('user_id')->unsigned()->unique();
+            $table->decimal('salary', 15, 2)->unsigned()
+                ->comment('Unit of money is thousands');
             $table->timestamps();
             $table->foreign('user_id')
                 ->references('id')

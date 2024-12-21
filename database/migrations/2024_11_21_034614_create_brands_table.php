@@ -14,9 +14,10 @@ return new class extends Migration {
     {
         Schema::create('brands', function (Blueprint $table) {
             $table->tinyIncrements('id')->unsigned();
-            $table->string('name', 50);
-            $table->string('slug', 50)->unique();
+            $table->string('name', 100);
+            $table->string('slug', 100)->unique();
             $table->string('image')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

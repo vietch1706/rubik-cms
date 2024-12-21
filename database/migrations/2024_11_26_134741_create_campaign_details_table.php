@@ -33,6 +33,7 @@ return new class extends Migration {
                 ->references('id')
                 ->on('campaigns')
                 ->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

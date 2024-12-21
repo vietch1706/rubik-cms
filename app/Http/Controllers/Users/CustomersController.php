@@ -5,22 +5,24 @@ namespace App\Http\Controllers\Users;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\CustomerRequest;
+use App\Http\Resources\UsersResource;
 use App\Models\Users\Customers;
 use App\Models\Users\Users;
 use App\Schema\CustomerSchema;
-use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use function back;
+use function json_decode;
 use function redirect;
-use function time;
 
 class CustomersController extends Controller
 {
+    public const PAGE_LIMIT = 20;
     private Customers $customers;
     private Users $users;
-    public const PAGE_LIMIT = 20;
 
     public function __construct(
         Customers $customer,
@@ -34,32 +36,29 @@ class CustomersController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
         //
-        $customers = $this->customers
+        $customersPaginate = $this->customers
             ->whereHas('users', function ($query) {
                 return $query->whereNot('deleted_at', '!=', null);
             })
             ->paginate(self::PAGE_LIMIT);
-        foreach ($customers as $key => $customer) {
-            $customerSchema = new CustomerSchema($customer);
-            $customers[$key] = $customerSchema->convertData();
-        }
+        $customers = json_decode(UsersResource::collection($customersPaginate)->toJson(), true);
         return view('users.customers.list', [
             'customers' => $customers,
+            'customersPaginate' => $customersPaginate,
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public
-    function create()
+    public function create()
     {
         //
         return view('users.customers.create', [
@@ -73,7 +72,7 @@ class CustomersController extends Controller
      * Store a newly created resource in storage.
      *
      * @param App\Http\Requests\Users\CustomerRequest $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(CustomerRequest $request)
     {
@@ -104,9 +103,9 @@ class CustomersController extends Controller
                 return redirect()->route('customers')->with('success', 'Created Successfully!');
             }
             return back()->with('success', 'Created Successfully!');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
-            throw new \Exception(['error' => $e->getMessage()]);
+            throw new Exception(['error' => $e->getMessage()]);
         }
     }
 
@@ -114,7 +113,7 @@ class CustomersController extends Controller
      * Display the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -125,7 +124,7 @@ class CustomersController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
@@ -141,11 +140,27 @@ class CustomersController extends Controller
     }
 
     /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function destroy(Request $request)
+    {
+        //
+        $ids = $request->ids;
+        $this->users->whereIn('id', $ids)->delete();
+        return response()->json(
+            ["success" => 'Users have been deleted']
+        );
+    }
+
+    /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(CustomerRequest $request, $id)
     {
@@ -173,26 +188,10 @@ class CustomersController extends Controller
                 return redirect()->route('customers')->with('success', 'Update Successfully!');
             }
             return back()->with('success', 'Created Successfully!');
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
 
 
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Request $request)
-    {
-        //
-        $ids = $request->ids;
-        Users::whereIn('id', $ids)->update(['deleted_at' => Carbon::now()]);
-        return response()->json(
-            ["success" => 'Users have been deleted']
-        );
     }
 }

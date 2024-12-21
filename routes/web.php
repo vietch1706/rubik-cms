@@ -6,6 +6,7 @@ use App\Http\Controllers\Catalogs\BrandsController;
 use App\Http\Controllers\Catalogs\CategoriesController;
 use App\Http\Controllers\Catalogs\DistributorsController;
 use App\Http\Controllers\Catalogs\ProductsController;
+use App\Http\Controllers\Transactions\ImportReceiptsController;
 use App\Http\Controllers\Transactions\OrdersController;
 use App\Http\Controllers\Users\CustomersController;
 use App\Http\Controllers\Users\EmployeesController;
@@ -110,9 +111,17 @@ Route::group([
             Route::get('/', [OrdersController::class, 'index'])->name('orders');
             Route::get('/create', [OrdersController::class, 'create'])->name('orders.create');
             Route::post('/create', [OrdersController::class, 'store'])->name('orders.store');
-            Route::get('/edit/{id}', [OrdersController::class, 'edit'])->name('orders.edit');
-            Route::put('/edit/{id}', [OrdersController::class, 'update'])->name('orders.update');
+            Route::get('/preview/{id}', [OrdersController::class, 'edit'])->name('orders.preview');
             Route::delete('/delete', [OrdersController::class, 'destroy'])->name('orders.destroy');
+        });
+        Route::group([
+            'prefix' => 'import-receipts'
+        ], function () {
+            Route::get('/', [ImportReceiptsController::class, 'index'])->name('receipts');
+            Route::get('/preview/{id}', [ImportReceiptsController::class, 'edit'])->name('receipts.preview');
+            Route::get('/import', [ImportReceiptsController::class, 'importView'])->name('receipts.import');
+//            Route::post('/import', 'MyController@import')->name('import');
+            Route::delete('/delete', [ImportReceiptsController::class, 'destroy'])->name('receipts.destroy');
         });
     });
 });

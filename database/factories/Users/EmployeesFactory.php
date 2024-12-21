@@ -2,12 +2,11 @@
 
 namespace Database\Factories\Users;
 
-use App\Models\Users\Users;
+use App\Models\Users;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use function fake;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Users>
+ * @extends Factory<Users>
  */
 class EmployeesFactory extends Factory
 {
@@ -19,7 +18,6 @@ class EmployeesFactory extends Factory
     public function definition()
     {
         $employees = [
-            'user_id' => Users::factory(),
             'salary' => $this->faker->numberBetween($min = 1, $max = 10),
         ];
         return $employees;

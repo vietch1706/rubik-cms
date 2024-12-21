@@ -16,19 +16,20 @@ return new class extends Migration {
             $table->increments('id')->unsigned();
             $table->tinyInteger('distributor_id')->unsigned()
                 ->comment('References the distributor who supplies the goods or products.');
-            $table->integer('employee_id')->unsigned()
-                ->comment('References the employee responsible for managing or processing the record.');
+            $table->integer('user_id')->unsigned()
+                ->comment('References to current employee who created the order.');
             $table->dateTime('date');
-            $table->boolean('status');
+            $table->boolean('status')->default(0);
             $table->string('note')->nullable();
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('distributor_id')
                 ->references('id')
                 ->on('distributors')
                 ->onDelete('cascade');
-            $table->foreign('employee_id')
+            $table->foreign('user_id')
                 ->references('id')
-                ->on('employees')
+                ->on('users')
                 ->onDelete('cascade');
         });
     }

@@ -2,6 +2,8 @@
 
 namespace Database\Seeders\Users;
 
+use App\Models\Customer;
+use App\Models\Employee;
 use App\Models\Users\Customers;
 use App\Models\Users\Employees;
 use App\Models\Users\Users;
@@ -27,8 +29,25 @@ class UserSeeder extends Seeder
         $admin->email = 'admin@admin.com';
         $admin->password = Hash::make('admin');
         $admin->save();
-        $users = Users::factory()->count(100)->create();
-        $customers = Customers::factory(50)->recycle([$users])->create();
-        $employees = Employees::factory(50)->recycle([$users])->create();
+
+        $users = Users::factory(100)->create();
+
+        $users = $users->shuffle();
+
+        $employeeUsers = $users->random(50);
+        $customerUsers = $users->diff($employeeUsers);
+
+        foreach ($employeeUsers as $user) {
+            $user->role_id = Users::ROLE_EMPLOYEE;
+            $user->save();
+            $user->employees()->save(Employees::factory()->make());
+        }
+
+        // Assign the customer role and create customer records
+        foreach ($customerUsers as $user) {
+            $user->role_id = Users::ROLE_CUSTOMER;
+            $user->save();
+            $user->customers()->save(Customers::factory()->make());
+        }
     }
 }

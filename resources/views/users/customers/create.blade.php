@@ -120,6 +120,7 @@
            href="{{ route('customers') }}">Cancel</a>
     </form>
 
+    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
     <script>
         @if (Session::has('success'))
         Swal.fire(

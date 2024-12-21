@@ -7,23 +7,22 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\EmployeeRequest;
 use App\Models\Users\Employees;
 use App\Models\Users\Users;
-use App\Schema\CustomerSchema;
 use App\Schema\EmployeeSchema;
-use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use function back;
 use function redirect;
 use function response;
-use function time;
 use function view;
 
 class EmployeesController extends Controller
 {
+    public const PAGE_LIMIT = 20;
     private Employees $employees;
     private Users $users;
-    public const PAGE_LIMIT = 20;
 
     public function __construct(
         Employees $employee,
@@ -37,7 +36,7 @@ class EmployeesController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -57,7 +56,7 @@ class EmployeesController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -71,8 +70,8 @@ class EmployeesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(EmployeeRequest $request)
     {
@@ -94,16 +93,16 @@ class EmployeesController extends Controller
             $user->activated_at = $request->input('activated_at');
             $user->save();
             $employee->user_id = $user->id;
-            $employee->type = $request->input('salary');
+            $employee->salary = $request->input('salary');
             $employee->save();
             DB::commit();
             if ($request->input('action') === 'save_and_close') {
                 return redirect()->route('employees')->with('success', 'Created Successfully!');
             }
             return back()->with('success', 'Created Successfully!');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
-            throw new \Exception($e->getMessage());
+            throw new Exception($e->getMessage());
         }
     }
 
@@ -111,7 +110,7 @@ class EmployeesController extends Controller
      * Display the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -122,7 +121,7 @@ class EmployeesController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
@@ -139,9 +138,9 @@ class EmployeesController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, $id)
     {
@@ -168,8 +167,8 @@ class EmployeesController extends Controller
                 return redirect()->route('employees')->with('success', 'Update Successfully!');
             }
             return back()->with('success', 'Update Successfully!');
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
     }
 
@@ -177,13 +176,13 @@ class EmployeesController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(Request $request)
     {
         //
         $ids = $request->ids;
-        Users::whereIn('id', $ids)->update(['deleted_at' => Carbon::now()]);
+        $this->users->whereIn('id', $ids)->delete();
         return response()->json(
             ["success" => 'Users have been deleted']
         );

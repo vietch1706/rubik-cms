@@ -16,8 +16,8 @@ return new class extends Migration {
             $table->increments('id')->unsigned();
             $table->integer('employee_id')->unsigned()
                 ->comment('References the employee who authored the blog post.');
-            $table->string('title', 50);
-            $table->string('slug', 50)
+            $table->string('title', 100);
+            $table->string('slug', 100)
                 ->comment('Slug from Title');
             $table->tinyInteger('topic')->default(0)
                 ->comment('Represents the topic category or classification.');

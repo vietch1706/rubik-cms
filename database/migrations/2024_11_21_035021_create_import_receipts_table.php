@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -20,7 +19,8 @@ return new class extends Migration
             $table->integer('employee_id')->unsigned()
                 ->comment('Employee who created the inventory receipt for the order.');
             $table->dateTime('date');
-            $table->boolean('status');
+            $table->boolean('status')->default(0);
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('order_id')
                 ->references('id')

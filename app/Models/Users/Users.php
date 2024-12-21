@@ -5,25 +5,25 @@ namespace App\Models\Users;
 use App\Models\Admin\Roles;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class Users extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
-    protected $table = 'users';
-    public $timestamps = true;
     public const INACTIVE = 0;
     public const ACTIVATED = 1;
     public const GENDER_MALE = 0;
     public const GENDER_FEMALE = 1;
     public const GENDER_OTHER = 2;
-
     public const ROLE_ADMIN = 1;
     public const ROLE_CUSTOMER = 2;
     public const ROLE_EMPLOYEE = 3;
+    public $timestamps = true;
+    protected $table = 'users';
     protected $fillable = [
         'first_name',
         'last_name',
@@ -72,10 +72,9 @@ class Users extends Authenticatable
         ];
     }
 
-    public function fullName(): Attribute
+    public function getFullNameAttribute()
     {
-        return new Attribute(
-            get: fn($value, $attribute) => $attribute['first_name'] . ' ' . $attribute['last_name']);
+        return $this->first_name . ' ' . $this->last_name;
     }
 
     public function textGender(): Attribute

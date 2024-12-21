@@ -1,6 +1,6 @@
 @extends('layout.app')
 @section('content')
-    <div class="container">
+    <div class="container-fluid">
         <div class="action-buttons">
             <a href="{{ route('orders.create') }}" class="btn btn-primary">Create</a>
             <button id="delete-record" class="btn btn-danger">Delete Selected</button>
@@ -9,8 +9,9 @@
             <table class="table table-bordered table-striped table-hover ">
                 <thead>
                 <tr class="text-nowrap col-md">
-                    <th scope="col" class="px-3">
-                        <input type="checkbox" name="" id="select-all-ids">
+                    <th scope="col" class="px-3" style="width: 25px; height: 25px; text-align: center;">
+                        <input class="checkbox-size" type="checkbox" name=""
+                               id="select-all-ids">
                     </th>
                     <th scope="col" class="pe-5">
                         ID
@@ -41,7 +42,7 @@
                 <tbody>
                 @foreach($orders as $order)
                     <tr class="text-nowrap hover-pointer" id="delete-id-{{$order['id']}}"
-                        onclick="window.location='{{ route('orders.edit', $order['id']) }}'">
+                        onclick="window.location='{{ route('orders.preview', $order['id']) }}'">
                         <td class="text-center">
                             <input type="checkbox" name="ids" class="checkbox-ids"
                                    value="{{ $order['id'] }}">
@@ -70,8 +71,20 @@
                         <td>
                             {{ $order['date'] }}
                         </td>
-                        <td>
-                            {{ $order['status'] }}
+                        <td @class([
+                                'h-100',
+                                'text-success' => $order['status'] === 1,
+                                'text-primary' => $order['status'] === 2,
+                                'text-warning' => $order['status'] === 3,
+                                'text-danger' => !in_array($order['status'], [1, 2, 3]),
+                            ])>
+                            <i class="fa-solid fa-circle"></i>
+                            {{
+                               $order['status'] === 1 ? 'Completed' :
+                               ($order['status'] === 2 ? 'Processing' :
+                               ($order['status'] === 3 ? 'Pending' :
+                               'Canceled'))
+                           }}
                         </td>
                         <td>
                             {{ $order['note'] }}
@@ -89,7 +102,8 @@
         </div>
         <div class="pagination-container">{{$orders->links()}}</div>
     </div>
-    <script src="{{ asset('/js/jquery.js') }}"></script>
+    <script src="{{ asset('/js/jQuery.js') }}"></script>
+    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
     <script type="text/javascript">
         @if (Session::has('success'))
         Swal.fire(

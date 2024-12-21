@@ -40,6 +40,7 @@
            href="{{ route('brands') }}">Cancel</a>
     </form>
 
+    <script src="{{ asset('js/sweetlalert2.min.js') }}"></script>
     <script>
         @if (Session::has('success'))
         Swal.fire(

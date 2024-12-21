@@ -1,83 +1,87 @@
 @extends('layout.app')
 @section('content')
-{{--    <link rel="stylesheet" href="{{ asset('css/list.css') }}">--}}
-    <div class="action-buttons">
-        <a href="{{ route('distributors.create') }}" class="btn btn-primary">Create</a>
-        <button id="delete-record" class="btn btn-danger">Delete Selected</button>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead>
-            <tr class="text-nowrap col-md">
-                <th scope="col" class="px-3">
-                    <input type="checkbox" name="" id="select-all-ids">
-                </th>
-                <th scope="col" class="pe-5 ">
-                    ID
-                </th>
-                <th scope="col" class="pe-5 col-3">
-                    Name
-                </th>
-                <th scope="col" class="pe-5 col-3">
-                    Address
-                </th>
-                <th scope="col" class="pe-5 col-3">
-                    Country
-                </th>
-                <th scope="col" class="pe-5 col-3">
-                    Phone
-                </th>
-                <th scope="col" class="pe-5 col-3">
-                    Email
-                </th>
-                <th scope="col" class="pe-5 col-3">
-                    Created At
-                </th>
-                <th scope="col" class="pe-5 col-3">
-                    Updated At
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            @if(!empty($distributors))
-                @foreach($distributors as $distributor)
-                    <tr class="text-nowrap hover-pointer" id="delete-id-{{ $distributor['id'] }}"
-                        onclick="window.location='{{ route('distributors.edit', $distributor['id']) }}'">
-                        <td class="text-center">
-                            <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $distributor['id'] }}">
-                        </td>
-                        <td>
-                            {{ $distributor['id'] }}
-                        </td>
-                        <td>
-                            {{ $distributor['name'] }}
-                        </td>
-                        <td>
-                            {{ $distributor['address'] }}
-                        </td>
-                        <td>
-                            {{ $distributor['country'] }}
-                        </td>
-                        <td>
-                            {{ $distributor['phone'] }}
-                        </td>
-                        <td>
-                            {{ $distributor['email'] }}
-                        </td>
-                        <td>
-                            {{ $distributor['created_at'] }}
-                        </td>
-                        <td>
-                            {{ $distributor['updated_at'] }}
-                        </td>
-                    </tr>
-                @endforeach
-            @endif
-            </tbody>
-        </table>
+    {{--    <link rel="stylesheet" href="{{ asset('css/list.css') }}">--}}
+    <div class="container-fluid">
+        <div class="action-buttons">
+            <a href="{{ route('distributors.create') }}" class="btn btn-primary">Create</a>
+            <button id="delete-record" class="btn btn-danger">Delete Selected</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                <tr class="text-nowrap col-md">
+                    <th scope="col" class="px-3">
+                        <input type="checkbox" name="" id="select-all-ids">
+                    </th>
+                    <th scope="col" class="pe-5 ">
+                        ID
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Name
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Address
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Country
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Phone
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Email
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Created At
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Updated At
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                @if(!empty($distributors))
+                    @foreach($distributors as $distributor)
+                        <tr class="text-nowrap hover-pointer" id="delete-id-{{ $distributor['id'] }}"
+                            onclick="window.location='{{ route('distributors.edit', $distributor['id']) }}'">
+                            <td class="text-center">
+                                <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $distributor['id'] }}">
+                            </td>
+                            <td>
+                                {{ $distributor['id'] }}
+                            </td>
+                            <td>
+                                {{ $distributor['name'] }}
+                            </td>
+                            <td>
+                                {{ $distributor['address'] }}
+                            </td>
+                            <td>
+                                {{ $distributor['country'] }}
+                            </td>
+                            <td>
+                                {{ $distributor['phone'] }}
+                            </td>
+                            <td>
+                                {{ $distributor['email'] }}
+                            </td>
+                            <td>
+                                {{ $distributor['created_at'] }}
+                            </td>
+                            <td>
+                                {{ $distributor['updated_at'] }}
+                            </td>
+                        </tr>
+                    @endforeach
+                @endif
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="pagination-container">{{$distributors->links()}}</div>
-    <script src="{{ asset('/js/jquery.js') }}"></script>
+
+    <script src="{{ asset('/js/jQuery.js') }}"></script>
+    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
     <script type="text/javascript">
         @if (Session::has('success'))
         Swal.fire(

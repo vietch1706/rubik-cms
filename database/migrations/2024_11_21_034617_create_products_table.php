@@ -16,18 +16,19 @@ return new class extends Migration {
             $table->increments('id')->unsigned();
             $table->tinyInteger('category_id')->unsigned();
             $table->tinyInteger('brand_id')->unsigned();
-            $table->string('name', 50);
-            $table->string('slug', 50)->unique();
+            $table->string('name', 100);
+            $table->string('slug', 100)->unique();
             $table->string('sku', 20)->unique();
             $table->date('release_date');
-            $table->smallInteger('weight');
+            $table->smallInteger('weight')->unsigned();
             $table->boolean('magnetic')->default(false);
-            $table->integer('price')->unsigned()
-                ->comment('Unit of money is million');
-            $table->smallInteger('box_weight');
-            $table->smallInteger('quantity');
+            $table->decimal('price', 15, 2)->unsigned()->nullable()
+                ->comment('Unit of money is thousands');
+            $table->smallInteger('box_weight')->unsigned();
+            $table->smallInteger('quantity')->unsigned();
             $table->boolean('status')->default(true);
             $table->string('image', 100)->nullable();
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('category_id')
                 ->references('id')

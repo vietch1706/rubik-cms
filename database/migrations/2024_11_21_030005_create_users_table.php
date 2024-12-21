@@ -20,12 +20,12 @@ return new class extends Migration {
             $table->boolean('gender')->default(2);
             $table->string('phone', 50)->unique();
             $table->string('email', 100)->unique();
-            $table->string('address', 100)->nullable();
-            $table->string('avatar', 100)->nullable();
+            $table->string('address')->nullable();
+            $table->string('avatar')->nullable();
             $table->string('password', 64);
             $table->boolean('is_activated')->default(false);
             $table->timestamp('activated_at')->nullable();
-            $table->timestamp('deleted_at')->nullable();
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('role_id')
                 ->references('id')

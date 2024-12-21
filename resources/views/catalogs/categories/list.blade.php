@@ -1,77 +1,80 @@
 @extends('layout.app')
 @section('content')
     {{--    <link rel="stylesheet" href="{{ asset('css/list.css') }}">--}}
-    <div class="action-buttons">
-        <a href="{{ route('categories.create') }}" class="btn btn-primary">Create</a>
-        <button id="delete-record" class="btn btn-danger">Delete Selected</button>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead>
-            <tr class="text-nowrap col-md">
-                <th scope="col" class="px-3">
-                    <input type="checkbox" name="" id="select-all-ids">
-                </th>
-                <th scope="col" class="pe-5 ">
-                    ID
-                </th>
-                <th scope="col" class="pe-5 col-3">
-                    Name
-                </th>
-                <th scope="col" class="pe-5 col-3">
-                    Parent Category
-                </th>
-                <th scope="col" class="pe-5 col-3">
-                    Slug
-                </th>
-                <th scope="col" class="pe-5 col-3">
-                    Created At
-                </th>
-                <th scope="col" class="pe-5 col-3">
-                    Updated At
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            @if(!empty($categories))
-                @foreach($categories as $category)
-                    <tr class="text-nowrap hover-pointer" id="delete-id-{{ $category['id'] }}"
-                        onclick="window.location='{{ route('categories.edit', $category['id']) }}'">
-                        <td class="text-center">
-                            <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $category['id'] }}">
-                        </td>
-                        <td>
-                            {{ $category['id'] }}
-                        </td>
-                        <td>
-                            {{ $category['name'] }}
-                        </td>
-                        <td>
-                            {{ $category['slug'] }}
-                        </td>
-                        @if($category['parent_category'])
-                            <td>
-                                {{ current($category['parent_category']) }}
+    <div class="container-fluid">
+        <div class="action-buttons">
+            <a href="{{ route('categories.create') }}" class="btn btn-primary">Create</a>
+            <button id="delete-record" class="btn btn-danger">Delete Selected</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                <tr class="text-nowrap col-md">
+                    <th scope="col" class="px-3">
+                        <input type="checkbox" name="" id="select-all-ids">
+                    </th>
+                    <th scope="col" class="pe-5 ">
+                        ID
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Name
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Slug
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Parent Category
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Created At
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Updated At
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                @if(!empty($categories))
+                    @foreach($categories as $category)
+                        <tr class="text-nowrap hover-pointer" id="delete-id-{{ $category['id'] }}"
+                            onclick="window.location='{{ route('categories.edit', $category['id']) }}'">
+                            <td class="text-center">
+                                <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $category['id'] }}">
                             </td>
-                        @else
                             <td>
-
+                                {{ $category['id'] }}
                             </td>
-                        @endif
-                        <td>
-                            {{ $category['created_at'] }}
-                        </td>
-                        <td>
-                            {{ $category['updated_at'] }}
-                        </td>
-                    </tr>
-                @endforeach
-            @endif
-            </tbody>
-        </table>
+                            <td>
+                                {{ $category['name'] }}
+                            </td>
+                            <td>
+                                {{ $category['slug'] }}
+                            </td>
+                            @if($category['parent_category'])
+                                <td>
+                                    {{ current($category['parent_category']) }}
+                                </td>
+                            @else
+                                <td class="text-danger" style="font-weight: bold; font-size: 20px;">
+                                    Parent
+                                </td>
+                            @endif
+                            <td>
+                                {{ $category['created_at'] }}
+                            </td>
+                            <td>
+                                {{ $category['updated_at'] }}
+                            </td>
+                        </tr>
+                    @endforeach
+                @endif
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination-container">{{$categories->links()}}</div>
     </div>
-    <div class="pagination-container">{{$categories->links()}}</div>
-    <script src="{{ asset('/js/jquery.js') }}"></script>
+    <script src="{{ asset('/js/jQuery.js') }}"></script>
+    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
     <script type="text/javascript">
         @if (Session::has('success'))
         Swal.fire(

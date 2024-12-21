@@ -21,14 +21,14 @@ class RoleSeeder extends Seeder
                 'is_system' => Roles::IS_SYSTEM_YES,
             ],
             [
-                'name' => 'Employee',
-                'code' => 'employee',
-                'is_system' => Roles::IS_SYSTEM_NO,
-            ],
-            [
                 'name' => 'Customer',
                 'code' => 'customer',
                 'is_system' => Roles::IS_SYSTEM_NO, Roles::IS_SYSTEM_NO,
+            ],
+            [
+                'name' => 'Employee',
+                'code' => 'employee',
+                'is_system' => Roles::IS_SYSTEM_NO,
             ],
         ];
         foreach ($roles as $role) {

@@ -103,6 +103,16 @@
                 @enderror
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Created At </label>
+                <input type="datetime-local" class="form-control" value="{{ $employees['created_at'] }}" readonly>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Updated At </label>
+                <input type="datetime-local" class="form-control" value="{{ $employees['updated_at'] }}" readonly>
+            </div>
+        </div>
         <input type="hidden" name="action" id="actionType" value="save">
         <button type="submit" class="btn btn-primary me-3">Save</button>
         <button type="submit" class="btn btn-secondary me-3" onclick="setAction('save_and_close')">Save and Close
@@ -111,7 +121,7 @@
         <a type="submit" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
            href="{{ route('employees')  }}">Cancel</a>
     </form>
-
+    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
     <script>
         @if (Session::has('success'))
         Swal.fire(

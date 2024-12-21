@@ -30,7 +30,6 @@ class ProductRequest extends FormRequest
             'distributor_id' => 'required',
             'slug' => 'required',
             'sku' => 'required',
-            'price' => 'required|numeric',
             'release_date' => 'required|date|before:today',
             'weight' => 'required|numeric',
             'box_weight' => 'required|numeric',

@@ -80,12 +80,15 @@
                 <span class="text-danger error">{{ $errors->first('quantity') }}</span>
                 @enderror
             </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Price (million) <span class="required"> * </span></label>
-                <input type="text" class="form-control" name="price" value="{{ old('price') }}">
-                @error('price')
-                <span class="text-danger error">{{ $errors->first('price') }}</span>
-                @enderror
+            <div class="col-md-6 mb-3 ">
+                <label class="form-label">Status</label>
+                <select class="form-select" name="status">
+                    @foreach($statuses as $key => $status)
+                        <option value="{{$key}}">
+                            {{ $status }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
         </div>
         <div class="row">
@@ -116,18 +119,6 @@
                 </select>
             </div>
             <div class="col-md-6 mb-3 ">
-                <label class="form-label">Status</label>
-                <select class="form-select" name="status">
-                    @foreach($statuses as $key => $status)
-                        <option value="{{$key}}">
-                            {{ $status }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6 mb-3 ">
                 <label class="form-label">Release Date <span class="required"> * </span></label>
                 <input class="form-control" type="datetime-local" name="release_date"
                        value="{{ old('release_date') }}">
@@ -135,7 +126,9 @@
                 <span class="text-danger error">{{ $errors->first('release_date') }}</span>
                 @enderror
             </div>
-            <div class="col-md-6 mb-3">
+        </div>
+        <div class="row">
+            <div class="col mb-3">
                 <label class="form-label">Image </label>
                 <input class="form-control" type="file" accept="image/png, image/jpeg, image/jpg" name="image">
                 @error('image')
@@ -152,7 +145,10 @@
            href="{{ route('products') }}">Cancel</a>
     </form>
 
-    <script src="{{ asset('/js/jquery.js') }}"></script>
+    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('/js/jQuery.js') }}"></script>
+    <script src="{{ asset('/js/select2.min.js') }}"></script>
+
     <script>
         @if (Session::has('success'))
         Swal.fire(

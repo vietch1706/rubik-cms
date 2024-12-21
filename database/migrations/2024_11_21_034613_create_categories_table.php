@@ -18,8 +18,9 @@ return new class extends Migration {
                 ->unsigned()
                 ->nullable()
                 ->comment('References the parent category ID. Null indicates a root category.');
-            $table->string('name', 50);
-            $table->string('slug', 50)->unique();
+            $table->string('name', 100);
+            $table->string('slug', 100)->unique();
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('parent_id')
                 ->references('id')

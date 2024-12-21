@@ -18,9 +18,10 @@ return new class extends Migration {
                 ->comment('References the invoice to which these details belong.');
             $table->integer('product_id')->unsigned()
                 ->comment('References the product being purchased in this invoice detail.');
-            $table->integer('price')
-                ->comment('Unit of money is million')->unsigned();
-            $table->integer('quantity');
+            $table->decimal('price', 15, 2)->unsigned()
+                ->comment('Unit of money is thousands');
+            $table->smallInteger('quantity')->unsigned();
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');

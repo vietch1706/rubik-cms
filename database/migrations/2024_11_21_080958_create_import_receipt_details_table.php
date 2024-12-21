@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -20,10 +19,12 @@ return new class extends Migration
             $table->integer('product_id')->unsigned()
                 ->comment('The imported product');
             $table->date('import_date');
-            $table->integer('import_price')
-                ->comment('Unit of money is million')->unsigned();
-            $table->tinyInteger('import_quantity');
+            $table->decimal('price', 15, 2)->unsigned()
+                ->comment('Unit of money is thousands');
+            $table->smallInteger('quantity')->unsigned();
             $table->boolean('status')->default(0);
+            $table->softDeletes();
+            $table->timestamps();
             $table->foreign('import_receipt_id')
                 ->references('id')
                 ->on('import_receipts')
@@ -32,7 +33,6 @@ return new class extends Migration
                 ->references('id')
                 ->on('products')
                 ->onDelete('cascade');
-            $table->timestamps();
         });
     }
 

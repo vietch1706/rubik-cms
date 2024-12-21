@@ -1,7 +1,7 @@
 @extends('layout.app')
 @section('content')
-{{--    <link rel="stylesheet" href="{{ asset('css/list.css') }}">--}}
-    <div class="container">
+    {{--    <link rel="stylesheet" href="{{ asset('css/list.css') }}">--}}
+    <div class="container-fluid">
         <div class="action-buttons">
             <a href="{{ route('customers.create') }}" class="btn btn-primary">Create</a>
             <button id="delete-record" class="btn btn-danger">Delete Selected</button>
@@ -121,9 +121,10 @@
                 </tbody>
             </table>
         </div>
-        <div class="pagination-container">{{$customers->links()}}</div>
+        <div class="pagination-container">{{$customersPaginate->links()}}</div>
     </div>
-    <script src="{{ asset('/js/jquery.js') }}"></script>
+    <script src="{{ asset('/js/jQuery.js') }}"></script>
+    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
     <script type="text/javascript">
         @if (Session::has('success'))
         Swal.fire(

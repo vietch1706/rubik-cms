@@ -21,11 +21,11 @@ use function view;
 class ProductsController extends Controller
 {
 
+    public const PAGE_LIMIT = 20;
     private Products $products;
     private Categories $categories;
     private Brands $brands;
     private Distributors $distributors;
-    public const PAGE_LIMIT = 20;
 
     public function __construct(
         Products     $product,
@@ -100,12 +100,11 @@ class ProductsController extends Controller
             $product->weight = $request->input('weight');
             $product->box_weight = $request->input('box_weight');
             $product->magnetic = $request->input('magnetic');
-            $product->price = $request->input('price');
             $product->quantity = $request->input('quantity');
             $product->image = Helper::setStoragePath('img', $request->file('image'));
             $product->save();
             $distributor = $this->distributors->find($request->input('distributor_id'));
-            $distributor->products()->attach([$product->id], ['price' => $request->input('price')]);
+            $distributor->products()->attach([$product->id]);
             DB::commit();
             if ($request->input('action') === 'save_and_close') {
                 return redirect()->route('products')->with('success', 'Created Successfully!');

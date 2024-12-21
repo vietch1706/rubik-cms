@@ -18,9 +18,10 @@ return new class extends Migration {
                 ->comment('The order to which these details belong.');
             $table->integer('product_id')->unsigned()
                 ->comment('The product being purchased in this order detail.');
-            $table->integer('price')
-                ->comment('Unit of money is million')->unsigned();
-            $table->tinyInteger('quantity');
+            $table->decimal('price', 15, 2)->unsigned()
+                ->comment('Unit of money is thousands');
+            $table->smallInteger('quantity')->unsigned();
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('order_id')
                 ->references('id')

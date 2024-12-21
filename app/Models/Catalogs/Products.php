@@ -2,9 +2,11 @@
 
 namespace App\Models\Catalogs;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Products extends Model
@@ -44,6 +46,46 @@ class Products extends Model
                 $product->slug = Str::slug($product->name, '-');
             }
         });
+        static::updated(function ($product) {
+            $product->updatePrice();
+        });
+    }
+
+    public function updatePrice()
+    {
+        $minPrice = DB::table('distributors_products')
+            ->where('product_id', $this->product_id)
+            ->min('price');
+
+        if ($minPrice) {
+            DB::table('products')
+                ->where('id', $this->product_id)
+                ->update(['price' => $minPrice]);
+        }
+    }
+
+    /**
+     * Scope a query to only include users of a given type.
+     *
+     * @param Builder $query
+     * @param int $id
+     * @return Builder
+     */
+    public function scopeGetByDistributorId($query, $id)
+    {
+        return $query->whereHas('distributors', function ($q) use ($id) {
+            $q->where('id', $id);
+        })->with(['distributors']);
+    }
+
+    public function scopeGetByCategoryId($query, $id)
+    {
+        return $query->where('category_id', $id);
+    }
+
+    public function scopeGetByBrandId($query, $id)
+    {
+        return $query->where('brand_id', $id);
     }
 
     public function distributors()
@@ -87,8 +129,13 @@ class Products extends Model
         );
     }
 
-    public static function getProductByDistributorId($id)
+    public function scopeGetBySlug($query, $slug)
     {
-        dd(Products::with('distributors')->where('distributors.id', $id)->get());
+        return $query->with('category', 'brand')->where('slug', $slug);
+    }
+
+    public function scopeGetById($query, $id)
+    {
+        return $query->with('category', 'brand')->where('id', $id);
     }
 }

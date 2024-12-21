@@ -5,29 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name') }}</title>
-    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet"
-          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('img/apple-touch-icon.png') }}">
     <link rel="icon" type="image/x-icon" sizes="32x32" href="{{ asset('img/favicon-32x32.ico') }}">
     <link rel="icon" type="image/x-icon" sizes="16x16" href="{{ asset('img/favicon-16x16.ico') }}">
     <link rel="manifest" href="{{ asset('img/site.webmanifest') }}">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/list.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/form.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"/>
-
-
+    <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/list.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/form.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}" type="text/css"/>
+    <link rel="stylesheet" href="{{ asset('css/select2-bootstrap.min.css') }}" type="text/css"/>
 </head>
 <body>
 @if(Request::route()->getName() != 'login')
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-light p-0">
+        <div class="container-fluid p-0">
             <a class="navbar-brand" href="{{ route('dashboard') }}">
                 <img src="{{ asset('img/main-logo.png') }}" alt="Store Logo" height="50">
             </a>
@@ -130,8 +123,11 @@
          @else style="display: none;" @endif>
         <a href="{{ route('orders') }}"
            @if(Request::is('admin/transactions/orders/*', 'admin/transactions/orders')) class="active-sideitem" @endif>Orders</a>
+        <a href="{{ route('receipts') }}"
+           @if(Request::is('admin/transactions/import-receipts/*', 'admin/transactions/import-receipts')) class="active-sideitem" @endif>Import
+            Receipts</a>
     </div>
-    <div class="main-content" style="margin: 60px 0 0 250px; padding: 25px 25px">
+    <div class="main-content" style="margin: 60px 0 0 250px; padding: 50px 25px 20px 25px">
         @yield('content')
     </div>
 @else
@@ -139,11 +135,7 @@
         @yield('content')
     </div>
 @endif
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{{ asset('/js/bootstrap.bundle.min.js') }}"></script>
 <script>
     function toggleSidebar(targetId) {
         const sidebar = document.getElementById(targetId);

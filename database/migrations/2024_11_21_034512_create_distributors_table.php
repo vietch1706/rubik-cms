@@ -14,11 +14,12 @@ return new class extends Migration {
     {
         Schema::create('distributors', function (Blueprint $table) {
             $table->tinyIncrements('id')->unsigned();
-            $table->string('name', 50);
-            $table->string('address', 100);
+            $table->string('name', 100);
+            $table->string('address');
             $table->string('country', 20);
             $table->string('phone', 50)->unique();
             $table->string('email', 100)->unique();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

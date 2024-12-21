@@ -36,8 +36,14 @@ class ProductSchema
             'name' => $this->products->name,
             'category' => $category,
             'brand' => $brand,
+            'distributor' => $this->products
+                ->distributors()
+                ->where('price', $this->products->price)
+                ->pluck('name', 'id')
+                ->toArray(),
             'slug' => $this->products->slug,
             'sku' => $this->products->sku,
+            'status' => $this->products->status,
             'release_date' => $this->products->release_date,
             'weight' => $this->products->weight,
             'magnetic' => $this->products->textMagnetic,
@@ -47,7 +53,7 @@ class ProductSchema
             'unit' => $this->products->unit,
             'image' => $this->products->image,
             'created_at' => $this->products->created_at,
-            'updated_at' => $this->products->deleted_at,
+            'updated_at' => $this->products->updated_at,
         ];
     }
 }

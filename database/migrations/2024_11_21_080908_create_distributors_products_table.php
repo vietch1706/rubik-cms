@@ -15,7 +15,9 @@ return new class extends Migration {
         Schema::create('distributors_products', function (Blueprint $table) {
             $table->tinyInteger('distributor_id')->unsigned();
             $table->integer('product_id')->unsigned();
-            $table->integer('price')->unsigned()->comment('Unit of money is million');
+            $table->decimal('price', 15, 2)->unsigned()->nullable()
+                ->comment('Unit of money is thousands');
+            $table->softDeletes();
             $table->foreign('distributor_id')
                 ->references('id')
                 ->on('distributors')

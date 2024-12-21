@@ -19,8 +19,9 @@ return new class extends Migration {
             $table->integer('customer_id')->unsigned()
                 ->comment('References the customer who is billed in the invoice.');
             $table->dateTime('date');
-            $table->boolean('status');
+            $table->boolean('status')->default(0);
             $table->string('note')->nullable();
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('customer_id')
                 ->references('id')

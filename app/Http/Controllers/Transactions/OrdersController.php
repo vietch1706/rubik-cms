@@ -3,42 +3,53 @@
 namespace App\Http\Controllers\Transactions;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Transactions\OrderRequest;
 use App\Models\Catalogs\Distributors;
+use App\Models\Transactions\OrderDetails;
 use App\Models\Transactions\Orders;
-use App\Models\Users\Employees;
+use App\Schema\OrderDetailSchema;
+use App\Schema\OrderSchema;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use function back;
+use function redirect;
 use function view;
 
 class OrdersController extends Controller
 {
-    private Orders $orders;
-    private Employees $employees;
-    private Distributors $distributors;
-
     public const PAGE_LIMIT = 20;
+    private Orders $orders;
+    private OrderDetails $orderDetails;
+    private Distributors $distributors;
 
     public function __construct(
         Orders       $order,
-        Employees    $employee,
+        OrderDetails $orderDetail,
         Distributors $distributor
     )
     {
         $this->orders = $order;
-        $this->employees = $employee;
+        $this->orderDetails = $orderDetail;
         $this->distributors = $distributor;
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
         //
         $orders = $this->orders
             ->paginate(self::PAGE_LIMIT);
+        foreach ($orders as $key => $order) {
+            $orderSchema = new OrderSchema($order);
+            $orders[$key] = $orderSchema->convertData();
+        }
         return view('transactions.orders.list', [
             'orders' => $orders,
         ]);
@@ -47,35 +58,65 @@ class OrdersController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
         //
-//        $employees = $this->employees->with('users')->get()->pluck('users.fullName', 'id');
         $distributors = $this->distributors->pluck('name', 'id');
         return view('transactions.orders.create', [
-            'current_employee' => Auth::user()->fullName,
+            'current_employee' => [
+                'full_name' => Auth::user()->full_name,
+                'id' => Auth::user()->id,
+            ],
             'distributors' => $distributors,
+            'statuses' => $this->orders->getStatusOptions(),
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
-    public function store(Request $request)
+    public function store(OrderRequest $request)
     {
         //
+        $products = json_decode($request->input('products'), true);
+        DB::beginTransaction();
+        $orders = new $this->orders;
+        try {
+            $orders->distributor_id = $request->input('distributor_id');
+            $orders->user_id = $request->input('employee_id');
+            $orders->date = $request->input('date');
+            $orders->status = $request->input('status');
+            $orders->note = $request->input('note');
+            $orders->save();
+            foreach ($products as $product) {
+                $orderDetails = new $this->orderDetails;
+                $orderDetails->order_id = $orders->id;
+                $orderDetails->product_id = $product['id'];
+                $orderDetails->quantity = $product['quantity'];
+                $orderDetails->price = $product['price'];
+                $orderDetails->save();
+            }
+            DB::commit();
+            if ($request->input('action') === 'save_and_close') {
+                return redirect()->route('orders')->with('success', 'Created Successfully!');
+            }
+            return back()->with('success', 'Created Successfully!');
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw new Exception($e->getMessage());
+        }
     }
 
     /**
      * Display the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -86,19 +127,30 @@ class OrdersController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
         //
+        $orders = $this->orders->find($id);
+        $orderSchema = new OrderSchema($orders);
+        $orderDetails = $orders->details()->get();
+        foreach ($orderDetails as $key => $orderDetail) {
+            $orderDetailSchema = new OrderDetailSchema($orderDetail);
+            $orderDetails[$key] = $orderDetailSchema->convertData();
+        }
+        return view('transactions.orders.preview', [
+            'orders' => $orderSchema->convertData(),
+            'orderDetails' => $orderDetails,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, $id)
     {
@@ -109,7 +161,7 @@ class OrdersController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {

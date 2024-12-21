@@ -1,20 +1,3 @@
-/* General Input Styling */
-input, select {
-    font-size: 16px;
-    padding: 8px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    outline: none;
-    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-input:focus, select:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 5px rgba(128, 189, 255, 0.5);
-}
-
-/* Hide Number Input Arrows */
-/* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -26,15 +9,35 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
-/* Labels */
+input, select {
+    font-size: 16px;
+    padding: 8px;
+    border: 1px solid var(--latte-subtle);
+    outline: none;
+    background-color: var(--latte-input-bg);
+    color: var(--latte-input-text);
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+input:focus, select:focus {
+    border-color: var(--latte-primary);
+    box-shadow: 0 0 8px rgba(140, 170, 238, 0.5);
+    transform: scale(1.02);
+}
+
 .form-label {
     font-size: 18px;
     font-weight: 500;
     margin-bottom: 5px;
     display: block;
+    color: var(--latte-text);
+    transition: color 0.2s ease-in-out;
 }
 
-/* Required Field Indicator */
+.form-label:hover {
+    color: var(--latte-primary);
+}
+
 .required {
     font-size: 18px;
     color: #e22b30;
@@ -56,39 +59,47 @@ button {
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
-    transition: background-color 0.2s ease-in-out;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+    cursor: pointer;
 }
 
 .btn-primary {
-    background-color: #007bff;
+    background-color: var(--latte-primary);
     color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover {
-    background-color: #0056b3;
+    background-color: #5f81d7;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
 .btn-secondary {
-    background-color: #6c757d;
+    background-color: var(--latte-secondary);
     color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary:hover {
-    background-color: #5a6268;
+    background-color: #84c97a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
 .link-secondary {
     font-size: 14px;
-    color: #6c757d;
+    color: var(--latte-muted);
     text-decoration: none;
+    transition: color 0.2s ease-in-out, text-decoration 0.2s ease-in-out;
 }
 
 .link-secondary:hover {
-    color: #343a40;
+    color: var(--latte-dark);
     text-decoration: underline;
 }
 
-/* Form Layout */
+
 .row {
     margin-bottom: 20px;
 }
@@ -101,18 +112,6 @@ button {
     margin-bottom: 1rem !important;
 }
 
-/* Modal Styling */
-.modal-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.modal-footer button {
-    margin-left: 10px;
-}
-
 /* Alert */
 .alert-success {
     color: #155724;
@@ -120,6 +119,13 @@ button {
     border-color: #c3e6cb;
     padding: 10px 15px;
     border-radius: 4px;
+}
+
+.form-container {
+    background-color: var(--latte-light);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 #hidden_div {
