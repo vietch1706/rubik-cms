@@ -1,11 +1,12 @@
 @extends('layout.app')
 @section('content')
-    <form enctype="multipart/form-data">
+    <form action="{{ route('receipts.approve', ['id' => $importReceipts['id']]) }}" method="POST"
+          enctype="multipart/form-data">
         @csrf
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label class="form-label">Order ID </label>
-                <input type="text" class="form-control" value="{{ $importReceipts['order_id'] }}" readonly>
+                <label class="form-label">Order Number </label>
+                <input type="text" class="form-control" value="{{ $importReceipts['order_number'] }}" readonly>
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Employee </label>
@@ -20,10 +21,7 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label">Status </label>
                 <input type="text" class="form-control" value="{{
-                                $importReceipts['status'] === 0 ? 'Pending' :
-                                ($importReceipts['status'] === 1 ? 'Partially Imported' :
-                                ($importReceipts['status'] === 2 ? 'Fully Imported' :
-                                'Failed'))
+                                $importReceipts['status'] === 0 ? 'Pending' : 'Complete'
                            }}" readonly>
             </div>
         </div>
@@ -47,6 +45,9 @@
                         </th>
                         <th scope="col" class="pe-5">
                             Product
+                        </th>
+                        <th scope="col" class="pe-5">
+                            Import Date
                         </th>
                         <th scope="col" class="pe-5">
                             Price (thousands)
@@ -92,6 +93,28 @@
                 </table>
             </div>
         </div>
-        <a type="submit" class="btn btn-secondary me-3" href="{{ route('receipts') }}">Return</a>
+        <button type="submit" @class(['btn', 'btn-primary', 'd-none' =>  !empty($importReceiptDetail)])>Approve
+            Receipt
+        </button>
+        <a class="btn btn-secondary me-3" href="{{ route('receipts') }}">Return</a>
     </form>
+    <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
+    <script>
+        @if (Session::has('success'))
+        Swal.fire(
+            '{{ Session::get('success') }}',
+            '',
+            'success'
+        );
+        @endif
+        @if (Session::has('error'))
+        Swal.fire(
+            '{{ Session::get('error') }}',
+            '',
+            'error'
+        );
+        @endif
+
+    </script>
 @endsection

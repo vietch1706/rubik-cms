@@ -2,7 +2,7 @@
 
 namespace App\Schema;
 
-use App\Models\Transactions\ImportReceipts;
+use App\Models\Transactions\ImportReceipts\ImportReceipts;
 use App\Models\Users\Users;
 
 class ImportReceiptSchema
@@ -25,7 +25,7 @@ class ImportReceiptSchema
             ->toArray();
         return [
             'id' => $this->importReceipts->id,
-            'order_id' => $this->importReceipts->order_id,
+            'order_number' => $this->importReceipts->order->order_number,
             'employee' => $employeeFullname,
             'date' => $this->importReceipts->date,
             'status' => $this->importReceipts->status,

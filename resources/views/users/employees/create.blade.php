@@ -33,7 +33,8 @@
                 </select>
             </div>
             <div class="col-md-6 mb-3">
-                <label class="form-label">Salary<span class="required"> * </span> </label>
+                <label class="form-label">Salary <span class="note"> (Unit of salary is thousand)</span><span
+                        class="required"> * </span></label>
                 <input type="number" class="form-control" name="salary"
                        value=" {{ old('salary') }}">
                 @error('salary')
@@ -115,7 +116,6 @@
            class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
            href="{{ route('employees') }}">Cancel</a>
     </form>
-    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
     <script>
         @if (Session::has('success'))
         Swal.fire(

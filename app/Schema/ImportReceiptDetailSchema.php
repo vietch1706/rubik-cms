@@ -2,8 +2,7 @@
 
 namespace App\Schema;
 
-use App\Models\Transactions\ImportReceiptDetails;
-use App\Models\Transactions\OrderDetails;
+use App\Models\Transactions\ImportReceipts\ImportReceiptDetails;
 
 class ImportReceiptDetailSchema
 {
@@ -19,7 +18,7 @@ class ImportReceiptDetailSchema
 
     public function convertData()
     {
-        $product = $this->importReceiptDetails->products()->pluck('name', 'id')->toArray();
+        $product = $this->importReceiptDetails->product()->pluck('name', 'id')->toArray();
         return [
             'id' => $this->importReceiptDetails->id,
             'product' => $product,

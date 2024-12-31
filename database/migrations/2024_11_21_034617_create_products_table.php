@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->tinyInteger('brand_id')->unsigned();
             $table->string('name', 100);
             $table->string('slug', 100)->unique();
-            $table->string('sku', 20)->unique();
+            $table->string('sku', 10)->unique();
             $table->date('release_date');
             $table->smallInteger('weight')->unsigned();
             $table->boolean('magnetic')->default(false);

@@ -21,7 +21,13 @@
                         Name
                     </th>
                     <th scope="col" class="pe-5 col-3">
-                        Category
+                        Image
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        SKU
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Release Date
                     </th>
                     <th scope="col" class="pe-5 col-3">
                         Brand
@@ -30,34 +36,28 @@
                         Distributor
                     </th>
                     <th scope="col" class="pe-5 col-3">
+                        Category
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
                         Slug
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Release Date
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        SKU
                     </th>
                     <th scope="col" class="pe-5 col-3">
                         Status
                     </th>
                     <th scope="col" class="pe-5 col-3">
-                        Weight (g)
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Magnetic
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
                         Price (thousand)
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Box Weight (g)
                     </th>
                     <th scope="col" class="pe-5 col-3">
                         Quantity
                     </th>
                     <th scope="col" class="pe-5 col-3">
-                        Image
+                        Magnetic
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Weight (g)
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
+                        Box Weight (g)
                     </th>
                     <th scope="col" class="pe-5 col-3">
                         Created At
@@ -81,10 +81,14 @@
                             {{ $product['name'] }}
                         </td>
                         <td>
-                            @if($product['category'])
-                                {{ current($product['category']) }}
+                            @if($product['image'])
+                                <img src="{{ url($product['image']) }}"
+                                     alt="{{ $product['slug'] }}" width="75"
+                                     height="50">
                             @endif
                         </td>
+                        <td>{{ $product['sku'] }}</td>
+                        <td>{{ $product['release_date'] }}</td>
                         <td>
                             @if($product['brand'])
                                 {{ current($product['brand']) }}
@@ -95,25 +99,21 @@
                                 {{ current($product['distributor']) }}
                             @endif
                         </td>
+                        <td>
+                            @if($product['category'])
+                                {{ current($product['category']) }}
+                            @endif
+                        </td>
                         <td>{{ $product['slug'] }}</td>
                         <td class=" h-100 {{ $class = $product['status'] != 0 ? 'text-success' : 'text-danger' }}">
                             <i class="fa-solid fa-circle"></i>
                             {{ $product['status'] != 0 ? 'Available' : 'Unavailable' }}
                         </td>
-                        <td>{{ $product['release_date'] }}</td>
-                        <td>{{ $product['sku'] }}</td>
-                        <td>{{ $product['weight'] }}</td>
-                        <td>{{ $product['magnetic'] }}</td>
                         <td>{{ $product['price'] }}</td>
-                        <td>{{ $product['box_weight'] }}</td>
                         <td>{{ $product['quantity'] }}</td>
-                        <td>
-                            @if($product['image'])
-                                <img src="{{ url($product['image']) }}"
-                                     alt="{{ $product['slug'] }}" width="75"
-                                     height="50">
-                            @endif
-                        </td>
+                        <td>{{ $product['magnetic'] }}</td>
+                        <td>{{ $product['weight'] }}</td>
+                        <td>{{ $product['box_weight'] }}</td>
                         <td>
                             {{ $product['created_at'] }}
                         </td>
@@ -127,8 +127,7 @@
         </div>
         <div class="pagination-container">{{$products->links()}}</div>
     </div>
-    <script src="{{ asset('/js/jQuery.js') }}"></script>
-    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script type="text/javascript">
         @if (Session::has('success'))
         Swal.fire(

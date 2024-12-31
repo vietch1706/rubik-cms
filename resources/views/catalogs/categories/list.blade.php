@@ -73,8 +73,7 @@
         </div>
         <div class="pagination-container">{{$categories->links()}}</div>
     </div>
-    <script src="{{ asset('/js/jQuery.js') }}"></script>
-    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script type="text/javascript">
         @if (Session::has('success'))
         Swal.fire(

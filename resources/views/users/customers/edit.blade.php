@@ -53,7 +53,7 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Email <span class="required"> * </span></label>
-                <input type="email" class="form-control" name="email" value="{{ $customers['email'] }}">
+                <input type="email" class="form-control" name="email" value="{{ $customers['email'] }}" readonly>
                 @error('email')
                 <span class="text-danger error">{{ $errors->first('email') }}</span>
                 @enderror
@@ -132,8 +132,6 @@
         <a type="submit" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
            href="{{ route('customers') }}">Cancel</a>
     </form>
-
-    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
     <script>
         @if (Session::has('success'))
         Swal.fire(

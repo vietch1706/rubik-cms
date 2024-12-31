@@ -34,6 +34,12 @@ input:focus, select:focus {
     transition: color 0.2s ease-in-out;
 }
 
+textarea.form-control {
+    width: 100%;
+    max-width: 100%;
+    resize: none;
+}
+
 .form-label:hover {
     color: var(--latte-primary);
 }
@@ -51,6 +57,12 @@ input:focus, select:focus {
     color: #e22b30;
     margin-top: 5px;
     display: block;
+}
+
+.note {
+    font-size: 14px;
+    color: var(--latte-muted);
+    margin-top: 5px;
 }
 
 /* Buttons */

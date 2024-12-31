@@ -19,7 +19,8 @@ return new class extends Migration {
             $table->integer('product_id')->unsigned()
                 ->comment('The product being purchased in this order detail.');
             $table->decimal('price', 15, 2)->unsigned()
-                ->comment('Unit of money is thousands');
+                ->comment('The agreed price per unit in purchase order .Unit of money is thousands');
+            $table->boolean('status')->default(0);
             $table->smallInteger('quantity')->unsigned();
             $table->softDeletes();
             $table->timestamps();

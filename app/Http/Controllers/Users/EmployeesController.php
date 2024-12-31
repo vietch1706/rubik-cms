@@ -41,9 +41,11 @@ class EmployeesController extends Controller
     public function index()
     {
         //
-        $employees = $this->employees->whereHas('users', function ($query) {
-            return $query->whereNot('deleted_at', '!=', null);
-        })->paginate(self::PAGE_LIMIT);
+        $employees = $this->employees
+            ->whereHas('users', function ($query) {
+                return $query->whereNot('deleted_at', '!=', null);
+            })
+            ->paginate(self::PAGE_LIMIT);
         foreach ($employees as $key => $employee) {
             $employeeSchema = new EmployeeSchema($employee);
             $employees[$key] = $employeeSchema->convertData();

@@ -2,7 +2,7 @@
 
 namespace App\Schema;
 
-use App\Models\Transactions\OrderDetails;
+use App\Models\Transactions\Orders\OrderDetails;
 
 class OrderDetailSchema
 {
@@ -17,12 +17,18 @@ class OrderDetailSchema
 
     public function convertData()
     {
-        $product = $this->orderDetails->products()->pluck('name', 'id')->toArray();
+        $product = $this->orderDetails->product()
+            ->select('id', 'name', 'sku');
         return [
             'id' => $this->orderDetails->id,
-            'product' => $product,
+            'product' => $product
+                ->pluck('name', 'id')
+                ->toArray(),
+            'sku' => $product->first()->sku,
+            'status' => $this->orderDetails->status,
             'price' => $this->orderDetails->price,
             'quantity' => $this->orderDetails->quantity,
+            'imported_quantity' => $this->orderDetails->imported_quantity,
             'created_at' => $this->orderDetails->created_at,
             'updated_at' => $this->orderDetails->updated_at,
         ];

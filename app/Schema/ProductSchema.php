@@ -4,6 +4,7 @@ namespace App\Schema;
 
 
 use App\Models\Catalogs\Products;
+use Carbon\Carbon;
 
 class ProductSchema
 {
@@ -44,7 +45,7 @@ class ProductSchema
             'slug' => $this->products->slug,
             'sku' => $this->products->sku,
             'status' => $this->products->status,
-            'release_date' => $this->products->release_date,
+            'release_date' => Carbon::parse($this->products->release_date),
             'weight' => $this->products->weight,
             'magnetic' => $this->products->textMagnetic,
             'price' => $this->products->price,

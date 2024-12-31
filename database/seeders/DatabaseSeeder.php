@@ -8,6 +8,7 @@ use Database\Seeders\Catalogs\BrandSeeder;
 use Database\Seeders\Catalogs\CategorySeeder;
 use Database\Seeders\Catalogs\DistributorSeeder;
 use Database\Seeders\Catalogs\ProductSeeder;
+use Database\Seeders\Transactions\OrderSeeder;
 use Database\Seeders\Users\UserSeeder;
 use Illuminate\Database\Seeder;
 
@@ -27,6 +28,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             ProductSeeder::class,
+            OrderSeeder::class
         ]);
     }
 }

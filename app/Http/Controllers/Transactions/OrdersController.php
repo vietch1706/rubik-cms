@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Transactions;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transactions\OrderRequest;
 use App\Models\Catalogs\Distributors;
-use App\Models\Transactions\ImportReceipts;
-use App\Models\Transactions\OrderDetails;
-use App\Models\Transactions\Orders;
+use App\Models\Transactions\ImportReceipts\ImportReceipts;
+use App\Models\Transactions\Orders\OrderDetails;
+use App\Models\Transactions\Orders\Orders;
 use App\Schema\OrderDetailSchema;
 use App\Schema\OrderSchema;
 use Exception;
@@ -97,13 +97,6 @@ class OrdersController extends Controller
             $orders->status = $request->input('status');
             $orders->note = $request->input('note');
             $orders->save();
-            if ($orders->status == $this->orders::STATUS_PROCESSING) {
-                $importReceipt = new $this->importReceipts;
-                $importReceipt->order_id = $orders->id;
-                $importReceipt->date = $request->input('date');
-                $importReceipt->status = $this->importReceipts::STATUS_PENDING;
-                $importReceipt->save();
-            }
             foreach ($products as $product) {
                 $orderDetails = new $this->orderDetails;
                 $orderDetails->order_id = $orders->id;
@@ -123,30 +116,30 @@ class OrdersController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
     public function preview($id)
     {
-        //
-        $orders = $this->orders->find($id);
-        $orderSchema = new OrderSchema($orders);
-        $orderDetails = $orders->details()->get();
+        $order = $this->orders->find($id);
+        $orderSchema = new OrderSchema($order);
+        $orderDetails = $order->details()->get();
+        $isImported = false;
         foreach ($orderDetails as $key => $orderDetail) {
+            if ($orderDetail->status == OrderDetails::STATUS_PARTIALLY_IMPORTED) {
+                $isImported = true;
+                $importedDetails = $this->importReceipts
+                    ->where('order_no', $order->order_number)
+                    ->first()
+                    ->details()
+                    ->where('product_id', $orderDetail->product_id)
+                    ->first();
+                $orderDetail->imported_quantity = $importedDetails->quantity;
+            }
             $orderDetailSchema = new OrderDetailSchema($orderDetail);
             $orderDetails[$key] = $orderDetailSchema->convertData();
         }
         return view('transactions.orders.preview', [
             'orders' => $orderSchema->convertData(),
             'orderDetails' => $orderDetails,
+            'isImported' => $isImported,
         ]);
     }
 

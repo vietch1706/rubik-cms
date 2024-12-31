@@ -93,14 +93,16 @@
         </div>
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label class="form-label">Weight (g) <span class="required"> * </span></label>
+                <label class="form-label">Weight (g)<span class="note"> (The weight of the Rubik's cube) </span> <span
+                        class="required"> * </span></label>
                 <input type="number" class="form-control" name="weight" value="{{ old('weight') }}">
                 @error('weight')
                 <span class="text-danger error">{{ $errors->first('weight') }}</span>
                 @enderror
             </div>
             <div class="col-md-6 mb-3">
-                <label class="form-label">Box Weight (g) <span class="required"> * </span></label>
+                <label class="form-label">Box Weight (g)<span class="note"> (The total weight of the entire Rubik's box including accompanying accessories) </span>
+                    <span class="required"> * </span></label>
                 <input type="number" class="form-control" name="box_weight" value="{{ old('box_weight') }}">
                 @error('box_weight')
                 <span class="text-danger error">{{ $errors->first('box_weight') }}</span>
@@ -144,11 +146,7 @@
         <a type="submit" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
            href="{{ route('products') }}">Cancel</a>
     </form>
-
-    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
-    <script src="{{ asset('/js/jQuery.js') }}"></script>
-    <script src="{{ asset('/js/select2.min.js') }}"></script>
-
+    <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script>
         @if (Session::has('success'))
         Swal.fire(

@@ -19,13 +19,14 @@ class ProductsFactory extends Factory
      */
     public function definition()
     {
+        $startDate = '2022-01-01 00:00:00';
+        $endDate = '2024-12-31 23:59:59';
         return [
             'category_id' => Categories::inRandomOrder()->first()->id,
             'brand_id' => Brands::inRandomOrder()->first()->id,
-            'name' => $this->faker->word(),
-            'slug' => $this->faker->slug(),
-            'sku' => $this->faker->unique()->numberBetween(1000, 9999),
-            'release_date' => $this->faker->date(),
+            'name' => $this->faker->unique()->word(3, true),
+            'sku' => Products::generateUniqueOrderNo('RBK-'),
+            'release_date' => $this->faker->dateTimeBetween($startDate, $endDate),
             'weight' => $this->faker->numberBetween(1, 100),
             'magnetic' => $this->faker->boolean(),
             'price' => null,

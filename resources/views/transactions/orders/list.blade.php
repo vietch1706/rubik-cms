@@ -17,6 +17,9 @@
                         ID
                     </th>
                     <th scope="col" class="pe-5">
+                        Order No
+                    </th>
+                    <th scope="col" class="pe-5">
                         Distributor
                     </th>
                     <th scope="col" class="pe-5">
@@ -50,6 +53,9 @@
                         <td>
                             {{ $order['id'] }}
                         </td>
+                        <td>
+                            {{ $order['order_number'] }}
+                        </td>
                         @if($order['distributor'])
                             <td>
                                 {{ current($order['distributor']) }}
@@ -81,13 +87,13 @@
                             <i class="fa-solid fa-circle"></i>
                             {{
                                 $order['status'] === 0 ? 'Pending' :
-                                ($order['status'] === 1 ? 'Processing' :
-                                ($order['status'] === 2 ? 'Completed' :
+                                ($order['status'] === 1 ? 'Partially Imported' :
+                                ($order['status'] === 2 ? 'Fully Imported' :
                                 'Canceled'))
                             }}
                         </td>
-                        <td>
-                            {{ $order['note'] }}
+                        <td title="{{ $order['note'] }}">
+                            {{ Str::limit($order['note'], 50) }}
                         </td>
                         <td>
                             {{ $order['created_at'] }}
@@ -102,8 +108,7 @@
         </div>
         <div class="pagination-container">{{$orders->links()}}</div>
     </div>
-    <script src="{{ asset('/js/jQuery.js') }}"></script>
-    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script type="text/javascript">
         @if (Session::has('success'))
         Swal.fire(
@@ -132,7 +137,7 @@
                 if (selectedIds.length === 0) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'No Orders Selected',
+                        title: 'No OrderSeeder Selected',
                         text: 'Please select at least one customer to delete.',
                     });
                     return;

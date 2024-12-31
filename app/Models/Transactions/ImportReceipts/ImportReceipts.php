@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models\Transactions;
+namespace App\Models\Transactions\ImportReceipts;
 
+use App\Models\Transactions\Orders\Orders;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,9 +11,7 @@ class ImportReceipts extends Model
     use HasFactory;
 
     public const STATUS_PENDING = 0;
-    public const STATUS_PARTIALLY_IMPORTED = 1;
-    public const STATUS_FULLY_IMPORTED = 2;
-    public const STATUS_FAILED = 3;
+    public const STATUS_COMPLETE = 1;
 
     public $timestamps = true;
     protected $table = 'import_receipts';
@@ -25,23 +24,21 @@ class ImportReceipts extends Model
         'status' => 0,
     ];
 
+    public function details()
+    {
+        return $this->hasMany(ImportReceiptDetails::class, 'import_receipt_id', 'id');
+    }
+
     public function getStatusOptions()
     {
         return [
             self::STATUS_PENDING => 'Pending',
-            self::STATUS_PARTIALLY_IMPORTED => 'Partially Imported',
-            self::STATUS_FULLY_IMPORTED => 'Fully Imported',
-            self::STATUS_FAILED => 'Failed',
+            self::STATUS_COMPLETE => 'Complete'
         ];
     }
 
-    public function orders()
+    public function order()
     {
-        return $this->belongsTo(Orders::class, 'order_id', 'id');
-    }
-
-    public function details()
-    {
-        return $this->hasMany(ImportReceiptDetails::class, 'import_receipt_id', 'id');
+        return $this->belongsTo(Orders::class, 'order_no', 'order_number');
     }
 }

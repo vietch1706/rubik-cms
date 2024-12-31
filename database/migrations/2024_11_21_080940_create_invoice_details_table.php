@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->integer('product_id')->unsigned()
                 ->comment('References the product being purchased in this invoice detail.');
             $table->decimal('price', 15, 2)->unsigned()
-                ->comment('Unit of money is thousands');
+                ->comment('The actual price per unit at the time of receiving the products .Unit of money is thousands');
             $table->smallInteger('quantity')->unsigned();
             $table->softDeletes();
             $table->timestamps();

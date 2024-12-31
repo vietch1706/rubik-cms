@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="{{ asset('css/list.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('css/form.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}" type="text/css"/>
-    <link rel="stylesheet" href="{{ asset('css/select2-bootstrap.min.css') }}" type="text/css"/>
+    <link rel="stylesheet" href="{{ asset('css/select2-bootstrap-5-theme.min.css') }}" type="text/css"/>
 </head>
 <body>
 @if(Request::route()->getName() != 'login')
@@ -60,11 +60,10 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="productsDropdown">
                             <li>
-                                <a class="dropdown-item" href="{{ route('products') }}" data-target="productsSidebar">Products</a>
+                                <a class="dropdown-item" href="{{ route('brands') }}" data-target="productsSidebar">Brands</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{{ route('brands') }}" data-target="productsSidebar">Brands</a>
-
+                                <a class="dropdown-item" href="{{ route('campaigns') }}" data-target="productsSidebar">Campaigns</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('categories') }}" data-target="productsSidebar">Categories</a>
@@ -72,6 +71,9 @@
                             <li>
                                 <a class="dropdown-item" href="{{ route('distributors') }}"
                                    data-target="productsSidebar">Distributors</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('products') }}" data-target="productsSidebar">Products</a>
                             </li>
                         </ul>
                     </li>
@@ -83,6 +85,14 @@
                         <ul class="dropdown-menu" aria-labelledby="transactionsDropdown">
                             <li>
                                 <a class="dropdown-item" href="{{ route('orders') }}" data-target="transactionsSidebar">Orders</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('receipts') }}"
+                                   data-target="transactionsSidebar">Import Receipts</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('invoices') }}"
+                                   data-target="transactionsSidebar">Invoices</a>
                             </li>
                         </ul>
                     </li>
@@ -110,14 +120,16 @@
     </div>
     <div class="sidebar" id="productsSidebar" @if (Request::is('admin/catalogs/*')) style="display: block;"
          @else style="display: none;" @endif>
-        <a href="{{ route('products') }}"
-           @if(Request::is('admin/catalogs/products/*', 'admin/catalogs/products')) class="active-sideitem" @endif>Products</a>
         <a href="{{ route('brands') }}"
            @if(Request::is('admin/catalogs/brands/*', 'admin/catalogs/brands')) class="active-sideitem" @endif>Brands</a>
+        <a href="{{ route('campaigns') }}"
+           @if(Request::is('admin/catalogs/campaigns/*', 'admin/catalogs/campaigns')) class="active-sideitem" @endif>Campaigns</a>
         <a href="{{ route('categories') }}"
            @if(Request::is('admin/catalogs/categories/*', 'admin/catalogs/categories')) class="active-sideitem" @endif>Categories</a>
         <a href="{{ route('distributors') }}"
            @if(Request::is('admin/catalogs/distributors/*', 'admin/catalogs/distributors')) class="active-sideitem" @endif>Distributors</a>
+        <a href="{{ route('products') }}"
+           @if(Request::is('admin/catalogs/products/*', 'admin/catalogs/products')) class="active-sideitem" @endif>Products</a>
     </div>
     <div class="sidebar" id="transactionsSidebar" @if (Request::is('admin/transactions/*')) style="display: block;"
          @else style="display: none;" @endif>
@@ -126,6 +138,8 @@
         <a href="{{ route('receipts') }}"
            @if(Request::is('admin/transactions/import-receipts/*', 'admin/transactions/import-receipts')) class="active-sideitem" @endif>Import
             Receipts</a>
+        <a href="{{ route('invoices') }}"
+           @if(Request::is('admin/transactions/invoices/*', 'admin/transactions/invoices')) class="active-sideitem" @endif>Invoices</a>
     </div>
     <div class="main-content" style="margin: 60px 0 0 250px; padding: 50px 25px 20px 25px">
         @yield('content')
@@ -136,6 +150,9 @@
     </div>
 @endif
 <script src="{{ asset('/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('js/sweetalert2@11.js') }}"></script>
+<script src="{{ asset('js/select2.full.min.js') }}"></script>
+
 <script>
     function toggleSidebar(targetId) {
         const sidebar = document.getElementById(targetId);

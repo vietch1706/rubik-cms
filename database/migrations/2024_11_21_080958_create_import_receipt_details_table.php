@@ -18,11 +18,10 @@ return new class extends Migration {
                 ->comment('Represents the import receipt)');
             $table->integer('product_id')->unsigned()
                 ->comment('The imported product');
-            $table->date('import_date');
+            $table->date('import_date')->nullable();
             $table->decimal('price', 15, 2)->unsigned()
                 ->comment('Unit of money is thousands');
             $table->smallInteger('quantity')->unsigned();
-            $table->boolean('status')->default(0);
             $table->softDeletes();
             $table->timestamps();
             $table->foreign('import_receipt_id')

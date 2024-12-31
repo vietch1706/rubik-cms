@@ -39,8 +39,6 @@
         <a type="submit" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
            href="{{ route('brands') }}">Cancel</a>
     </form>
-
-    <script src="{{ asset('js/sweetlalert2.min.js') }}"></script>
     <script>
         @if (Session::has('success'))
         Swal.fire(

@@ -18,7 +18,7 @@ class EmployeesFactory extends Factory
     public function definition()
     {
         $employees = [
-            'salary' => $this->faker->numberBetween($min = 1, $max = 10),
+            'salary' => $this->faker->numberBetween($min = 1000, $max = 10000),
         ];
         return $employees;
     }

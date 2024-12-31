@@ -33,7 +33,8 @@
                 </select>
             </div>
             <div class="col-md-6 mb-3 ">
-                <label class="form-label">Salary <span class="required"> * </span></label>
+                <label class="form-label">Salary <span class="note"> (Unit of salary is thousand)</span> <span
+                        class="required"> * </span></label>
                 <input type="text" class="form-control" name="salary" value="{{ $employees['salary'] }}">
                 @error('salary')
                 <span class="text-danger error">{{ $errors->first('salary') }}</span>
@@ -50,7 +51,7 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Email <span class="required"> * </span></label>
-                <input type="email" class="form-control" name="email" value="{{ $employees['email'] }}">
+                <input type="email" class="form-control" name="email" value="{{ $employees['email'] }}" readonly>
                 @error('email')
                 <span class="text-danger error">{{ $errors->first('email') }}</span>
                 @enderror
@@ -121,7 +122,6 @@
         <a type="submit" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
            href="{{ route('employees')  }}">Cancel</a>
     </form>
-    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
     <script>
         @if (Session::has('success'))
         Swal.fire(

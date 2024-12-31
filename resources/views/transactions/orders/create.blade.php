@@ -1,4 +1,4 @@
-@php use App\Http\Controllers\Transactions\OrdersController;use App\Models\Catalogs\Products;use App\Models\Transactions\Orders;use Illuminate\Support\Facades\Session; @endphp
+@php use Illuminate\Support\Facades\Session; @endphp
 @extends('layout.app')
 @section('content')
     <form method="POST" action="{{ route('orders.store') }}" enctype="multipart/form-data" id="orderForm">
@@ -18,7 +18,7 @@
             <div class="col mb-3">
                 <label class="form-label">Distributor <span class="required"> * </span></label>
                 <select class="form-control select2-overwrite" name="distributor_id"
-                        onchange="selectDistributor('hidden_div', this)">
+                        onchange="selectDistributor('hidden_div', this)" required>
                     <option value="">Select Distributor</option>
                     @foreach($distributors as $key => $distributor)
                         <option value="{{$key}}">
@@ -32,13 +32,10 @@
             </div>
             <div class="col-md-6 mb-3" id="hidden_div">
                 <label class="form-label">Product <span class="required"> * </span></label>
-                <select class="form-control select2-overwrite" id="multiple-select" multiple="multiple">
+                <select class="form-control select2-overwrite" id="multiple-select" multiple="multiple" required>
                     <option value="">Select Product</option>
                 </select>
                 <input type="hidden" name="products" id="products">
-                @error('products')
-                <span class="text-danger error">{{ $errors->first('products') }}</span>
-                @enderror
             </div>
         </div>
         <div id="product-details-container" class="row" style="display: none;">
@@ -58,9 +55,6 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label">Note</label>
                 <input type="email" class="form-control" name="note" value="{{ old('note') }}">
-                @error('note')
-                <span class="text-danger error">{{ $errors->first('note') }}</span>
-                @enderror
             </div>
         </div>
         <input type="hidden" name="action" id="actionType" value="save">
@@ -72,10 +66,7 @@
         <a type="submit" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
            href="{{ route('orders') }}">Cancel</a>
     </form>
-
-    <script src="{{ asset('/js/jQuery.js') }}"></script>
-    <script src="{{ asset('js/select2.min.js') }}"></script>
-    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script>
         @if (Session::has('success'))
         Swal.fire(
@@ -105,7 +96,13 @@
                             // No products available
                             $('#multiple-select').append('<option value="">No products available</option>');
                         }
-                        $('#multiple-select').trigger('change');
+                        $('#multiple-select').select2({
+                            placeholder: "Search and select an option",
+                            allowClear: true,
+                            theme: 'bootstrap-5',
+                            width: '100%',
+                            closeOnSelect: false
+                        });
                     }
                 });
             } else {
@@ -143,9 +140,8 @@
             $('#products').val(JSON.stringify(productsArray));
             this.submit();
         })
-        $('#multiple-select').on('select2:select', function () {
+        $('#multiple-select').on('change', function () {
             var selectedProducts = $(this).val();
-            console.log(selectedProducts);
             $('#product-details-container').empty();
             selectedProducts.forEach(function (productId) {
                 var productOption = $("#multiple-select option[value='" + productId + "']");
@@ -161,7 +157,7 @@
                         </div>
                         <div class="col mb-3 " id="product-${productId}">
                              <label class="form-label">Price per product (thousands)</label>
-                            <input type="number" class="form-control mt-2" id="price-${productId}" placeholder="Price">
+                            <input type="number" class="form-control mt-2" id="price-${productId}" placeholder="Price" required>
                         </div>
                     </div>
                 `);

@@ -2,7 +2,7 @@
 
 namespace App\Schema;
 
-use App\Models\Transactions\Orders;
+use App\Models\Transactions\Orders\Orders;
 use App\Models\Users\Users;
 
 class OrderSchema
@@ -23,9 +23,10 @@ class OrderSchema
             ->get(['id', 'first_name', 'last_name'])
             ->pluck('fullName', 'id')
             ->toArray();
-        $distributor = $this->orders->distributors()->pluck('name', 'id')->toArray();
+        $distributor = $this->orders->distributor()->pluck('name', 'id')->toArray();
         return [
             'id' => $this->orders->id,
+            'order_number' => $this->orders->order_number,
             'distributor' => $distributor,
             'employee' => $employeeFullname,
             'date' => $this->orders->date,

@@ -91,8 +91,8 @@
                             <td>
                                 {{ $customer['type'] }}
                             </td>
-                            <td>
-                                {{ $customer['address'] }}
+                            <td title="{{ $customer['address'] }}">
+                                {{ Str::limit($customer['address'], 50) }}
                             </td>
                             <td>
                                 @if($customer['avatar'])
@@ -123,8 +123,7 @@
         </div>
         <div class="pagination-container">{{$customersPaginate->links()}}</div>
     </div>
-    <script src="{{ asset('/js/jQuery.js') }}"></script>
-    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script type="text/javascript">
         @if (Session::has('success'))
         Swal.fire(

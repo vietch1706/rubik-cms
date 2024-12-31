@@ -17,7 +17,7 @@
                         ID
                     </th>
                     <th scope="col" class="pe-5">
-                        Order ID
+                        Order Number
                     </th>
                     <th scope="col" class="pe-5">
                         Employee
@@ -48,7 +48,7 @@
                             {{ $importReceipt['id'] }}
                         </td>
                         <td>
-                            {{ $importReceipt['order_id'] }}
+                            {{ $importReceipt['order_number'] }}
                         </td>
                         @if($importReceipt['employee'])
                             <td>
@@ -65,16 +65,11 @@
                         <td @class([
                                 'h-100',
                                 'text-primary' => $importReceipt['status'] === 0,
-                                'text-warning' => $importReceipt['status'] === 1,
-                                'text-success' => $importReceipt['status'] === 2,
-                                'text-danger' => !in_array($importReceipt['status'], [0, 1, 2 ]),
+                                'text-success' => $importReceipt['status'] === 1,
                             ])>
                             <i class="fa-solid fa-circle"></i>
                             {{
-                                $importReceipt['status'] === 0 ? 'Pending' :
-                                ($importReceipt['status'] === 1 ? 'Partially Imported' :
-                                ($importReceipt['status'] === 2 ? 'Fully Imported' :
-                                'Failed'))
+                                $importReceipt['status'] === 0 ? 'Pending' : 'Complete'
                             }}
                         </td>
                         <td>
@@ -90,8 +85,7 @@
         </div>
         <div class="pagination-container">{{$importReceipts->links()}}</div>
     </div>
-    <script src="{{ asset('/js/jQuery.js') }}"></script>
-    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script type="text/javascript">
         @if (Session::has('success'))
         Swal.fire(
@@ -120,7 +114,7 @@
                 if (selectedIds.length === 0) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'No Orders Selected',
+                        title: 'No OrderSeeder Selected',
                         text: 'Please select at least one customer to delete.',
                     });
                     return;

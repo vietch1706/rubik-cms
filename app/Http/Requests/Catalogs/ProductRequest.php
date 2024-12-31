@@ -34,6 +34,14 @@ class ProductRequest extends FormRequest
             'weight' => 'required|numeric',
             'box_weight' => 'required|numeric',
             'quantity' => 'required|numeric',
+            'image' => 'nullable|mimes:jpg,jpeg,png|max:2048'
         ];
+    }
+
+    public function prepareForValidation()
+    {
+        if ($this->image == null) {
+            $this->request->remove('image');
+        }
     }
 }

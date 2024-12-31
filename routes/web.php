@@ -3,10 +3,12 @@
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Catalogs\BrandsController;
+use App\Http\Controllers\Catalogs\CampaignsController;
 use App\Http\Controllers\Catalogs\CategoriesController;
 use App\Http\Controllers\Catalogs\DistributorsController;
 use App\Http\Controllers\Catalogs\ProductsController;
 use App\Http\Controllers\Transactions\ImportReceiptsController;
+use App\Http\Controllers\Transactions\InvoicesController;
 use App\Http\Controllers\Transactions\OrdersController;
 use App\Http\Controllers\Users\CustomersController;
 use App\Http\Controllers\Users\EmployeesController;
@@ -100,6 +102,16 @@ Route::group([
             Route::put('/edit/{id}', [ProductsController::class, 'update'])->name('products.update');
             Route::delete('/delete', [ProductsController::class, 'destroy'])->name('products.destroy');
         });
+        Route::group([
+            'prefix' => 'campaigns'
+        ], function () {
+            Route::get('/', [CampaignsController::class, 'index'])->name('campaigns');
+            Route::get('/create', [CampaignsController::class, 'create'])->name('campaigns.create');
+            Route::post('/create', [CampaignsController::class, 'store'])->name('campaigns.store');
+            Route::get('/edit/{id}', [CampaignsController::class, 'edit'])->name('campaigns.edit');
+            Route::put('/edit/{id}', [CampaignsController::class, 'update'])->name('campaigns.update');
+            Route::delete('/delete', [CampaignsController::class, 'destroy'])->name('campaigns.destroy');
+        });
     });
     Route::group([
         'prefix' => 'transactions',
@@ -119,9 +131,20 @@ Route::group([
         ], function () {
             Route::get('/', [ImportReceiptsController::class, 'index'])->name('receipts');
             Route::get('/preview/{id}', [ImportReceiptsController::class, 'preview'])->name('receipts.preview');
-            Route::get('/import', [ImportReceiptsController::class, 'importView'])->name('receipts.import');
-            Route::post('/import', [ImportReceiptsController::class, 'import'])->name('import');
+            Route::post('/approve/{id}', [ImportReceiptsController::class, 'approveReceipt'])->name('receipts.approve');
+            Route::group([
+                'prefix' => 'import'
+            ], function () {
+                Route::get('/', [ImportReceiptsController::class, 'importView'])->name('receipts.import');
+                Route::post('/preview', [ImportReceiptsController::class, 'previewImport'])->name('receipts.import_preview');
+            });
             Route::delete('/delete', [ImportReceiptsController::class, 'destroy'])->name('receipts.destroy');
+        });
+        Route::group([
+            'prefix' => 'invoices'
+        ], function () {
+            Route::get('/', [InvoicesController::class, 'index'])->name('invoices');
+            Route::delete('/delete', [InvoicesController::class, 'destroy'])->name('invoices.destroy');
         });
     });
 });

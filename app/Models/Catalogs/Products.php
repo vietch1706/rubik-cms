@@ -2,12 +2,14 @@
 
 namespace App\Models\Catalogs;
 
+use App\Helper\Helper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use function strlen;
 
 class Products extends Model
 {
@@ -18,6 +20,7 @@ class Products extends Model
 
     public const STATUS_AVAILABLE = 1;
     public const STATUS_UNAVAILABLE = 0;
+    public const SKU_LENGTH = 10;
 
     public $timestamps = true;
     protected $table = 'products';
@@ -38,6 +41,17 @@ class Products extends Model
         'quantity' => 0,
         'status' => self::STATUS_AVAILABLE,
     ];
+
+    public static function generateUniqueOrderNo(?string $prefix = null)
+    {
+        $length = self::SKU_LENGTH - strlen($prefix ?? '');
+
+        do {
+            $sku = ($prefix ?? '') . Helper::generateRandomString($length, 3);
+        } while (self::where('sku', $sku)->exists());
+
+        return $sku;
+    }
 
     protected static function booted()
     {

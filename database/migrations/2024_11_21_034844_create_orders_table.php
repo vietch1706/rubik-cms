@@ -18,6 +18,7 @@ return new class extends Migration {
                 ->comment('References the distributor who supplies the goods or products.');
             $table->integer('user_id')->unsigned()
                 ->comment('References to current employee who created the order.');
+            $table->string('order_number', 10)->unique();
             $table->dateTime('date');
             $table->boolean('status')->default(0);
             $table->string('note')->nullable();

@@ -84,8 +84,8 @@
                             <td>
                                 {{ $employee['salary'] }}
                             </td>
-                            <td>
-                                {{ $employee['address'] }}
+                            <td title="{{ $employee['address'] }}">
+                                {{ Str::limit($employee['address'], 50) }}
                             </td>
                             <td>
                                 @if($employee['avatar'])
@@ -116,8 +116,7 @@
         </div>
         <div class="pagination-container">{{$employees->links()}}</div>
     </div>
-    <script src="{{ asset('/js/jQuery.js') }}"></script>
-    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script type="text/javascript">
         @if (Session::has('success'))
         Swal.fire(

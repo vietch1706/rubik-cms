@@ -136,6 +136,19 @@ class ProductsController extends Controller
     public function edit($id)
     {
         //
+        $categories = $this->categories->pluck('name', 'id');
+        $brands = $this->brands->pluck('name', 'id');
+        $distributors = $this->distributors->pluck('name', 'id');
+        $product = $this->products->find($id);
+        $productSchema = new ProductSchema($product);
+        return view('catalogs.products.edit', [
+            'product' => $productSchema->convertData(),
+            'categories' => $categories,
+            'brands' => $brands,
+            'distributors' => $distributors,
+            'magnetics' => $this->products->getMagneticOptions(),
+            'statuses' => $this->products->getStatusOptions(),
+        ]);
     }
 
     /**
@@ -145,9 +158,32 @@ class ProductsController extends Controller
      * @param int $id
      * @return Response
      */
-    public function update(Request $request, $id)
+    public function update(ProductRequest $request, $id)
     {
         //
+        $product = $this->products->find($id);
+        try {
+            $product->name = $request->input('name');
+            $product->category_id = $request->input('category_id');
+            $product->brand_id = $request->input('brand_id');
+            $product->slug = $request->input('slug');
+            $product->sku = $request->input('sku');
+            $product->release_date = $request->input('release_date');
+            $product->weight = $request->input('weight');
+            $product->box_weight = $request->input('box_weight');
+            $product->magnetic = $request->input('magnetic');
+            $product->image = Helper::setStoragePath('img', $request->file('image'));
+            $product->quantity = $request->input('quantity');
+            $product->save();
+            $distributor = $this->distributors->find($request->input('distributor_id'));
+            $distributor->products()->sync([$product->id]);
+            if ($request->input('action') === 'save_and_close') {
+                return redirect()->route('products')->with('success', 'Updated Successfully!');
+            }
+            return back()->with('success', 'Updated Successfully!');
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
     }
 
     /**
