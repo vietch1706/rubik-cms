@@ -1,20 +1,17 @@
 @php use Illuminate\Support\Facades\Session; @endphp
 @extends('layout.app')
 @section('content')
-    <form method="POST" action="{{ route('categories.store') }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ route('campaigns.store') }}" enctype="multipart/form-data">
         @csrf
         <div class="row">
-            <div class="col mb-3 ">
+            <div class="col-md-6 mb-3 ">
                 <label class="form-label">Name <span class="required"> * </span></label>
                 <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}">
                 @error('name')
                 <span class="text-danger error">{{ $errors->first('name') }}</span>
                 @enderror
             </div>
-
-        </div>
-        <div class="row">
-            <div class="col mb-3">
+            <div class="col-md-6 mb-3">
                 <label class="form-label">Slug <span class="required"> * </span></label>
                 <input type="text" class="form-control" id="slug" name="slug" value="{{ old('slug') }}">
                 @error('slug')
@@ -23,19 +20,13 @@
             </div>
         </div>
         <div class="row">
-            <div class="col mb-3">
-                <label class="form-label">Parent Category</label>
-                <select class="form-select" name="parent_id">
-                    <option value="" selected>Parent Category</option>
-                    @foreach($categories as $key => $category)
-                        <option value="{{$key}}" @if($key == old('parent_id')) selected @endif>
-                            {{ $category }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('parent_id')
-                <span class="text-danger error">{{ $errors->first('parent_id') }}</span>
-                @enderror
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Start Date </label>
+                <input type="datetime-local" class="form-control" value="{{ old('start_date') }}" name="start_date">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">End Date </label>
+                <input type="datetime-local" class="form-control" value="{{ old('end_date') }}" name="end_date">
             </div>
         </div>
         <input type="hidden" name="action" id="actionType" value="save">
@@ -44,7 +35,7 @@
         </button>
         <span>Or</span>
         <a type="submit" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
-           href="{{ route('categories') }}">Cancel</a>
+           href="{{ route('campaigns') }}">Cancel</a>
     </form>
     <script>
         @if (Session::has('success'))

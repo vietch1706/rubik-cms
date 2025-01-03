@@ -3,11 +3,29 @@
 namespace App\Http\Controllers\Catalogs;
 
 use App\Http\Controllers\Controller;
+use App\Models\Catalogs\Campaigns\CampaignDetails;
+use App\Models\Catalogs\Campaigns\Campaigns;
+use App\Schema\BrandSchema;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use function compact;
+use function response;
+use function view;
 
 class CampaignsController extends Controller
 {
+    private Campaigns $campaigns;
+    private CampaignDetails $campaignDetails;
+
+    public function __construct(
+        Campaigns       $campaign,
+        CampaignDetails $campaignDetail,
+    )
+    {
+        $this->campaigns = $campaign;
+        $this->campaignDetails = $campaignDetail;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,6 +34,9 @@ class CampaignsController extends Controller
     public function index()
     {
         //
+        return view('catalogs.campaigns.list', [
+            'types' => $this->campaignDetails->getTypeOptions(),
+        ]);
     }
 
     /**
@@ -26,6 +47,7 @@ class CampaignsController extends Controller
     public function create()
     {
         //
+        return view('catalogs.campaigns.create');
     }
 
     /**
@@ -79,8 +101,35 @@ class CampaignsController extends Controller
      * @param int $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $ids = $request->ids;
+        $this->campaigns->whereIn('id', $ids)->delete();
+        return response()->json(
+            ["success" => 'Camapaigns have been deleted']
+        );
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $campaigns = $this->campaigns
+            ->where('name', 'like', '%' . $search . '%')
+            ->orWhere('slug', 'like', '%' . $search . '%')
+            ->paginate(self::PAGE_LIMIT);
+        foreach ($campaigns as $key => $brand) {
+            $brandSchema = new BrandSchema($brand);
+            $campaigns[$key] = $brandSchema->convertData();
+        }
+        if ($campaigns->count() > 0) {
+            return response()->json([
+                'campaigns' => view('catalogs.campaigns.search', compact('campaigns'))->render(),
+                'pagination' => $campaigns->links()->render(),
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'No result found!',
+            ]);
+        }
     }
 }

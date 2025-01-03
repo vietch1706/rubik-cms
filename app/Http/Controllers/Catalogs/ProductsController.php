@@ -15,7 +15,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use function back;
+use function compact;
 use function redirect;
+use function response;
 use function view;
 
 class ProductsController extends Controller
@@ -192,8 +194,48 @@ class ProductsController extends Controller
      * @param int $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
         //
+        $ids = $request->ids;
+        $this->products->whereIn('id', $ids)->delete();
+        return response()->json(
+            ["success" => 'Products have been deleted']
+        );
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $products = $this->products
+            ->whereHas('category', function ($query) use ($search) {
+                return $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->orWhereHas('brand', function ($query) use ($search) {
+                return $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->orWhereHas('distributors', function ($query) use ($search) {
+                return $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->orWhere('name', 'like', '%' . $search . '%')
+            ->orWhere('slug', 'like', '%' . $search . '%')
+            ->orWhere('sku', 'like', '%' . $search . '%')
+            ->orWhere('price', 'like', '%' . $search . '%')
+            ->orWhere('quantity', 'like', '%' . $search . '%')
+            ->paginate(self::PAGE_LIMIT);
+        foreach ($products as $key => $product) {
+            $productSchema = new ProductSchema($product);
+            $products[$key] = $productSchema->convertData();
+        }
+        if ($products->count() > 0) {
+            return response()->json([
+                'products' => view('catalogs.products.search', compact('products'))->render(),
+                'pagination' => $products->links()->render(),
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'No result found!',
+            ]);
+        }
     }
 }

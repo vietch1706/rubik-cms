@@ -2,7 +2,7 @@
 
 namespace App\Schema;
 
-use App\Models\Transactions\Orders\Orders;
+use App\Models\Transactions\Orders;
 use App\Models\Users\Users;
 
 class OrderSchema

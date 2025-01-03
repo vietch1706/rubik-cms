@@ -18,7 +18,7 @@
             <div class="col mb-3">
                 <label class="form-label">Distributor <span class="required"> * </span></label>
                 <select class="form-control select2-overwrite" name="distributor_id"
-                        onchange="selectDistributor('hidden_div', this)" required>
+                        onchange="selectDistributor('hidden_div', this)">
                     <option value="">Select Distributor</option>
                     @foreach($distributors as $key => $distributor)
                         <option value="{{$key}}">
@@ -32,10 +32,13 @@
             </div>
             <div class="col-md-6 mb-3" id="hidden_div">
                 <label class="form-label">Product <span class="required"> * </span></label>
-                <select class="form-control select2-overwrite" id="multiple-select" multiple="multiple" required>
+                <select class="form-control select2-overwrite" id="multiple-select" multiple="multiple">
                     <option value="">Select Product</option>
                 </select>
                 <input type="hidden" name="products" id="products">
+                @error('products')
+                <div class="text-danger error">{{ $errors->first('products') }}</div>
+                @enderror
             </div>
         </div>
         <div id="product-details-container" class="row" style="display: none;">
@@ -51,10 +54,16 @@
                         </option>
                     @endforeach
                 </select>
+                @error('status')
+                <div class="text-danger error">{{ $errors->first('status') }}</div>
+                @enderror
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Note</label>
                 <input type="email" class="form-control" name="note" value="{{ old('note') }}">
+                @error('note')
+                <div class="text-danger error">{{ $errors->first('note') }}</div>
+                @enderror
             </div>
         </div>
         <input type="hidden" name="action" id="actionType" value="save">
@@ -153,11 +162,11 @@
                         </div>
                         <div class="col mb-3 " id="product-${productId}">
                             <label class="form-label">Quantity</label>
-                            <input type="number" class="form-control" id="quantity-${productId}" placeholder="Quantity" required>
+                            <input type="number" class="form-control" id="quantity-${productId}" placeholder="Quantity">
                         </div>
                         <div class="col mb-3 " id="product-${productId}">
                              <label class="form-label">Price per product (thousands)</label>
-                            <input type="number" class="form-control mt-2" id="price-${productId}" placeholder="Price" required>
+                            <input type="number" class="form-control mt-2" id="price-${productId}" placeholder="Price">
                         </div>
                     </div>
                 `);

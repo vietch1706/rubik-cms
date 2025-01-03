@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models\Catalogs\Campaigns;
+namespace App\Models\Transactions;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CampaignDetails extends Model
+class InvoiceDetails extends Model
 {
     use HasFactory;
 }

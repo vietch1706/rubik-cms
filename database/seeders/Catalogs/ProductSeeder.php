@@ -17,8 +17,8 @@ class ProductSeeder extends Seeder
     public function run()
     {
         //
-        Products::factory(10)->create()->each(function ($product) {
-            $distributors = Distributors::inRandomOrder()->take(3)->pluck('id');
+        Products::factory(50)->create()->each(function ($product) {
+            $distributors = Distributors::inRandomOrder()->take(1)->pluck('id');
 
             $distributors->each(function ($distributorId) use ($product) {
                 DB::table('distributors_products')->insert([

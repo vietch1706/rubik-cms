@@ -15,12 +15,14 @@ return new class extends Migration {
         Schema::create('campaign_details', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->integer('campaign_id')->unsigned();
-            $table->decimal('discount_percent', 15, 2)
-                ->comment('Null if the campaign is bundle campaign')
-                ->nullable();
+            $table->boolean('type')->default(0)
+                ->comment('0: discount; 1: buy one free one');
             $table->integer('product_id')
                 ->unsigned()
                 ->comment('Main product in the campaign.');
+            $table->decimal('discount_percent', 15, 2)
+                ->comment('Null if the campaign is bundle campaign')
+                ->nullable();
             $table->integer('bundle_product_id')
                 ->unsigned()
                 ->nullable()

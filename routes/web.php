@@ -46,6 +46,7 @@ Route::group([
             Route::get('/edit/{id}', [CustomersController::class, 'edit'])->name('customers.edit');
             Route::put('/edit/{id}', [CustomersController::class, 'update'])->name('customers.update');
             Route::delete('/delete', [CustomersController::class, 'destroy'])->name('customers.destroy');
+            Route::get('/search', [CustomersController::class, 'search'])->name('customers.search');
         });
         Route::group([
             'prefix' => 'employees',
@@ -56,6 +57,7 @@ Route::group([
             Route::get('/edit/{id}', [EmployeesController::class, 'edit'])->name('employees.edit');
             Route::put('/edit/{id}', [EmployeesController::class, 'update'])->name('employees.update');
             Route::delete('/delete', [EmployeesController::class, 'destroy'])->name('employees.destroy');
+            Route::get('/search', [EmployeesController::class, 'search'])->name('employees.search');
         });
     });
     Route::group([
@@ -71,6 +73,7 @@ Route::group([
             Route::get('/edit/{id}', [BrandsController::class, 'edit'])->name('brands.edit');
             Route::put('/edit/{id}', [BrandsController::class, 'update'])->name('brands.update');
             Route::delete('/delete', [BrandsController::class, 'destroy'])->name('brands.destroy');
+            Route::get('/search', [BrandsController::class, 'search'])->name('brands.search');
         });
         Route::group([
             'prefix' => 'distributors'
@@ -81,6 +84,7 @@ Route::group([
             Route::get('/edit/{id}', [DistributorsController::class, 'edit'])->name('distributors.edit');
             Route::put('/edit/{id}', [DistributorsController::class, 'update'])->name('distributors.update');
             Route::delete('/delete', [DistributorsController::class, 'destroy'])->name('distributors.destroy');
+            Route::get('/search', [DistributorsController::class, 'search'])->name('distributors.search');
         });
         Route::group([
             'prefix' => 'categories'
@@ -91,6 +95,7 @@ Route::group([
             Route::get('/edit/{id}', [CategoriesController::class, 'edit'])->name('categories.edit');
             Route::put('/edit/{id}', [CategoriesController::class, 'update'])->name('categories.update');
             Route::delete('/delete', [CategoriesController::class, 'destroy'])->name('categories.destroy');
+            Route::get('/search', [CategoriesController::class, 'search'])->name('categories.search');
         });
         Route::group([
             'prefix' => 'products'
@@ -101,6 +106,7 @@ Route::group([
             Route::get('/edit/{id}', [ProductsController::class, 'edit'])->name('products.edit');
             Route::put('/edit/{id}', [ProductsController::class, 'update'])->name('products.update');
             Route::delete('/delete', [ProductsController::class, 'destroy'])->name('products.destroy');
+            Route::get('/search', [ProductsController::class, 'search'])->name('products.search');
         });
         Route::group([
             'prefix' => 'campaigns'
@@ -111,6 +117,7 @@ Route::group([
             Route::get('/edit/{id}', [CampaignsController::class, 'edit'])->name('campaigns.edit');
             Route::put('/edit/{id}', [CampaignsController::class, 'update'])->name('campaigns.update');
             Route::delete('/delete', [CampaignsController::class, 'destroy'])->name('campaigns.destroy');
+            Route::get('/search', [CampaignsController::class, 'search'])->name('campaigns.search');
         });
     });
     Route::group([
@@ -125,6 +132,7 @@ Route::group([
             Route::post('/create', [OrdersController::class, 'store'])->name('orders.store');
             Route::get('/preview/{id}', [OrdersController::class, 'preview'])->name('orders.preview');
             Route::delete('/delete', [OrdersController::class, 'destroy'])->name('orders.destroy');
+            Route::get('/search', [OrdersController::class, 'search'])->name('orders.search');
         });
         Route::group([
             'prefix' => 'import-receipts'
@@ -135,10 +143,12 @@ Route::group([
             Route::group([
                 'prefix' => 'import'
             ], function () {
-                Route::get('/', [ImportReceiptsController::class, 'importView'])->name('receipts.import');
-                Route::post('/preview', [ImportReceiptsController::class, 'previewImport'])->name('receipts.import_preview');
+                Route::get('/', [ImportReceiptsController::class, 'importView'])->name('import');
+                Route::post('/preview', [ImportReceiptsController::class, 'previewImport'])->name('import.preview');
+                Route::post('/process', [ImportReceiptsController::class, 'processImport'])->name('import.process');
             });
             Route::delete('/delete', [ImportReceiptsController::class, 'destroy'])->name('receipts.destroy');
+            Route::get('/search', [ImportReceiptsController::class, 'search'])->name('receipts.search');
         });
         Route::group([
             'prefix' => 'invoices'

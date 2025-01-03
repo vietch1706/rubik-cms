@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers\Catalogs;
 
-use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalogs\CategoryRequest;
 use App\Models\Catalogs\Categories;
-use App\Schema\BrandSchema;
 use App\Schema\CategorySchema;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use function back;
-use function dd;
+use function compact;
 use function redirect;
+use function response;
 use function view;
 
 class CategoriesController extends Controller
 {
-    private Categories $categories;
     public const PAGE_LIMIT = 20;
+    private Categories $categories;
 
     public function __construct(Categories $category)
     {
@@ -27,7 +28,7 @@ class CategoriesController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -45,7 +46,7 @@ class CategoriesController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -59,8 +60,8 @@ class CategoriesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(CategoryRequest $request)
     {
@@ -75,8 +76,8 @@ class CategoriesController extends Controller
                 return redirect()->route('categories')->with('success', 'Created Successfully!');
             }
             return back()->with('success', 'Created Successfully!');
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
 
     }
@@ -85,7 +86,7 @@ class CategoriesController extends Controller
      * Display the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -96,26 +97,26 @@ class CategoriesController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
         //
         $parentCategories = $this->categories->pluck('name', 'id');
-        $categories = $this->categories->find($id);
-        $categorySchema = new CategorySchema($categories);
+        $category = $this->categories->find($id);
+        $categorySchema = new CategorySchema($category);
         return view('catalogs.categories.edit', [
             'parentCategories' => $parentCategories,
-            'categories' => $categorySchema->convertData(),
+            'category' => $categorySchema->convertData(),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(CategoryRequest $request, $id)
     {
@@ -130,8 +131,8 @@ class CategoriesController extends Controller
                 return redirect()->route('categories')->with('success', 'Updated Successfully!');
             }
             return back()->with('success', 'Updated Successfully!');
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
 
 
@@ -141,10 +142,42 @@ class CategoriesController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
         //
+        $ids = $request->ids;
+        $this->categories->whereIn('id', $ids)->delete();
+        return response()->json(
+            ["success" => 'Categories have been deleted']
+        );
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $categories = $this->categories->whereHas('parentCategory', function ($query) use ($search) {
+            return $query
+                ->where('name', 'like', '%' . $search . '%')
+                ->orWhere('slug', 'like', '%' . $search . '%');
+        })
+            ->orWhere('name', 'like', '%' . $search . '%')
+            ->orWhere('slug', 'like', '%' . $search . '%')
+            ->paginate(self::PAGE_LIMIT);
+        foreach ($categories as $key => $category) {
+            $categorySchema = new CategorySchema($category);
+            $categories[$key] = $categorySchema->convertData();
+        }
+        if ($categories->count() > 0) {
+            return response()->json([
+                'categories' => view('catalogs.categories.search', compact('categories'))->render(),
+                'pagination' => $categories->links()->render(),
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'No result found!',
+            ]);
+        }
     }
 }

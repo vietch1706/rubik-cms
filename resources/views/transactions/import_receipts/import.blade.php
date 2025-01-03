@@ -79,7 +79,7 @@
                 Import Data
             </div>
             <div class="card-body">
-                <form action="{{ route('receipts.import_preview') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('import.preview') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="row">
                         <div class="col">
@@ -87,7 +87,8 @@
                             <select class="form-control select2" name="order_number">
                                 <option value="">Select Order Number</option>
                                 @foreach($orders as $key => $order)
-                                    <option value="{{$order}}">
+                                    <option @if(old('order_number')) value="{{ old('order_number') }}"
+                                            @else  value="{{$order}}" @endif>
                                         {{ $order }}
                                     </option>
                                 @endforeach
@@ -109,9 +110,6 @@
                     </div>
                     <input type="hidden" name="action" id="actionType" value="import">
                     <button type="submit" class="btn btn-primary me-3">Import</button>
-                    <button type="submit" class="btn btn-secondary me-3" onclick="setAction('import_and_close')">
-                        Import and Close
-                    </button>
                     <span>Or</span>&nbsp;
                     <a href="{{ route('receipts') }}" class="link-secondary">Cancel</a>
                 </form>

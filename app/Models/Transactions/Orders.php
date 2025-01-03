@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Models\Transactions\Orders;
+namespace App\Models\Transactions;
 
 use App\Helper\Helper;
 use App\Models\Catalogs\Distributors;
-use App\Models\Transactions\ImportReceipts\ImportReceipts;
 use App\Models\Users\Employees;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -47,7 +46,7 @@ class Orders extends Model
         return $this->hasMany(OrderDetails::class, 'order_id', 'id');
     }
 
-    public function importReceipt()
+    public function importReceipts()
     {
         return $this->hasOne(ImportReceipts::class, 'order_no', 'order_number');
     }

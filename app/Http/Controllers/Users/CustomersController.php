@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Users;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\CustomerRequest;
-use App\Http\Resources\UsersResource;
 use App\Models\Users\Customers;
 use App\Models\Users\Users;
 use App\Schema\CustomerSchema;
@@ -15,8 +14,10 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use function back;
-use function json_decode;
+use function compact;
 use function redirect;
+use function response;
+use function view;
 
 class CustomersController extends Controller
 {
@@ -41,15 +42,26 @@ class CustomersController extends Controller
     public function index()
     {
         //
-        $customersPaginate = $this->customers
+        $search = 'Bre';
+        $test = $this->customers->whereHas('users', function ($query) use ($search) {
+            return $query->where('first_name', 'like', '%' . $search . '%')
+                ->orWhere('last_name', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%')
+                ->orWhere('phone', 'like', '%' . $search . '%');
+        })
+            ->paginate(self::PAGE_LIMIT);
+        $customers = $this->customers
             ->whereHas('users', function ($query) {
                 return $query->whereNot('deleted_at', '!=', null);
             })
             ->paginate(self::PAGE_LIMIT);
-        $customers = json_decode(UsersResource::collection($customersPaginate)->toJson(), true);
+        foreach ($customers as $key => $customer) {
+            $customerSchema = new CustomerSchema($customer);
+            $customers[$key] = $customerSchema->convertData();
+        }
+//        $customers = (array)(UsersResource::collection($customersPaginate));
         return view('users.customers.list', [
             'customers' => $customers,
-            'customersPaginate' => $customersPaginate,
         ]);
     }
 
@@ -66,6 +78,34 @@ class CustomersController extends Controller
             'isActivateds' => $this->users->getIsActivatedOptions(),
             'types' => $this->customers->getTypeOptions(),
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $customers = $this->customers->whereHas('users', function ($query) use ($search) {
+            return $query->where('first_name', 'like', '%' . $search . '%')
+                ->orWhere('last_name', 'like', '%' . $search . '%')
+                ->orWhere('phone', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%')
+                ->orWhere('address', 'like', '%' . $search . '%');
+        })
+            ->orWhere('identity_number', 'like', '%' . $search . '%')
+            ->paginate(self::PAGE_LIMIT);
+        foreach ($customers as $key => $customer) {
+            $customerSchema = new CustomerSchema($customer);
+            $customers[$key] = $customerSchema->convertData();
+        }
+        if ($customers->count() > 0) {
+            return response()->json([
+                'customers' => view('users.customers.search', compact('customers'))->render(),
+                'pagination' => $customers->links()->render(),
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'No result found!',
+            ]);
+        }
     }
 
     /**
@@ -129,10 +169,10 @@ class CustomersController extends Controller
     public function edit($id)
     {
         //
-        $customers = $this->customers->find($id);
-        $customerSchema = new CustomerSchema($customers);
+        $customer = $this->customers->find($id);
+        $customerSchema = new CustomerSchema($customer);
         return view('users.customers.edit', [
-            'customers' => $customerSchema->convertData(),
+            'customer' => $customerSchema->convertData(),
             'genders' => $this->users->getGenderOptions(),
             'isActivateds' => $this->users->getIsActivatedOptions(),
             'types' => $this->customers->getTypeOptions(),
@@ -149,7 +189,9 @@ class CustomersController extends Controller
     {
         //
         $ids = $request->ids;
-        $this->users->whereIn('id', $ids)->delete();
+        $this->customers->whereIn('id', $ids)->each(function ($customer) {
+            $customer->users()->delete();
+        });
         return response()->json(
             ["success" => 'Users have been deleted']
         );

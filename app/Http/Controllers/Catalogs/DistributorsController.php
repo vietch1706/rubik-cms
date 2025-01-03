@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers\Catalogs;
 
-use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalogs\DistributorRequest;
-use App\Models\Catalogs\Categories;
 use App\Models\Catalogs\Distributors;
-use App\Schema\BrandSchema;
-use App\Schema\CategorySchema;
 use App\Schema\DistributorSchema;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use function back;
+use function compact;
 use function redirect;
+use function response;
 use function view;
 
 class DistributorsController extends Controller
 {
-    private Distributors $distributors;
     public const PAGE_LIMIT = 20;
+    private Distributors $distributors;
 
     public function __construct(Distributors $distributor)
     {
@@ -28,7 +28,7 @@ class DistributorsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -46,7 +46,7 @@ class DistributorsController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -57,8 +57,8 @@ class DistributorsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(DistributorRequest $request)
     {
@@ -75,8 +75,8 @@ class DistributorsController extends Controller
                 return redirect()->route('distributors')->with('success', 'Created Successfully!');
             }
             return back()->with('success', 'Created Successfully!');
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
     }
 
@@ -84,7 +84,7 @@ class DistributorsController extends Controller
      * Display the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -95,23 +95,23 @@ class DistributorsController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
-        $distributors = $this->distributors->find($id);
-        $distributorSchema = new DistributorSchema($distributors);
+        $distributor = $this->distributors->find($id);
+        $distributorSchema = new DistributorSchema($distributor);
         return view('catalogs.distributors.edit', [
-            'distributors' => $distributorSchema->convertData(),
+            'distributor' => $distributorSchema->convertData(),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(DistributorRequest $request, $id)
     {
@@ -128,8 +128,8 @@ class DistributorsController extends Controller
                 return redirect()->route('distributors')->with('success', 'Updated Successfully!');
             }
             return back()->with('success', 'Updated Successfully!');
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
     }
 
@@ -137,10 +137,41 @@ class DistributorsController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
         //
+        $ids = $request->ids;
+        $this->distributors->whereIn('id', $ids)->delete();
+        return response()->json(
+            ["success" => 'Categories have been deleted']
+        );
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $distributors = $this->distributors
+            ->where('name', 'like', '%' . $search . '%')
+            ->orWhere('address', 'like', '%' . $search . '%')
+            ->orWhere('country', 'like', '%' . $search . '%')
+            ->orWhere('phone', 'like', '%' . $search . '%')
+            ->orWhere('email', 'like', '%' . $search . '%')
+            ->paginate(self::PAGE_LIMIT);
+        foreach ($distributors as $key => $distributor) {
+            $distributorSchema = new DistributorSchema($distributor);
+            $distributors[$key] = $distributorSchema->convertData();
+        }
+        if ($distributors->count() > 0) {
+            return response()->json([
+                'distributors' => view('catalogs.distributors.search', compact('distributors'))->render(),
+                'pagination' => $distributors->links()->render(),
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'No result found!',
+            ]);
+        }
     }
 }

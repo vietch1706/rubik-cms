@@ -2,9 +2,8 @@
 
 namespace Database\Seeders\Transactions;
 
-use App\Models\OrderDetail;
-use App\Models\Transactions\Orders\OrderDetails;
-use App\Models\Transactions\Orders\Orders;
+use App\Models\Transactions\OrderDetails;
+use App\Models\Transactions\Orders;
 use Illuminate\Database\Seeder;
 use function rand;
 
@@ -19,7 +18,7 @@ class OrderSeeder extends Seeder
     {
         //
         Orders::factory()->count(5)->create()->each(function ($order) {
-            $products = $order->distributors->products()->select('id')->get();
+            $products = $order->distributor->products()->select('id')->get();
             $productCount = $products->count();
             $selectedProducts = $products->pluck('id')->shuffle()->take(rand(1, $productCount));
             $order->details()->createMany(

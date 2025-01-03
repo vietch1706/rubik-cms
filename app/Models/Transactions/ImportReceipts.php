@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Models\Transactions\ImportReceipts;
+namespace App\Models\Transactions;
 
-use App\Models\Transactions\Orders\Orders;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

@@ -2,9 +2,25 @@
 @section('content')
     {{--    <link rel="stylesheet" href="{{ asset('css/list.css') }}">--}}
     <div class="container-fluid">
-        <div class="action-buttons">
-            <a href="{{ route('products.create') }}" class="btn btn-primary">Create</a>
-            <button id="delete-record" class="btn btn-danger">Delete Selected</button>
+        <div class="d-flex justify-content-between mb-3">
+            <div class="action-buttons">
+                <a href="{{ route('products.create') }}" class="btn btn-primary py-2"><i class="fa-solid fa-plus"></i>
+                    Create</a>
+                <button id="delete-record" class="btn btn-danger py-2"><i class="fa-solid fa-trash-can"></i> Delete
+                </button>
+            </div>
+            <div class="input-group w-25">
+                <span class="input-group-text" id="basic-addon1">
+                 <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input
+                    type="text"
+                    id="search"
+                    class="search-box form-control h-100 py-2 pl-5"
+                    placeholder="Search Here ..."
+                    autocomplete="off"
+                    aria-describedby="basic-addon2">
+            </div>
         </div>
         <div class="table-responsive">
             <table
@@ -67,65 +83,67 @@
                     </th>
                 </tr>
                 </thead>
-                <tbody>
-                @foreach($products as $product)
-                    <tr class="text-nowrap hover-pointer" id="delete-id-{{ $product['id'] }}"
-                        onclick="window.location='{{ route('products.edit', $product['id']) }}'">
-                        <td class="text-center">
-                            <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $product['id'] }}">
-                        </td>
-                        <td>
-                            {{ $product['id'] }}
-                        </td>
-                        <td>
-                            {{ $product['name'] }}
-                        </td>
-                        <td>
-                            @if($product['image'])
-                                <img src="{{ url($product['image']) }}"
-                                     alt="{{ $product['slug'] }}" width="75"
-                                     height="50">
-                            @endif
-                        </td>
-                        <td>{{ $product['sku'] }}</td>
-                        <td>{{ $product['release_date'] }}</td>
-                        <td>
-                            @if($product['brand'])
-                                {{ current($product['brand']) }}
-                            @endif
-                        </td>
-                        <td>
-                            @if($product['distributor'])
-                                {{ current($product['distributor']) }}
-                            @endif
-                        </td>
-                        <td>
-                            @if($product['category'])
-                                {{ current($product['category']) }}
-                            @endif
-                        </td>
-                        <td>{{ $product['slug'] }}</td>
-                        <td class=" h-100 {{ $class = $product['status'] != 0 ? 'text-success' : 'text-danger' }}">
-                            <i class="fa-solid fa-circle"></i>
-                            {{ $product['status'] != 0 ? 'Available' : 'Unavailable' }}
-                        </td>
-                        <td>{{ $product['price'] }}</td>
-                        <td>{{ $product['quantity'] }}</td>
-                        <td>{{ $product['magnetic'] }}</td>
-                        <td>{{ $product['weight'] }}</td>
-                        <td>{{ $product['box_weight'] }}</td>
-                        <td>
-                            {{ $product['created_at'] }}
-                        </td>
-                        <td>
-                            {{ $product['updated_at'] }}
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
+                @if(!empty($products))
+                    <tbody>
+                    @foreach($products as $product)
+                        <tr class="text-nowrap hover-pointer" id="delete-id-{{ $product['id'] }}"
+                            onclick="window.location='{{ route('products.edit', $product['id']) }}'">
+                            <td class="text-center">
+                                <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $product['id'] }}">
+                            </td>
+                            <td>
+                                {{ $product['id'] }}
+                            </td>
+                            <td>
+                                {{ $product['name'] }}
+                            </td>
+                            <td>
+                                @if($product['image'])
+                                    <img src="{{ url($product['image']) }}"
+                                         alt="{{ $product['slug'] }}" width="75"
+                                         height="50">
+                                @endif
+                            </td>
+                            <td>{{ $product['sku'] }}</td>
+                            <td>{{ $product['release_date'] }}</td>
+                            <td>
+                                @if($product['brand'])
+                                    {{ current($product['brand']) }}
+                                @endif
+                            </td>
+                            <td>
+                                @if($product['distributor'])
+                                    {{ current($product['distributor']) }}
+                                @endif
+                            </td>
+                            <td>
+                                @if($product['category'])
+                                    {{ current($product['category']) }}
+                                @endif
+                            </td>
+                            <td>{{ $product['slug'] }}</td>
+                            <td class=" h-100 {{ $class = $product['status'] != 0 ? 'text-success' : 'text-danger' }}">
+                                <i class="fa-solid fa-circle"></i>
+                                {{ $product['status'] != 0 ? 'Available' : 'Unavailable' }}
+                            </td>
+                            <td>{{ $product['price'] }}</td>
+                            <td>{{ $product['quantity'] }}</td>
+                            <td>{{ $product['magnetic'] }}</td>
+                            <td>{{ $product['weight'] }}</td>
+                            <td>{{ $product['box_weight'] }}</td>
+                            <td>
+                                {{ $product['created_at'] }}
+                            </td>
+                            <td>
+                                {{ $product['updated_at'] }}
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
             </table>
         </div>
         <div class="pagination-container">{{$products->links()}}</div>
+        @endif
     </div>
     <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script type="text/javascript">
@@ -157,7 +175,7 @@
                     Swal.fire({
                         icon: 'warning',
                         title: 'No Products Selected',
-                        text: 'Please select at least one customer to delete.',
+                        text: 'Please select at least one product to delete.',
                     });
                     return;
                 }
@@ -171,7 +189,6 @@
                     cancelButtonText: 'No, keep it',
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Perform delete action here
                         $.ajax({
                             url: "{{ route('products.destroy') }}",
                             type: "DELETE",
@@ -188,8 +205,6 @@
                                 $.each(selectedIds, function (key, val) {
                                     $('#delete-id-' + val).remove();
                                 });
-                                window.location.reload();
-
                             },
                             error: function () {
                                 Swal.fire(
@@ -202,6 +217,29 @@
                     }
                 });
             });
+        });
+        $('#search').on('keyup', function (e) {
+            e.preventDefault();
+            let searchString = $(this).val();
+            console.log(searchString);
+            $.ajax({
+                url: "{{ route('products.search') }}",
+                method: 'GET',
+                data: {'search': searchString},
+                success: function (response) {
+                    console.log(response.error)
+                    if (response.error) {
+                        $('tbody').html(
+                            `<tr><td colspan="16" class="text-danger text-center" style="font-size: 20px;">${response.error}</td></tr>`
+                        );
+                        $('.pagination-container').html('');
+                    } else {
+                        $('tbody').html(response.products);
+                        $('.pagination-container').html(response.pagination);
+                    }
+                },
+
+            })
         });
     </script>
 @endsection

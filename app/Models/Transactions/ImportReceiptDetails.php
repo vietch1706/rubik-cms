@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Transactions\ImportReceipts;
+namespace App\Models\Transactions;
 
 use App\Models\Catalogs\Products;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

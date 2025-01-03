@@ -2,7 +2,7 @@
 
 namespace Database\Factories\Transactions;
 
-use App\Models\Transactions\Orders\OrderDetails;
+use App\Models\Transactions\OrderDetails;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

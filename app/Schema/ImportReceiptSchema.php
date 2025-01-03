@@ -2,7 +2,7 @@
 
 namespace App\Schema;
 
-use App\Models\Transactions\ImportReceipts\ImportReceipts;
+use App\Models\Transactions\ImportReceipts;
 use App\Models\Users\Users;
 
 class ImportReceiptSchema

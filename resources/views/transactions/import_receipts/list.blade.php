@@ -1,9 +1,25 @@
 @extends('layout.app')
 @section('content')
     <div class="container-fluid">
-        <div class="action-buttons">
-            <a href="{{ route('receipts.import') }}" class="btn btn-primary">Import</a>
-            <button id="delete-record" class="btn btn-danger">Delete Selected</button>
+        <div class="d-flex justify-content-between mb-3">
+            <div class="action-buttons">
+                <a href="{{ route('import') }}" class="btn btn-primary py-2"><i class="fa-solid fa-upload"></i>
+                    Import</a>
+                <button id="delete-record" class="btn btn-danger py-2"><i class="fa-solid fa-trash-can"></i> Delete
+                </button>
+            </div>
+            <div class="input-group w-25">
+                <span class="input-group-text" id="basic-addon1">
+                 <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input
+                    type="text"
+                    id="search"
+                    class="search-box form-control h-100 py-2 pl-5"
+                    placeholder="Search Here ..."
+                    autocomplete="off"
+                    aria-describedby="basic-addon2">
+            </div>
         </div>
         <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover ">
@@ -114,8 +130,8 @@
                 if (selectedIds.length === 0) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'No OrderSeeder Selected',
-                        text: 'Please select at least one customer to delete.',
+                        title: 'No Receipts Selected',
+                        text: 'Please select at least one receipt to delete.',
                     });
                     return;
                 }
@@ -129,9 +145,8 @@
                     cancelButtonText: 'No, keep it',
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Perform delete action here
                         $.ajax({
-                            url: "{{ route('orders.destroy') }}",
+                            url: "{{ route('receipts.destroy') }}",
                             type: "DELETE",
                             data: {
                                 ids: selectedIds,
@@ -140,19 +155,17 @@
                             success: function (response) {
                                 Swal.fire(
                                     'Deleted!',
-                                    'Your selected orders have been deleted.',
+                                    response.message,
                                     'success'
                                 );
                                 $.each(selectedIds, function (key, val) {
                                     $('#delete-id-' + val).remove();
                                 });
-                                window.location.reload();
-
                             },
                             error: function () {
                                 Swal.fire(
                                     'Error!',
-                                    'There was a problem deleting the orders.',
+                                    'There was a problem deleting the receipts.',
                                     'error'
                                 );
                             }

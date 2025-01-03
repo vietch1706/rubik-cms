@@ -24,8 +24,9 @@ class OrderRequest extends FormRequest
     public function rules()
     {
         return [
-            'distributor_id' => 'required',
-            'products' => 'required',
+            'distributor_id' => 'required|exists:distributors,id',
+            'status' => 'required',
+            'note' => 'nullable|string|max:255'
         ];
     }
 }

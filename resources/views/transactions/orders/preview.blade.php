@@ -5,34 +5,34 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">ID </label>
-                <input type="text" class="form-control" value="{{ $orders['id'] }}" readonly>
+                <input type="text" class="form-control" value="{{ $order['id'] }}" readonly>
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Order Number </label>
-                <input type="text" class="form-control" value="{{ $orders['order_number'] }}" readonly>
+                <input type="text" class="form-control" value="{{ $order['order_number'] }}" readonly>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">Employee </label>
-                <input type="text" class="form-control" value="{{ current($orders['employee']) }}" readonly>
+                <input type="text" class="form-control" value="{{ current($order['employee']) }}" readonly>
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Distributor </label>
-                <input type="text" class="form-control" value="{{ current($orders['distributor']) }}" readonly>
+                <input type="text" class="form-control" value="{{ current($order['distributor']) }}" readonly>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">Date </label>
-                <input type="datetime-local" class="form-control" value="{{ $orders['date'] }}" readonly>
+                <input type="datetime-local" class="form-control" value="{{ $order['date'] }}" readonly>
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Status </label>
                 <input type="text" class="form-control" value="{{
-                                $orders['status'] === 0 ? 'Pending' :
-                                ($orders['status'] === 1 ? 'Processing' :
-                                ($orders['status'] === 2 ? 'Completed' :
+                                $order['status'] === 0 ? 'Pending' :
+                                ($order['status'] === 1 ? 'Processing' :
+                                ($order['status'] === 2 ? 'Completed' :
                                 'Canceled'))
                            }}" readonly>
             </div>
@@ -40,17 +40,17 @@
         <div class="row">
             <div class="col mb-3">
                 <label class="form-label">Note </label>
-                <textarea class="form-control" rows="5" readonly>{{ $orders['note'] }}</textarea>
+                <textarea class="form-control" rows="5" readonly>{{ $order['note'] }}</textarea>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">Created At </label>
-                <input type="datetime-local" class="form-control" value="{{ $orders['created_at'] }}" readonly>
+                <input type="datetime-local" class="form-control" value="{{ $order['created_at'] }}" readonly>
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Updated At </label>
-                <input type="datetime-local" class="form-control" value="{{ $orders['updated_at'] }}" readonly>
+                <input type="datetime-local" class="form-control" value="{{ $order['updated_at'] }}" readonly>
             </div>
         </div>
         <ul id="orderTab" role="tablist" @class(['nav', 'nav-tabs','d-none' => !$isImported])>
@@ -71,7 +71,7 @@
         <div class="tab-content" id="orderTabContent">
             <div class="tab-pane fade show active" id="order-details" role="tabpanel"
                  aria-labelledby="order-details-tab">
-                <div class="container-fluid pb-5 px-0">
+                <div class="container-fluid pb-4 px-0">
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped table-hover ">
                             <thead>
@@ -150,7 +150,7 @@
                 </div>
             </div>
             <div class="tab-pane fade" id="partially-imported" role="tabpanel" aria-labelledby="partially-imported-tab">
-                <div class="container-fluid pb-5 px-0">
+                <div class="container-fluid pb-4 px-0">
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped table-hover ">
                             <thead>
@@ -222,6 +222,64 @@
                 </div>
             </div>
         </div>
-        <a type="submit" class="btn btn-secondary me-3" href="{{ route('orders') }}">Return</a>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+            <div class="left-item">
+                <a type="submit" class="link-secondary mx-3" href="{{ route('orders') }}">Cancel</a>
+            </div>
+            <div class="right-item">
+                <button class="delete-item" data-id="{{ $order['id'] }}">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>
+        </div>
     </form>
+    <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.delete-item').on('click', function (event) {
+                event.preventDefault();
+                var selectedIds = [];
+                var selectedId = $(this).data('id');
+                selectedIds.push(selectedId);
+                console.log(selectedIds);
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this action!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, keep it',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ route('orders.destroy') }}",
+                            type: "DELETE",
+                            data: {
+                                ids: selectedIds,
+                                _token: "{{ csrf_token() }}",
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: 'Your selected order have been deleted.',
+                                    icon: 'success'
+                                }).then(function () {
+                                    window.location.href = "{{ route('orders') }}";
+                                });
+                            },
+                            error: function (response) {
+                                console.log(response);
+                                Swal.fire(
+                                    'Error!',
+                                    'There was a problem deleting the order.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

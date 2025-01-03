@@ -7,17 +7,19 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalogs\BrandRequest;
 use App\Models\Catalogs\Brands;
 use App\Schema\BrandSchema;
-use App\Schema\CustomerSchema;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Response;
 use function back;
+use function compact;
 use function redirect;
+use function response;
 use function view;
 
 class BrandsController extends Controller
 {
-    private Brands $brands;
     public const PAGE_LIMIT = 20;
+    private Brands $brands;
 
     public function __construct(Brands $brand)
     {
@@ -27,7 +29,7 @@ class BrandsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -45,7 +47,7 @@ class BrandsController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -55,8 +57,8 @@ class BrandsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(BrandRequest $request)
     {
@@ -70,8 +72,8 @@ class BrandsController extends Controller
                 return redirect()->route('brands')->with('success', 'Created Successfully!');
             }
             return back()->with('success', 'Created Successfully!');
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
 
     }
@@ -80,7 +82,7 @@ class BrandsController extends Controller
      * Display the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -91,24 +93,24 @@ class BrandsController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
         //
-        $brands = $this->brands->find($id);
-        $brandSchema = new BrandSchema($brands);
+        $brand = $this->brands->find($id);
+        $brandSchema = new BrandSchema($brand);
         return view('catalogs.brands.edit', [
-            'brands' => $brandSchema->convertData(),
+            'brand' => $brandSchema->convertData(),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(BrandRequest $request, $id)
     {
@@ -123,8 +125,8 @@ class BrandsController extends Controller
                 return redirect()->route('brands')->with('success', 'Updated Successfully!');
             }
             return back()->with('success', 'Updated Successfully!');
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
     }
 
@@ -132,10 +134,38 @@ class BrandsController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
         //
+        $ids = $request->ids;
+        $this->brands->whereIn('id', $ids)->delete();
+        return response()->json(
+            ["success" => 'Brands have been deleted']
+        );
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $brands = $this->brands
+            ->where('name', 'like', '%' . $search . '%')
+            ->orWhere('slug', 'like', '%' . $search . '%')
+            ->paginate(self::PAGE_LIMIT);
+        foreach ($brands as $key => $brand) {
+            $brandSchema = new BrandSchema($brand);
+            $brands[$key] = $brandSchema->convertData();
+        }
+        if ($brands->count() > 0) {
+            return response()->json([
+                'brands' => view('catalogs.brands.search', compact('brands'))->render(),
+                'pagination' => $brands->links()->render(),
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'No result found!',
+            ]);
+        }
     }
 }

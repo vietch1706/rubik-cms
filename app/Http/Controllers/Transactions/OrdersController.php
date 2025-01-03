@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Transactions;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transactions\OrderRequest;
 use App\Models\Catalogs\Distributors;
-use App\Models\Transactions\ImportReceipts\ImportReceipts;
-use App\Models\Transactions\Orders\OrderDetails;
-use App\Models\Transactions\Orders\Orders;
+use App\Models\Transactions\ImportReceipts;
+use App\Models\Transactions\OrderDetails;
+use App\Models\Transactions\Orders;
 use App\Schema\OrderDetailSchema;
 use App\Schema\OrderSchema;
 use Exception;
@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use function back;
 use function redirect;
+use function response;
 use function view;
 
 class OrdersController extends Controller
@@ -137,7 +138,7 @@ class OrdersController extends Controller
             $orderDetails[$key] = $orderDetailSchema->convertData();
         }
         return view('transactions.orders.preview', [
-            'orders' => $orderSchema->convertData(),
+            'order' => $orderSchema->convertData(),
             'orderDetails' => $orderDetails,
             'isImported' => $isImported,
         ]);
@@ -161,8 +162,24 @@ class OrdersController extends Controller
      * @param int $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
         //
+        $ids = $request->ids;
+        $pendingOrders = $this->orders->whereIn('id', $ids)
+            ->whereNot('status', $this->orders::STATUS_PENDING)
+            ->pluck('id');
+        if ($pendingOrders->isNotEmpty()) {
+            return response()->json([
+                'message' => "Can'\t delete none pending orders:" . $pendingOrders->join(', ')
+            ]);
+        }
+        $this->orders->destroy($ids);
+        $this->orders->whereIn('id', $ids)->each(function ($order) {
+            $order->details()->destroy();
+        });
+        return response()->json([
+            "message" => 'Orders have been deleted'
+        ]);
     }
 }

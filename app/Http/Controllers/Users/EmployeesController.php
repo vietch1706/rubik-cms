@@ -14,6 +14,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use function back;
+use function compact;
 use function redirect;
 use function response;
 use function view;
@@ -128,10 +129,10 @@ class EmployeesController extends Controller
     public function edit($id)
     {
         //
-        $employees = $this->employees->find($id);
-        $employeeSchema = new EmployeeSchema($employees);
+        $employee = $this->employees->find($id);
+        $employeeSchema = new EmployeeSchema($employee);
         return view('users.employees.edit', [
-            'employees' => $employeeSchema->convertData(),
+            'employee' => $employeeSchema->convertData(),
             'genders' => $this->users->getGenderOptions(),
             'isActivateds' => $this->users->getIsActivatedOptions(),
         ]);
@@ -184,9 +185,38 @@ class EmployeesController extends Controller
     {
         //
         $ids = $request->ids;
-        $this->users->whereIn('id', $ids)->delete();
+        $this->employees->whereIn('id', $ids)->each(function ($employee) {
+            $employee->users()->delete();
+        });
         return response()->json(
             ["success" => 'Users have been deleted']
         );
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $employees = $this->employees->whereHas('users', function ($query) use ($search) {
+            return $query->where('first_name', 'like', '%' . $search . '%')
+                ->orWhere('last_name', 'like', '%' . $search . '%')
+                ->orWhere('phone', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%')
+                ->orWhere('address', 'like', '%' . $search . '%');
+        })
+            ->paginate(self::PAGE_LIMIT);
+        foreach ($employees as $key => $employee) {
+            $employeeSchema = new EmployeeSchema($employee);
+            $employees[$key] = $employeeSchema->convertData();
+        }
+        if ($employees->count() > 0) {
+            return response()->json([
+                'employees' => view('users.employees.search', compact('employees'))->render(),
+                'pagination' => $employees->links()->render(),
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'No result found!',
+            ]);
+        }
     }
 }

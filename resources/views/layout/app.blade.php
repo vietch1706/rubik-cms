@@ -107,39 +107,34 @@
             </div>
         </div>
     </nav>
-
-    <div class="sidebar" id="usersSidebar" @if (Request::is('admin/users/*')) style="display: block;"
-         @else style="display: none;" @endif>
+    <div id="usersSidebar" @class(['sidebar', 'd-block' => Request::is('admin/users/*')])>
         <a href="{{ route('customers') }}"
-           @if(Request::is('admin/users/customers/*', 'admin/users/customers')) class="active-sideitem" @endif>Customers</a>
-        <a href="{{ route('customers') }}" @class(['active-sideitem' => Request::is('admin/users/customers/*', 'admin/users/customers')])>Customers</a>
+            @class(['active-sideitem' => Request::is('admin/users/customers/*', 'admin/users/customers')])>Customers</a>
         <a href="{{ route('employees') }}"
-           @if(Request::is('admin/users/employees/*', 'admin/users/employees')) class="active-sideitem" @endif>Employees</a>
+            @class(['active-sideitem' => Request::is('admin/users/employees/*', 'admin/users/employees')])>Employees</a>
         <a href="">Roles</a>
         <a href="">Permissions</a>
     </div>
-    <div class="sidebar" id="productsSidebar" @if (Request::is('admin/catalogs/*')) style="display: block;"
-         @else style="display: none;" @endif>
+    <div id="productsSidebar" @class(['sidebar', 'd-block' => Request::is('admin/catalogs/*')])>
         <a href="{{ route('brands') }}"
-           @if(Request::is('admin/catalogs/brands/*', 'admin/catalogs/brands')) class="active-sideitem" @endif>Brands</a>
+            @class(['active-sideitem' => Request::is('admin/catalogs/brands/*', 'admin/catalogs/brands')])>Brands</a>
         <a href="{{ route('campaigns') }}"
-           @if(Request::is('admin/catalogs/campaigns/*', 'admin/catalogs/campaigns')) class="active-sideitem" @endif>Campaigns</a>
+            @class(['active-sideitem' => Request::is('admin/catalogs/campaigns/*', 'admin/catalogs/campaigns')])>Campaigns</a>
         <a href="{{ route('categories') }}"
-           @if(Request::is('admin/catalogs/categories/*', 'admin/catalogs/categories')) class="active-sideitem" @endif>Categories</a>
+            @class(['active-sideitem' => Request::is('admin/catalogs/categories/*', 'admin/catalogs/categories')])>Categories</a>
         <a href="{{ route('distributors') }}"
-           @if(Request::is('admin/catalogs/distributors/*', 'admin/catalogs/distributors')) class="active-sideitem" @endif>Distributors</a>
+            @class(['active-sideitem' => Request::is('admin/catalogs/distributors/*', 'admin/catalogs/distributors')])>Distributors</a>
         <a href="{{ route('products') }}"
-           @if(Request::is('admin/catalogs/products/*', 'admin/catalogs/products')) class="active-sideitem" @endif>Products</a>
+            @class(['active-sideitem' => Request::is('admin/catalogs/products/*', 'admin/catalogs/products')])>Products</a>
     </div>
-    <div class="sidebar" id="transactionsSidebar" @if (Request::is('admin/transactions/*')) style="display: block;"
-         @else style="display: none;" @endif>
+    <div id="transactionsSidebar" @class(['sidebar', 'd-block' => Request::is('admin/transactions/*')])>
         <a href="{{ route('orders') }}"
-           @if(Request::is('admin/transactions/orders/*', 'admin/transactions/orders')) class="active-sideitem" @endif>Orders</a>
+            @class(['active-sideitem' => Request::is('admin/transactions/orders/*', 'admin/transactions/orders')])>Orders</a>
         <a href="{{ route('receipts') }}"
-           @if(Request::is('admin/transactions/import-receipts/*', 'admin/transactions/import-receipts')) class="active-sideitem" @endif>Import
+            @class(['active-sideitem' => Request::is('admin/transactions/import-receipts/*', 'admin/transactions/import-receipts')])>Import
             Receipts</a>
         <a href="{{ route('invoices') }}"
-           @if(Request::is('admin/transactions/invoices/*', 'admin/transactions/invoices')) class="active-sideitem" @endif>Invoices</a>
+            @class(['active-sideitem' => Request::is('admin/transactions/invoices/*', 'admin/transactions/invoices')])>Invoices</a>
     </div>
     <div class="main-content" style="margin: 60px 0 0 250px; padding: 50px 25px 20px 25px">
         @yield('content')

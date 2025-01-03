@@ -2,7 +2,7 @@
 
 namespace App\Schema;
 
-use App\Models\Transactions\Orders\OrderDetails;
+use App\Models\Transactions\OrderDetails;
 
 class OrderDetailSchema
 {

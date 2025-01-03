@@ -1,9 +1,25 @@
 @extends('layout.app')
 @section('content')
     <div class="container-fluid">
-        <div class="action-buttons">
-            <a href="{{ route('categories.create') }}" class="btn btn-primary">Create</a>
-            <button id="delete-record" class="btn btn-danger">Delete Selected</button>
+        <div class="d-flex justify-content-between mb-3">
+            <div class="action-buttons">
+                <a href="{{ route('campaigns.create') }}" class="btn btn-primary py-2"><i class="fa-solid fa-plus"></i>
+                    Create</a>
+                <button id="delete-record" class="btn btn-danger py-2"><i class="fa-solid fa-trash-can"></i> Delete
+                </button>
+            </div>
+            <div class="input-group w-25">
+                <span class="input-group-text" id="basic-addon1">
+                 <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input
+                    type="text"
+                    id="search"
+                    class="search-box form-control h-100 py-2 pl-5"
+                    placeholder="Search Here ..."
+                    autocomplete="off"
+                    aria-describedby="basic-addon2">
+            </div>
         </div>
         <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover">
@@ -12,65 +28,65 @@
                     <th scope="col" class="px-3">
                         <input type="checkbox" name="" id="select-all-ids">
                     </th>
-                    <th scope="col" class="pe-5 ">
+                    <th scope="col" class="pe-3 ">
                         ID
                     </th>
-                    <th scope="col" class="pe-5 col-3">
+                    <th scope="col" class="pe-3 col-2">
                         Name
                     </th>
-                    <th scope="col" class="pe-5 col-3">
+                    <th scope="col" class="pe-3 col-2">
                         Slug
                     </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Parent Category
+                    <th scope="col" class="pe-3 col-2">
+                        Start Date
                     </th>
-                    <th scope="col" class="pe-5 col-3">
+                    <th scope="col" class="pe-3 col-2">
+                        End Date
+                    </th>
+                    <th scope="col" class="pe-3 col-2">
                         Created At
                     </th>
-                    <th scope="col" class="pe-5 col-3">
+                    <th scope="col" class="pe-3 col-2">
                         Updated At
                     </th>
                 </tr>
                 </thead>
-                <tbody>
-                @if(!empty($categories))
-                    @foreach($categories as $category)
-                        <tr class="text-nowrap hover-pointer" id="delete-id-{{ $category['id'] }}"
-                            onclick="window.location='{{ route('categories.edit', $category['id']) }}'">
+                @if(!empty($campaigns))
+                    <tbody>
+                    @foreach($campaigns as $campaign)
+                        <tr class="text-nowrap hover-pointer" id="delete-id-{{ $campaign['id'] }}"
+                            onclick="window.location='{{ route('campaigns.edit', $campaign['id']) }}'">
                             <td class="text-center">
-                                <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $category['id'] }}">
+                                <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $campaign['id'] }}">
                             </td>
                             <td>
-                                {{ $category['id'] }}
+                                {{ $campaign['id'] }}
                             </td>
                             <td>
-                                {{ $category['name'] }}
+                                {{ $campaign['name'] }}
                             </td>
                             <td>
-                                {{ $category['slug'] }}
-                            </td>
-                            @if($category['parent_category'])
-                                <td>
-                                    {{ current($category['parent_category']) }}
-                                </td>
-                            @else
-                                <td class="text-danger" style="font-weight: bold; font-size: 20px;">
-                                    Parent
-                                </td>
-                            @endif
-                            <td>
-                                {{ $category['created_at'] }}
+                                {{ $campaign['slug'] }}
                             </td>
                             <td>
-                                {{ $category['updated_at'] }}
+                                {{ $campaign['start_date'] }}
+                            </td>
+                            <td>
+                                {{ $campaign['end_date'] }}
+                            </td>
+                            <td>
+                                {{ $campaign['created_at'] }}
+                            </td>
+                            <td>
+                                {{ $campaign['updated_at'] }}
                             </td>
                         </tr>
                     @endforeach
-                @endif
-                </tbody>
+                    </tbody>
             </table>
         </div>
-        <div class="pagination-container">{{$categories->links()}}</div>
+        <div class="pagination-container">{{$campaigns->links()}}</div>
+        @endif
     </div>
     <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script type="text/javascript">
@@ -101,7 +117,7 @@
                 if (selectedIds.length === 0) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'No Categories Selected',
+                        title: 'No Campaign Selected',
                         text: 'Please select at least one customer to delete.',
                     });
                     return;
@@ -118,7 +134,7 @@
                     if (result.isConfirmed) {
                         // Perform delete action here
                         $.ajax({
-                            url: "{{ route('categories.destroy') }}",
+                            url: "{{ route('campaigns.destroy') }}",
                             type: "DELETE",
                             data: {
                                 ids: selectedIds,
@@ -127,7 +143,7 @@
                             success: function (response) {
                                 Swal.fire(
                                     'Deleted!',
-                                    'Your selected categories have been deleted.',
+                                    'Your selected campaigns have been deleted.',
                                     'success'
                                 );
                                 $.each(selectedIds, function (key, val) {
@@ -139,7 +155,7 @@
                             error: function () {
                                 Swal.fire(
                                     'Error!',
-                                    'There was a problem deleting the categories.',
+                                    'There was a problem deleting the campaigns.',
                                     'error'
                                 );
                             }

@@ -13,7 +13,6 @@ class Campaigns extends Model
     protected $table = 'campaigns';
     protected $fillable = [
         'name',
-        'image',
         'slug',
         'start_date',
         'end_date',

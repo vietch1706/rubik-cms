@@ -15,6 +15,7 @@ return new class extends Migration {
         Schema::create('campaigns', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->string('name', 100);
+            $table->string('slug', 100)->unique();
             $table->date('start_date');
             $table->date('end_date');
             $table->softDeletes();

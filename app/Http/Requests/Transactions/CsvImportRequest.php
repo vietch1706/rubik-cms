@@ -24,12 +24,12 @@ class CsvImportRequest extends FormRequest
     public function rules()
     {
         $rules = [];
-        if (request()->routeIs('receipts.import_preview')) {
+        if (request()->routeIs('import.preview')) {
             $rules = [
                 'csv_file' => 'required|mimes:csv|file',
                 'order_number' => 'required|exists:orders,order_number',
             ];
-        } elseif (request()->routeIs('receipts.process')) {
+        } elseif (request()->routeIs('import.process')) {
             $rules = [
                 'filename' => 'required|string'
             ];
