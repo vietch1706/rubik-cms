@@ -101,7 +101,7 @@
                 @enderror
             </div>
             <div class="col-md-6 mb-3">
-                <label class="form-label">Box Weight (g)<span class="note"> (The total weight of the entire Rubik's box including accompanying accessories) </span>
+                <label class="form-label">Box Weight (g)<span class="note"> (Including accessories) </span>
                     <span class="required"> * </span></label>
                 <input type="number" class="form-control" name="box_weight" value="{{ old('box_weight') }}">
                 @error('box_weight')
@@ -130,11 +130,18 @@
             </div>
         </div>
         <div class="row">
-            <div class="col mb-3">
+            <div class="col-md-6 mb-3">
                 <label class="form-label">Image </label>
                 <input class="form-control" type="file" accept="image/png, image/jpeg, image/jpg" name="image">
                 @error('image')
                 <span class="text-danger error">{{ $errors->first('image') }}</span>
+                @enderror
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Gallery </label>
+                <input class="form-control" type="file" accept="image/png, image/jpeg, image/jpg" name="gallery[]" multiple>
+                @error('gallery')
+                <span class="text-danger error">{{ $errors->first('gallery') }}</span>
                 @enderror
             </div>
         </div>

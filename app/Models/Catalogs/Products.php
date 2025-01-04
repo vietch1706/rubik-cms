@@ -107,6 +107,11 @@ class Products extends Model
         return $this->belongsToMany(Distributors::class, 'distributors_products', 'product_id', 'distributor_id')->withPivot('price');
     }
 
+    public function galleries()
+    {
+        return $this->hasMany(ProductGalleries::class, 'product_id', 'id');
+    }
+
     public function getMagneticOptions()
     {
         return [

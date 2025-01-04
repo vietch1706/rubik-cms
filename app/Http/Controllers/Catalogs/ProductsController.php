@@ -8,6 +8,7 @@ use App\Http\Requests\Catalogs\ProductRequest;
 use App\Models\Catalogs\Brands;
 use App\Models\Catalogs\Categories;
 use App\Models\Catalogs\Distributors;
+use App\Models\Catalogs\ProductGalleries;
 use App\Models\Catalogs\Products;
 use App\Schema\ProductSchema;
 use Exception;
@@ -103,8 +104,17 @@ class ProductsController extends Controller
             $product->box_weight = $request->input('box_weight');
             $product->magnetic = $request->input('magnetic');
             $product->quantity = $request->input('quantity');
-            $product->image = Helper::setStoragePath('img', $request->file('image'));
+            $product->image = Helper::setStoragePath('product_img', $request->file('image'));
             $product->save();
+            $galleryCount = ProductGalleries::where('product_id', $product->id)->count();
+            foreach ($files = $request->file('gallery') as $file) {
+                $productGallery = new ProductGalleries();
+                $productGallery->product_id = $product->id;
+                $filename = $product->slug . '_' . ($galleryCount + 1);
+                $productGallery->image = Helper::setStoragePath('product_gallery', $file, $filename);
+                $productGallery->save();
+                $galleryCount++;
+            }
             $distributor = $this->distributors->find($request->input('distributor_id'));
             $distributor->products()->attach([$product->id]);
             DB::commit();

@@ -40,6 +40,9 @@
                         Image
                     </th>
                     <th scope="col" class="pe-5 col-3">
+                        Gallery
+                    </th>
+                    <th scope="col" class="pe-5 col-3">
                         SKU
                     </th>
                     <th scope="col" class="pe-5 col-3">
@@ -102,6 +105,15 @@
                                     <img src="{{ url($product['image']) }}"
                                          alt="{{ $product['slug'] }}" width="75"
                                          height="50">
+                                @endif
+                            </td>
+                            <td>
+                                @if($product['gallery'])
+                                    @foreach(array_slice($product['gallery'], 0, 3) as $gallery)
+                                        <img src="{{ url($gallery) }}"
+                                             alt="{{$product['slug']}}" width="75"
+                                             height="50">
+                                    @endforeach
                                 @endif
                             </td>
                             <td>{{ $product['sku'] }}</td>

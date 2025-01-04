@@ -27,12 +27,13 @@ class Helper
         return $randomString;
     }
 
-    public static function setStoragePath($directory, $storedItem)
+    public static function setStoragePath($directory, $storedItem, $customName = null)
     {
         if ($storedItem) {
+            $filename = $customName ? $customName : time();
             return '/storage/' . $storedItem->storeAs(
                     $directory,
-                    time() . '.' . $storedItem->getClientOriginalExtension(),
+                    $filename . '.' . $storedItem->getClientOriginalExtension(),
                     'public'
                 );
         }

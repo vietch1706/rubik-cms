@@ -29,12 +29,13 @@ class ProductRequest extends FormRequest
             'category_id' => 'required',
             'distributor_id' => 'required',
             'slug' => 'required',
-            'sku' => 'required',
+            'sku' => 'required|string|max:10',
             'release_date' => 'required|date|before:today',
             'weight' => 'required|numeric',
             'box_weight' => 'required|numeric',
             'quantity' => 'required|numeric',
-            'image' => 'nullable|mimes:jpg,jpeg,png|max:2048'
+            'image' => 'nullable|mimes:jpg,jpeg,png|max:2048',
+            'gallery' => 'nullable|array|min:1',
         ];
     }
 
@@ -42,6 +43,9 @@ class ProductRequest extends FormRequest
     {
         if ($this->image == null) {
             $this->request->remove('image');
+        }
+        if ($this->galleies == null) {
+            $this->request->remove('gallery');
         }
     }
 }

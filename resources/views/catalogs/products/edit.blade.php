@@ -103,7 +103,7 @@
                 @enderror
             </div>
             <div class="col-md-6 mb-3">
-                <label class="form-label">Box Weight (g)<span class="note"> (The total weight of the entire Rubik's box including accompanying accessories) </span>
+                <label class="form-label">Box Weight (g)<span class="note"> (Including accessories) </span>
                     <span class="required"> * </span></label>
                 <input type="number" class="form-control" name="box_weight" value="{{ $product['box_weight'] }}">
                 @error('box_weight')

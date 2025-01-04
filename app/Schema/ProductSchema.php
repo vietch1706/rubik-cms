@@ -32,6 +32,7 @@ class ProductSchema
                 $this->products->brand_id => $this->products->brand->name,
             ];
         }
+        $gallery = $this->products->galleries()->pluck('image', 'id')->toArray();
         return [
             'id' => $this->products->id,
             'name' => $this->products->name,
@@ -53,6 +54,7 @@ class ProductSchema
             'quantity' => $this->products->quantity,
             'unit' => $this->products->unit,
             'image' => $this->products->image,
+            'gallery' => $gallery,
             'created_at' => $this->products->created_at,
             'updated_at' => $this->products->updated_at,
         ];
