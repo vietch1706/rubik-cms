@@ -3,21 +3,25 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Users\Users;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use function fake;
+use function redirect;
+use function route;
 
 class AuthController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
         //
+        if (Auth::check()) {
+            return redirect()->intended(route('dashboard'));
+        }
         return view('auth.login');
     }
 
@@ -29,8 +33,16 @@ class AuthController extends Controller
         ]);
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'));
+            return redirect()->intended(route('dashboard'))->with('success', 'Login Successfully!');
         }
         return redirect(route('login'))->withErrors('Wrong email or password!');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('login')->with('success', 'Logout!');
     }
 }

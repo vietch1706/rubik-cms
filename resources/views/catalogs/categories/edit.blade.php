@@ -1,6 +1,7 @@
 @php use Illuminate\Support\Facades\Session; @endphp
 @extends('layout.app')
 @section('content')
+    <link rel="stylesheet" href="{{ asset('css/form.css') }}" type="text/css">
     <form method="POST" action="{{ route('categories.update', ['id' => $category['id']]) }}"
           enctype="multipart/form-data">
         @csrf
@@ -27,7 +28,7 @@
         <div class="row">
             <div class="col mb-3">
                 <label class="form-label">Parent Category</label>
-                <select class="form-select" name="parent_id">
+                <select class="form-control select2-overwrite" name="parent_id">
                     <option value="" selected>Parent Category</option>
                     @foreach($parentCategories as $key => $parentCategory)
                         <option value="{{ $key }}"
@@ -70,6 +71,7 @@
             </div>
         </div>
     </form>
+    <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
     <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script>
         @if (Session::has('success'))

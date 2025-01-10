@@ -72,6 +72,26 @@ class Users extends Authenticatable
         ];
     }
 
+    public function getRoleOptions()
+    {
+        return [
+            self::ROLE_ADMIN => 'Admin',
+            self::ROLE_CUSTOMER => 'Customer',
+            self::ROLE_EMPLOYEE => 'Employee',
+        ];
+    }
+
+    public function textRole(): Attribute
+    {
+        return new Attribute(
+            get: fn($value, $attribute) => match ($attribute['role_id']) {
+                self::ROLE_ADMIN => 'Admin',
+                self::ROLE_CUSTOMER => 'Customer',
+                self::ROLE_EMPLOYEE => 'Employee',
+            },
+        );
+    }
+
     public function getFullNameAttribute()
     {
         return $this->first_name . ' ' . $this->last_name;

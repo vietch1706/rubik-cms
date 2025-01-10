@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Catalogs\Campaigns;
+namespace App\Models\Campaigns;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,4 +18,5 @@ class Campaigns extends Model
         'end_date',
         'status',
     ];
+
 }

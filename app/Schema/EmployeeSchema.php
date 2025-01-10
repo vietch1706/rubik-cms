@@ -22,6 +22,7 @@ class EmployeeSchema
         return [
             'id' => $this->employees->id,
             'user_id' => $user->id,
+            'role_id' => $user->role_id,
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'gender' => $user->textGender,

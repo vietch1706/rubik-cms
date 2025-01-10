@@ -1,6 +1,7 @@
 @php use Illuminate\Support\Facades\Session; @endphp
 @extends('layout.app')
 @section('content')
+    <link rel="stylesheet" href="{{ asset('css/form.css') }}" type="text/css">
     <form method="POST" action="{{ route('brands.store') }}" enctype="multipart/form-data">
         @csrf
         <div class="row">
@@ -39,6 +40,7 @@
         <a type="submit" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
            href="{{ route('brands') }}">Cancel</a>
     </form>
+    <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
     <script>
         @if (Session::has('success'))
         Swal.fire(

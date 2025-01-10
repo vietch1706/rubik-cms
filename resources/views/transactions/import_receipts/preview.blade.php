@@ -1,5 +1,6 @@
 @extends('layout.app')
 @section('content')
+    <link rel="stylesheet" href="{{ asset('css/form.css') }}" type="text/css">
     <form action="{{ route('receipts.approve', ['id' => $importReceipt['id']]) }}" method="POST"
           enctype="multipart/form-data">
         @csrf
@@ -20,9 +21,9 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Status </label>
-                <input type="text" class="form-control" value="{{
-                                $importReceipt['status'] === 0 ? 'Pending' : 'Complete'
-                           }}" readonly>
+                <input type="text" class="form-control"
+                       value="{{ $importReceipt['status'] === 0 ? 'Pending' : ($importReceipt['status'] === 1 ? 'Complete' : 'Cancelled') }}"
+                       readonly>
             </div>
         </div>
         <div class="row">
@@ -99,7 +100,7 @@
                     Receipt
                 </button> &nbsp;
                 <span @class(['d-none' => $importReceipt['status']])>Or</span> &nbsp;
-                <a href="{{ route('receipts') }}" class="link-secondary">Cancel</a>
+                <a href="{{ route('receipts') }}" class="link-secondary">Return</a>
             </div>
             <div class="right-item">
                 <button class="delete-item" data-id="{{ $importReceipt['id'] }}">

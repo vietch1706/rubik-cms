@@ -30,6 +30,14 @@ class Orders extends Model
         'note',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($order) {
+            $order->order_number = self::generateUniqueOrderNo('ORD-');
+        });
+    }
+
     public static function generateUniqueOrderNo(?string $prefix = null)
     {
         $length = self::ORDER_NO_LENGTH - strlen($prefix ?? '');

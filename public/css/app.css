@@ -4,7 +4,7 @@
     --latte-subtle: #DCE0E8;
     --latte-header: #E6E9EF;
     --latte-text: #575F73;
-    --latte-input-bg: #F4F5F7;
+    --latte-input-bg: #fafafa;
     --latte-input-text: #3C3F4A;
     --latte-primary: #8CAAEE;
     --latte-secondary: #A6DA95;
@@ -19,7 +19,7 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     background-color: var(--latte-base);
     color: var(--latte-text);
     margin: 0;
@@ -34,13 +34,15 @@ body {
     width: 100%;
     background-color: var(--latte-light);
     color: var(--latte-dark);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    padding: 10px 0;
 }
 
 .navbar a, .navbar .nav-link {
     color: var(--latte-dark);
     padding: 12px 20px;
+    font-weight: 500;
     transition: color 0.3s ease, transform 0.3s ease;
 }
 
@@ -51,76 +53,75 @@ body {
 
 .sidebar {
     min-height: 100vh;
-    height: auto;
-    width: 250px;
+    width: 240px;
     position: fixed;
-    overflow-y: auto;
     left: 0;
     background-color: var(--latte-subtle);
     transition: 0.3s ease-in-out;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    padding: 20px 0;
     display: none;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    padding: 50px 0;
+    max-width: 240px;
 }
 
 .active-sideitem {
     background-color: var(--latte-highlight);
     border-radius: 0 20px 20px 0;
-    transform: translateX(10px);
+    transform: scale(1.05);
     margin-right: 5px;
     display: inline-block;
     transition: background-color 0.3s ease;
+    max-width: 240px;
+    color: var(--latte-accent);
+    border-left: 3px solid var(--latte-primary);
 }
 
 .sidebar a {
-    padding: 10px 20px;
+    padding: 12px 20px;
     display: block;
     font-size: 16px;
     color: var(--latte-dark);
     text-decoration: none;
     transition: color 0.3s ease, background-color 0.3s ease;
+    border-left: 3px solid transparent;
+    transition: border-color 0.3s ease;
 }
 
 .sidebar a:hover {
     color: var(--latte-primary);
-    background-color: var(--latte-light);
+    background-color: var(--latte-accent);
     border-radius: 0 20px 20px 0;
     transform: translateX(10px);
-}
-
-.sidebar a.active {
-    background-color: var(--latte-highlight);
-    color: var(--latte-accent);
-    border-radius: 0 20px 20px 0;
-    transform: scale(1.05);
+    max-width: 230px;
+    border-left: 3px solid var(--latte-primary);
 }
 
 .main-content {
     margin-left: 0;
     padding: 20px;
     transition: margin-left 0.3s ease, background-color 0.3s ease;
-
-}
-
-.main-content.with-sidebar {
-    margin-left: 250px;
+    background-color: var(--latte-light);
+    border-radius: 5px;
 }
 
 .navbar .dropdown-menu {
     background-color: var(--latte-header);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    padding: 0;
-    min-width: 200px;
+    border-radius: 10px;
+    padding: 10px;
+    min-width: 150px;
 }
 
 .navbar .dropdown-item {
     color: var(--latte-dark);
-    padding: 10px 20px;
+    padding: 12px 20px;
     border-radius: 5px;
     transition: background-color 0.3s ease, color 0.3s ease;
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .navbar .dropdown-item:hover {
@@ -136,6 +137,62 @@ body {
     border-radius: 5px;
 }
 
+.input-group.password-container {
+    display: flex;
+    align-items: center;
+    background-color: var(--latte-input-bg);
+    border: 1px solid var(--latte-subtle);
+    border-radius: 35px;
+    padding: 4px;
+    height: 42px;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.input-group.password-container:focus-within {
+    border-color: var(--latte-primary);
+    box-shadow: 0 0 10px rgba(140, 170, 238, 0.5);
+    transform: scale(1.02);
+}
+
+.input-group.password-container .password-field:focus {
+    border-color: var(--latte-primary);
+    box-shadow: 0 0 8px rgba(140, 170, 238, 0.5);
+    transform: scale(1.02);
+    outline: none;
+}
+
+.input-group.password-container:hover {
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.15);
+}
+
+.input-group.password-container .password-field {
+    border: none;
+    background: transparent;
+    color: var(--latte-input-text);
+    border-radius: 35px;
+    font-size: 16px;
+    height: 24px;
+}
+
+.input-group.password-container .password-field:focus {
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+}
+
+.input-group.password-container .input-group-text {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: transparent;
+    border: none;
+    color: var(--latte-text);
+    cursor: pointer;
+}
+
+.input-group.password-container .password-field::placeholder {
+    color: var(--latte-muted);
+}
 
 @media (max-width: 768px) {
     .sidebar {

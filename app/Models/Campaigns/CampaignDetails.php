@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Catalogs\Campaigns;
+namespace App\Models\Campaigns;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +11,6 @@ class CampaignDetails extends Model
 
     public const TYPE_DISCOUNT = 0;
     public const TYPE_BUNDLE = 1;
-
     public $timestamps = true;
     protected $table = 'campaign_details';
     protected $fillable = [

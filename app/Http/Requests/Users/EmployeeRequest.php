@@ -2,10 +2,8 @@
 
 namespace App\Http\Requests\Users;
 
-use App\Models\Users\Customers;
 use App\Models\Users\Employees;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use function request;
 
 class EmployeeRequest extends FormRequest
@@ -47,7 +45,7 @@ class EmployeeRequest extends FormRequest
             'salary' => 'numeric|min:1',
             'gender' => 'numeric',
             'password' => $passwordRule . '|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
-            // 'avatar' => 'nullable|mimes:jpg,jpeg,png|max:2048'
+            'avatar' => 'nullable|mimes:jpg,jpeg,png|max:2048'
         ];
     }
 

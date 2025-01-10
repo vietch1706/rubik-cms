@@ -12,8 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}" type="text/css">
-    <link rel="stylesheet" href="{{ asset('css/list.css') }}" type="text/css">
-    <link rel="stylesheet" href="{{ asset('css/form.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}" type="text/css"/>
     <link rel="stylesheet" href="{{ asset('css/select2-bootstrap-5-theme.min.css') }}" type="text/css"/>
 </head>
@@ -60,10 +58,10 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="productsDropdown">
                             <li>
-                                <a class="dropdown-item" href="{{ route('brands') }}" data-target="productsSidebar">Brands</a>
+                                <a class="dropdown-item" href="{{ route('products') }}" data-target="productsSidebar">Products</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{{ route('campaigns') }}" data-target="productsSidebar">Campaigns</a>
+                                <a class="dropdown-item" href="{{ route('brands') }}" data-target="productsSidebar">Brands</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('categories') }}" data-target="productsSidebar">Categories</a>
@@ -71,9 +69,6 @@
                             <li>
                                 <a class="dropdown-item" href="{{ route('distributors') }}"
                                    data-target="productsSidebar">Distributors</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ route('products') }}" data-target="productsSidebar">Products</a>
                             </li>
                         </ul>
                     </li>
@@ -96,12 +91,53 @@
                             </li>
                         </ul>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="campaignsDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-percent"></i> Campaigns
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="campaignsDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{{ route('campaigns') }}" data-target="campaignsSidebar">Campaigns</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="logsDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-list"></i> Logs
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="logsDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{{ route('logs') }}" data-target="logsSidebar">Logs</a>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-user-circle"></i> Profile
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 20px">
+                            <img src="{{ auth()->user()->avatar ?? asset('storage/avatars/default-avatar.png') }}"
+                                 alt="Profile Picture"
+                                 class="rounded-circle"
+                                 style="width: 25px; height: 25px; object-fit: cover;"> Profile
                         </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{{ route('profile') }}">
+                                    <i class="fas fa-user-edit"></i> Edit Profile
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item logout" href="#" onclick="logout()">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>
@@ -118,8 +154,6 @@
     <div id="productsSidebar" @class(['sidebar', 'd-block' => Request::is('admin/catalogs/*')])>
         <a href="{{ route('brands') }}"
             @class(['active-sideitem' => Request::is('admin/catalogs/brands/*', 'admin/catalogs/brands')])>Brands</a>
-        <a href="{{ route('campaigns') }}"
-            @class(['active-sideitem' => Request::is('admin/catalogs/campaigns/*', 'admin/catalogs/campaigns')])>Campaigns</a>
         <a href="{{ route('categories') }}"
             @class(['active-sideitem' => Request::is('admin/catalogs/categories/*', 'admin/catalogs/categories')])>Categories</a>
         <a href="{{ route('distributors') }}"
@@ -136,7 +170,24 @@
         <a href="{{ route('invoices') }}"
             @class(['active-sideitem' => Request::is('admin/transactions/invoices/*', 'admin/transactions/invoices')])>Invoices</a>
     </div>
-    <div class="main-content" style="margin: 60px 0 0 250px; padding: 50px 25px 20px 25px">
+    <div id="campaignsSidebar" @class(['sidebar', 'd-block' => Request::is('admin/campaigns/*')])>
+        <a href="{{ route('campaigns') }}"
+            @class(['active-sideitem' => Request::is('admin/campaigns/campaigns/*', 'admin/campaigns/campaigns')])>Campaigns</a>
+    </div>
+    <div id="logsSidebar" @class(['sidebar', 'd-block' => Request::is('admin/logs/*')])>
+        <a href="{{ route('logs') }}"
+            @class(['active-sideitem' => Request::is('admin/logs/logs/*', 'admin/logs/logs')])>Logs</a>
+    </div>
+    <div id="profileSidebar" @class(['sidebar', 'd-block' => Request::is('admin/users/profile')])>
+        <a href="{{ route('profile') }}"
+            @class(['active-sideitem' => Request::is('admin/users/profile/*', 'admin/users/profile')])>Edit
+            Profile</a>
+        <a href="#" onclick="logout()" class="logout">
+            Logout
+        </a>
+    </div>
+    <div class="main-content"
+         style="margin: 75px 0 0 {{ Request::is('admin') ? '0px' : '240px' }}; padding: 25px">
         @yield('content')
     </div>
 @else
@@ -146,8 +197,8 @@
 @endif
 <script src="{{ asset('/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
+<script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
 <script src="{{ asset('js/select2.full.min.js') }}"></script>
-
 <script>
     function toggleSidebar(targetId) {
         const sidebar = document.getElementById(targetId);
@@ -167,6 +218,22 @@
         item.addEventListener('click', function (e) {
             const targetId = e.target.getAttribute('data-target');
             toggleSidebar(targetId);
+        });
+    });
+    $(document).ready(function () {
+        $('.logout').on('click', function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: '{{ route('logout') }}',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function () {
+                    window.location.href = '{{ route('login') }}';
+                },
+            });
         });
     });
 </script>

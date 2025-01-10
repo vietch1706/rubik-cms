@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Catalogs;
+namespace App\Http\Controllers\Campaigns;
 
 use App\Http\Controllers\Controller;
-use App\Models\Catalogs\Campaigns\CampaignDetails;
-use App\Models\Catalogs\Campaigns\Campaigns;
+use App\Models\Campaigns\CampaignDetails;
+use App\Models\Campaigns\Campaigns;
 use App\Schema\BrandSchema;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -34,7 +34,7 @@ class CampaignsController extends Controller
     public function index()
     {
         //
-        return view('catalogs.campaigns.list', [
+        return view('campaigns.campaigns.list', [
             'types' => $this->campaignDetails->getTypeOptions(),
         ]);
     }
@@ -47,7 +47,7 @@ class CampaignsController extends Controller
     public function create()
     {
         //
-        return view('catalogs.campaigns.create');
+        return view('campaigns.campaigns.create');
     }
 
     /**

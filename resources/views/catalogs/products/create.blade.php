@@ -1,6 +1,7 @@
 @php use Illuminate\Support\Facades\Session; @endphp
 @extends('layout.app')
 @section('content')
+    <link rel="stylesheet" href="{{ asset('css/form.css') }}" type="text/css">
     <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data">
         @csrf
         <div class="row">
@@ -82,7 +83,7 @@
             </div>
             <div class="col-md-6 mb-3 ">
                 <label class="form-label">Status</label>
-                <select class="form-select" name="status">
+                <select class="form-control select2-overwrite" name="status">
                     @foreach($statuses as $key => $status)
                         <option value="{{$key}}">
                             {{ $status }}
@@ -112,7 +113,7 @@
         <div class="row">
             <div class="col-md-6 mb-3 ">
                 <label class="form-label">Magnetic</label>
-                <select class="form-select" name="magnetic">
+                <select class="form-control select2-overwrite" name="magnetic">
                     @foreach($magnetics as $key => $magnetic)
                         <option value="{{$key}}">
                             {{ $magnetic }}
@@ -139,7 +140,8 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Gallery </label>
-                <input class="form-control" type="file" accept="image/png, image/jpeg, image/jpg" name="gallery[]" multiple>
+                <input class="form-control" type="file" accept="image/png, image/jpeg, image/jpg" name="gallery[]"
+                       multiple>
                 @error('gallery')
                 <span class="text-danger error">{{ $errors->first('gallery') }}</span>
                 @enderror
@@ -153,6 +155,7 @@
         <a type="submit" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
            href="{{ route('products') }}">Cancel</a>
     </form>
+    <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
     <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script>
         @if (Session::has('success'))

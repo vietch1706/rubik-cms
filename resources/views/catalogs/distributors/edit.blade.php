@@ -1,6 +1,7 @@
 @php use Illuminate\Support\Facades\Session; @endphp
 @extends('layout.app')
 @section('content')
+    <link rel="stylesheet" href="{{ asset('css/form.css') }}" type="text/css">
     <form method="POST" action="{{ route('distributors.update', ['id' => $distributor['id']]) }}"
           enctype="multipart/form-data">
         @csrf
@@ -75,6 +76,7 @@
             </div>
         </div>
     </form>
+    <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
     <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script>
         @if (Session::has('success'))

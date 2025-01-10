@@ -33,7 +33,6 @@ class BrandsController extends Controller
      */
     public function index()
     {
-        //
         $brands = $this->brands->paginate(self::PAGE_LIMIT);
         foreach ($brands as $key => $brand) {
             $brandSchema = new BrandSchema($brand);

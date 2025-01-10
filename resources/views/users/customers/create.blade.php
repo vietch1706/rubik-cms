@@ -1,6 +1,7 @@
 @php use Illuminate\Support\Facades\Session; @endphp
 @extends('layout.app')
 @section('content')
+    <link rel="stylesheet" href="{{ asset('css/form.css') }}" type="text/css">
     <form method="POST" action="{{ route('customers.store') }}" enctype="multipart/form-data">
         @csrf
         <div class="row">
@@ -22,7 +23,7 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">Type <span class="required"> * </span></label>
-                <select class="form-select" name="type">
+                <select class="form-control select2-overwrite" name="type">
                     @foreach($types as $key => $type)
                         <option value="{{$key}}" @if($key == old('type')) selected @endif>
                             {{$type}}
@@ -32,7 +33,7 @@
             </div>
             <div class="col-md-6 mb-3 ">
                 <label class="form-label">Gender <span class="required"> * </span></label>
-                <select class="form-select" name="gender">
+                <select class="form-control select2-overwrite" name="gender">
                     @foreach($genders as $key => $gender)
                         <option value="{{$key}}" @if($key == old('gender')) selected @endif>
                             {{ $gender }}
@@ -60,7 +61,12 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">Password <span class="required"> * </span> </label>
-                <input type="password" class="form-control" name="password">
+                <div class="input-group password-container">
+                    <input type="password" class="form-control password-field" name="password">
+                    <span class="input-group-text">
+                            <i class="fa-solid fa-eye-slash toggle-password"></i>
+                        </span>
+                </div>
                 <span @if($errors->has('password')) class=" text-danger"@endif
                           > Your password must be at least 8 characters long and contain a mix of letters, numbers, and symbols.</span>
                 @error('password')
@@ -94,7 +100,7 @@
         <div class="row">
             <div class="col-md-6 mb-3 ">
                 <label class="form-label">Is Activated</label>
-                <select class="form-select" name="is_activated" id="isActivated">
+                <select class="form-control select2-overwrite" name="is_activated" id="isActivated">
                     @foreach($isActivateds as $key => $isActivated)
                         <option value="{{$key}}">
                             {{ $isActivated }}
@@ -119,6 +125,8 @@
         <a type="submit" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
            href="{{ route('customers') }}">Cancel</a>
     </form>
+    <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
     <script>
         @if (Session::has('success'))
         Swal.fire(
@@ -127,11 +135,34 @@
             'success'
         );
         @endif
+        $(document).ready(function () {
+            $('.select2-overwrite').select2({
+                placeholder: "Search and select an option",
+                allowClear: true,
+                theme: 'bootstrap-5',
+                width: '100%'
+            });
+        });
 
         function setAction(action) {
             document.getElementById('actionType').value = action;
         }
 
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordContainers = document.querySelectorAll('.password-container');
+
+            passwordContainers.forEach(container => {
+                const toggleButton = container.querySelector('.toggle-password');
+                const passwordInput = container.querySelector('.password-field');
+
+                toggleButton.addEventListener('click', function () {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                });
+            });
+        });
         const now = new Date();
         // Format the date to match the 'datetime-local' input format
         const formattedDate = now.toISOString().slice(0, 16);

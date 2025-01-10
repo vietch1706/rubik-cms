@@ -4,8 +4,7 @@
     <div class="container-fluid">
         <div class="d-flex justify-content-between mb-3">
             <div class="action-buttons">
-                <a href="{{ route('distributors.create') }}" class="btn btn-primary py-2"><i
-                        class="fa-solid fa-plus"></i>
+                <a href="{{ route('campaigns.create') }}" class="btn btn-primary py-2"><i class="fa-solid fa-plus"></i>
                     Create</a>
                 <button id="delete-record" class="btn btn-danger py-2"><i class="fa-solid fa-trash-can"></i> Delete
                 </button>
@@ -30,70 +29,64 @@
                     <th scope="col" class="px-3">
                         <input type="checkbox" name="" id="select-all-ids">
                     </th>
-                    <th scope="col" class="pe-5 ">
+                    <th scope="col" class="pe-3 ">
                         ID
                     </th>
-                    <th scope="col" class="pe-5 col-3">
+                    <th scope="col" class="pe-3 col-2">
                         Name
                     </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Address
+                    <th scope="col" class="pe-3 col-2">
+                        Slug
                     </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Country
+                    <th scope="col" class="pe-3 col-2">
+                        Start Date
                     </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Phone
+                    <th scope="col" class="pe-3 col-2">
+                        End Date
                     </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Email
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
+                    <th scope="col" class="pe-3 col-2">
                         Created At
                     </th>
-                    <th scope="col" class="pe-5 col-3">
+                    <th scope="col" class="pe-3 col-2">
                         Updated At
                     </th>
                 </tr>
                 </thead>
-                @if(!empty($distributors))
+                @if(!empty($campaigns))
                     <tbody>
-                    @foreach($distributors as $distributor)
-                        <tr class="text-nowrap hover-pointer" id="delete-id-{{ $distributor['id'] }}"
-                            onclick="window.location='{{ route('distributors.edit', $distributor['id']) }}'">
+                    @foreach($campaigns as $campaign)
+                        <tr class="text-nowrap hover-pointer" id="delete-id-{{ $campaign['id'] }}"
+                            onclick="window.location='{{ route('campaigns.edit', $campaign['id']) }}'">
                             <td class="text-center">
-                                <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $distributor['id'] }}">
+                                <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $campaign['id'] }}">
                             </td>
                             <td>
-                                {{ $distributor['id'] }}
+                                {{ $campaign['id'] }}
                             </td>
                             <td>
-                                {{ $distributor['name'] }}
+                                {{ $campaign['name'] }}
                             </td>
                             <td>
-                                {{ $distributor['address'] }}
+                                {{ $campaign['slug'] }}
                             </td>
                             <td>
-                                {{ $distributor['country'] }}
+                                {{ $campaign['start_date'] }}
                             </td>
                             <td>
-                                {{ $distributor['phone'] }}
+                                {{ $campaign['end_date'] }}
                             </td>
                             <td>
-                                {{ $distributor['email'] }}
+                                {{ $campaign['created_at'] }}
                             </td>
                             <td>
-                                {{ $distributor['created_at'] }}
-                            </td>
-                            <td>
-                                {{ $distributor['updated_at'] }}
+                                {{ $campaign['updated_at'] }}
                             </td>
                         </tr>
                     @endforeach
                     </tbody>
             </table>
         </div>
-        <div class="pagination-container">{{$distributors->links()}}</div>
+        <div class="pagination-container">{{$campaigns->links()}}</div>
         @endif
     </div>
     <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
@@ -150,8 +143,8 @@
                 if (selectedIds.length === 0) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'No Distributors Selected',
-                        text: 'Please select at least one distributor to delete.',
+                        title: 'No Campaign Selected',
+                        text: 'Please select at least one customer to delete.',
                     });
                     return;
                 }
@@ -165,8 +158,9 @@
                     cancelButtonText: 'No, keep it',
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        // Perform delete action here
                         $.ajax({
-                            url: "{{ route('distributors.destroy') }}",
+                            url: "{{ route('campaigns.destroy') }}",
                             type: "DELETE",
                             data: {
                                 ids: selectedIds,
@@ -175,17 +169,19 @@
                             success: function (response) {
                                 Swal.fire(
                                     'Deleted!',
-                                    'Your selected distributors have been deleted.',
+                                    'Your selected campaigns have been deleted.',
                                     'success'
                                 );
                                 $.each(selectedIds, function (key, val) {
                                     $('#delete-id-' + val).remove();
                                 });
+                                window.location.reload();
+
                             },
                             error: function () {
                                 Swal.fire(
                                     'Error!',
-                                    'There was a problem deleting the distributors.',
+                                    'There was a problem deleting the campaigns.',
                                     'error'
                                 );
                             }
@@ -193,29 +189,6 @@
                     }
                 });
             });
-        });
-        $('#search').on('keyup', function (e) {
-            e.preventDefault();
-            let searchString = $(this).val();
-            console.log(searchString);
-            $.ajax({
-                url: "{{ route('distributors.search') }}",
-                method: 'GET',
-                data: {'search': searchString},
-                success: function (response) {
-                    console.log(response.error)
-                    if (response.error) {
-                        $('tbody').html(
-                            `<tr><td colspan="16" class="text-danger text-center" style="font-size: 20px;">${response.error}</td></tr>`
-                        );
-                        $('.pagination-container').html('');
-                    } else {
-                        $('tbody').html(response.distributors);
-                        $('.pagination-container').html(response.pagination);
-                    }
-                },
-
-            })
         });
     </script>
 @endsection

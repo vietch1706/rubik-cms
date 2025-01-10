@@ -39,11 +39,16 @@ class ProcessProduct implements ShouldQueue
     {
         //
         $importReceiptDetails = $this->importReceipt->details;
-        foreach ($importReceiptDetails as $importReceiptDetail) {
-            $product = Products::find($importReceiptDetail->product_id);
-            $product->quantity = $product->quantity + $importReceiptDetail->quantity;
-            $product->price = $importReceiptDetail->price;
-            $product->save();
+        if (!empty($importReceiptDetails)) {
+            foreach ($importReceiptDetails as $importReceiptDetail) {
+                $product = Products::find($importReceiptDetail->product_id);
+                if (!empty($product)) {
+                    $product->quantity = $product->quantity + $importReceiptDetail->quantity;
+                    $product->price = $importReceiptDetail->price;
+                    $product->save();
+                }
+            }
         }
+        #TODO: bao log
     }
 }

@@ -1,10 +1,9 @@
 @extends('layout.app')
 @section('content')
+    <link rel="stylesheet" href="{{ asset('css/list.css') }}" type="text/css">
     <div class="container-fluid">
         <div class="d-flex justify-content-between mb-3">
             <div class="action-buttons">
-                <a href="{{ route('campaigns.create') }}" class="btn btn-primary py-2"><i class="fa-solid fa-plus"></i>
-                    Create</a>
                 <button id="delete-record" class="btn btn-danger py-2"><i class="fa-solid fa-trash-can"></i> Delete
                 </button>
             </div>
@@ -22,71 +21,59 @@
             </div>
         </div>
         <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover">
+            <table class="table table-bordered table-striped table-hover ">
                 <thead>
                 <tr class="text-nowrap col-md">
-                    <th scope="col" class="px-3">
-                        <input type="checkbox" name="" id="select-all-ids">
+                    <th scope="col" class="px-3" style="width: 25px; height: 25px; text-align: center;">
+                        <input class="checkbox-size" type="checkbox" name=""
+                               id="select-all-ids">
                     </th>
-                    <th scope="col" class="pe-3 ">
+                    <th scope="col" class="pe-5">
                         ID
                     </th>
-                    <th scope="col" class="pe-3 col-2">
-                        Name
+                    <th scope="col" class="pe-5">
+                        Environment
                     </th>
-                    <th scope="col" class="pe-3 col-2">
-                        Slug
+                    <th scope="col" class="pe-5">
+                        Level
                     </th>
-                    <th scope="col" class="pe-3 col-2">
-                        Start Date
+                    <th scope="col" class="pe-5">
+                        Message
                     </th>
-                    <th scope="col" class="pe-3 col-2">
-                        End Date
-                    </th>
-                    <th scope="col" class="pe-3 col-2">
+                    <th scope="col" class="pe-5">
                         Created At
-                    </th>
-                    <th scope="col" class="pe-3 col-2">
-                        Updated At
                     </th>
                 </tr>
                 </thead>
-                @if(!empty($campaigns))
-                    <tbody>
-                    @foreach($campaigns as $campaign)
-                        <tr class="text-nowrap hover-pointer" id="delete-id-{{ $campaign['id'] }}"
-                            onclick="window.location='{{ route('campaigns.edit', $campaign['id']) }}'">
-                            <td class="text-center">
-                                <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $campaign['id'] }}">
-                            </td>
-                            <td>
-                                {{ $campaign['id'] }}
-                            </td>
-                            <td>
-                                {{ $campaign['name'] }}
-                            </td>
-                            <td>
-                                {{ $campaign['slug'] }}
-                            </td>
-                            <td>
-                                {{ $campaign['start_date'] }}
-                            </td>
-                            <td>
-                                {{ $campaign['end_date'] }}
-                            </td>
-                            <td>
-                                {{ $campaign['created_at'] }}
-                            </td>
-                            <td>
-                                {{ $campaign['updated_at'] }}
-                            </td>
-                        </tr>
-                    @endforeach
-                    </tbody>
+                <tbody>
+                @foreach($logs as $key => $log)
+                    <tr class="text-nowrap hover-pointer" id="delete-id-{{$key}}"
+                        onclick="window.location='{{ route('logs.preview', $key) }}'">
+                        <td class="text-center">
+                            <input type="checkbox" name="ids" class="checkbox-ids"
+                                   value="{{ $key }}">
+                        </td>
+                        <td>
+                            {{ $key }}
+                        </td>
+                        <td>
+                            {{ $log['environment'] }}
+                        </td>
+                        <td @class(['text-danger' => $log['level'] == 'ERROR'])>
+                            {{ $log['level'] }}
+                        </td>
+                        <td title="{{ $log['message'] }}">
+                            {{ Str::limit($log['message'], 50) }}
+                        </td>
+                        <td>
+                            {{ $log['timestamp'] }}
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
             </table>
         </div>
-        <div class="pagination-container">{{$campaigns->links()}}</div>
-        @endif
+        <div class="pagination-container">{{$logs->links()}}</div>
     </div>
     <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script type="text/javascript">
@@ -117,8 +104,8 @@
                 if (selectedIds.length === 0) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'No Campaign Selected',
-                        text: 'Please select at least one customer to delete.',
+                        title: 'No Receipts Selected',
+                        text: 'Please select at least one receipt to delete.',
                     });
                     return;
                 }
@@ -132,9 +119,8 @@
                     cancelButtonText: 'No, keep it',
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Perform delete action here
                         $.ajax({
-                            url: "{{ route('campaigns.destroy') }}",
+                            url: "{{ route('logs.destroy') }}",
                             type: "DELETE",
                             data: {
                                 ids: selectedIds,
@@ -143,19 +129,17 @@
                             success: function (response) {
                                 Swal.fire(
                                     'Deleted!',
-                                    'Your selected campaigns have been deleted.',
+                                    response.message,
                                     'success'
                                 );
                                 $.each(selectedIds, function (key, val) {
                                     $('#delete-id-' + val).remove();
                                 });
-                                window.location.reload();
-
                             },
                             error: function () {
                                 Swal.fire(
                                     'Error!',
-                                    'There was a problem deleting the campaigns.',
+                                    'There was a problem deleting the logs.',
                                     'error'
                                 );
                             }

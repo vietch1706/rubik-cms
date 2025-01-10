@@ -1,3 +1,4 @@
+@php use Carbon\Carbon; @endphp
 @extends('layout.app')
 @section('content')
     <style>
@@ -19,7 +20,7 @@
         }
 
         .h-custom {
-            height: calc(100% - 88px);
+            height: calc(100% - 72px);
         }
 
         @media (max-width: 450px) {
@@ -36,15 +37,31 @@
             color: var(--latte-text);
         }
 
+        .form-label {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            display: block;
+            color: var(--latte-text);
+            transition: color 0.2s ease-in-out;
+        }
+
         .form-control {
+            font-size: 16px;
+            padding: 8px 8px 8px 20px;
+            border: 1px solid var(--latte-subtle);
+            outline: none;
             background-color: var(--latte-input-bg);
             color: var(--latte-input-text);
-            border: 1px solid var(--latte-muted);
+            border-radius: 35px;
+            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out, transform 0.2s ease-in-out;
         }
 
         .form-control:focus {
             border-color: var(--latte-primary);
-            box-shadow: 0 0 0 0.25rem rgba(140, 170, 238, 0.25);
+            box-shadow: 0 0 8px rgba(140, 170, 238, 0.5);
+            transform: scale(1.02);
+            outline: none;
         }
 
         .btn-primary {
@@ -115,24 +132,22 @@
                             <label for="email" class="form-label">Email address</label>
                             <input
                                 type="email"
-                                class="form-control form-control-lg"
+                                class="form-control"
                                 placeholder="Enter a valid email address"
-                                name="email"
-                                required
-                                autofocus/>
+                                name="email"/>
                         </div>
 
-                        <!-- Password input -->
                         <div data-mdb-input-init class="form-outline mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input
-                                type="password"
-                                name="password"
-                                class="form-control form-control-lg"
-                                placeholder="Enter password"
-                                required/>
+                            <div class="input-group password-container">
+                                <input type="password" class="form-control password-field"
+                                       name="password"
+                                       placeholder="Enter password">
+                                <span class="input-group-text">
+                            <i class="fa-solid fa-eye-slash toggle-password"></i>
+                        </span>
+                            </div>
                         </div>
-
                         <div class="d-flex justify-content-between align-items-center">
                             <a href="" class="text-body">Forgot password?</a>
                         </div>
@@ -157,9 +172,34 @@
             class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary">
             <!-- Copyright -->
             <div class="text-white mb-3 mb-md-0">
-                Copyright © 2024. All rights reserved.
+                Copyright © {{Carbon::now()->format('Y')}}. All rights reserved.
             </div>
             <!-- Copyright -->
         </div>
     </section>
+    <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
+    <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
+    <script>
+        @if (Session::has('success'))
+        Swal.fire(
+            '{{ Session::get('success') }}',
+            '',
+            'success'
+        );
+        @endif
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordContainers = document.querySelectorAll('.password-container');
+            passwordContainers.forEach(container => {
+                const toggleButton = container.querySelector('.toggle-password');
+                const passwordInput = container.querySelector('.password-field');
+
+                toggleButton.addEventListener('click', function () {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                });
+            });
+        });
+    </script>
 @endsection

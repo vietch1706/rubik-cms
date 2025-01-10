@@ -26,7 +26,15 @@ class OrderRequest extends FormRequest
         return [
             'distributor_id' => 'required|exists:distributors,id',
             'status' => 'required',
-            'note' => 'nullable|string|max:255'
+            'note' => 'nullable|string|max:255',
+            'products' => 'required',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'products.required' => 'Please select at least one product',
         ];
     }
 }

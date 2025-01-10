@@ -2,16 +2,18 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Campaigns\CampaignsController;
 use App\Http\Controllers\Catalogs\BrandsController;
-use App\Http\Controllers\Catalogs\CampaignsController;
 use App\Http\Controllers\Catalogs\CategoriesController;
 use App\Http\Controllers\Catalogs\DistributorsController;
 use App\Http\Controllers\Catalogs\ProductsController;
+use App\Http\Controllers\Logs\LogsController;
 use App\Http\Controllers\Transactions\ImportReceiptsController;
 use App\Http\Controllers\Transactions\InvoicesController;
 use App\Http\Controllers\Transactions\OrdersController;
 use App\Http\Controllers\Users\CustomersController;
 use App\Http\Controllers\Users\EmployeesController;
+use App\Http\Controllers\Users\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,15 +30,22 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'prefix' => 'admin',
 ], function () {
-    Route::get('/', [DashboardController::class, 'index'])->middleware('isLogin')->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
     Route::get('/login', [AuthController::class, 'index'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     // NOTE: web group of contain users information
     Route::group([
         'prefix' => 'users',
-        'middleware' => ['isLogin'],
+        'middleware' => ['auth'],
     ], function () {
+        Route::group([
+            'prefix' => 'profile',
+        ], function () {
+            Route::get('/', [ProfileController::class, 'edit'])->name('profile');
+            Route::put('/edit/{id}', [ProfileController::class, 'update'])->name('profile.update');
+            Route::put('/change-password/{id}', [ProfileController::class, 'changePassword'])->name('profile.change-password');
+        });
         Route::group([
             'prefix' => 'customers',
         ], function () {
@@ -62,7 +71,7 @@ Route::group([
     });
     Route::group([
         'prefix' => 'catalogs',
-        'middleware' => ['isLogin'],
+        'middleware' => ['auth'],
     ], function () {
         Route::group([
             'prefix' => 'brands'
@@ -108,6 +117,11 @@ Route::group([
             Route::delete('/delete', [ProductsController::class, 'destroy'])->name('products.destroy');
             Route::get('/search', [ProductsController::class, 'search'])->name('products.search');
         });
+    });
+    Route::group([
+        'prefix' => 'campaigns',
+        'middleware' => ['auth'],
+    ], function () {
         Route::group([
             'prefix' => 'campaigns'
         ], function () {
@@ -122,7 +136,7 @@ Route::group([
     });
     Route::group([
         'prefix' => 'transactions',
-        'middleware' => ['isLogin'],
+        'middleware' => ['auth'],
     ], function () {
         Route::group([
             'prefix' => 'orders'
@@ -156,5 +170,13 @@ Route::group([
             Route::get('/', [InvoicesController::class, 'index'])->name('invoices');
             Route::delete('/delete', [InvoicesController::class, 'destroy'])->name('invoices.destroy');
         });
+    });
+    Route::group([
+        'prefix' => 'logs',
+        'middleware' => ['auth'],
+    ], function () {
+        Route::get('/logs', [LogsController::class, 'index'])->name('logs');
+        Route::get('/logs/preview/{id}', [LogsController::class, 'preview'])->name('logs.preview');
+        Route::delete('/logs/delete', [LogsController::class, 'destroy'])->name('logs.destroy');
     });
 });

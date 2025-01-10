@@ -1,6 +1,7 @@
 @php use Illuminate\Support\Facades\Session; @endphp
 @extends('layout.app')
 @section('content')
+    <link rel="stylesheet" href="{{ asset('css/form.css') }}" type="text/css">
     <form method="POST" action="{{ route('categories.store') }}" enctype="multipart/form-data">
         @csrf
         <div class="row">
@@ -25,7 +26,7 @@
         <div class="row">
             <div class="col mb-3">
                 <label class="form-label">Parent Category</label>
-                <select class="form-select" name="parent_id">
+                <select class="form-control select2-overwrite" name="parent_id">
                     <option value="" selected>Parent Category</option>
                     @foreach($categories as $key => $category)
                         <option value="{{$key}}" @if($key == old('parent_id')) selected @endif>
@@ -46,6 +47,7 @@
         <a type="submit" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
            href="{{ route('categories') }}">Cancel</a>
     </form>
+    <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
     <script>
         @if (Session::has('success'))
         Swal.fire(

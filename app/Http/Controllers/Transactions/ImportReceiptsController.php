@@ -147,18 +147,6 @@ class ImportReceiptsController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
     public function approveReceipt($id)
     {
         $rightOrder = false;
@@ -191,6 +179,9 @@ class ImportReceiptsController extends Controller
                 }
             }
             if (!$rightOrder) {
+                $importReceipt->status = ImportReceipts::STATUS_CANCELLED;
+                $importReceipt->save();
+                DB::commit();
                 return back()->with('error', 'Order not found!');
             }
             ProcessProduct::dispatch($importReceipt);

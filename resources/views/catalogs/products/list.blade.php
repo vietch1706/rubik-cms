@@ -1,6 +1,6 @@
 @extends('layout.app')
 @section('content')
-    {{--    <link rel="stylesheet" href="{{ asset('css/list.css') }}">--}}
+    <link rel="stylesheet" href="{{ asset('css/list.css') }}" type="text/css">
     <div class="container-fluid">
         <div class="d-flex justify-content-between mb-3">
             <div class="action-buttons">
@@ -157,8 +157,9 @@
         <div class="pagination-container">{{$products->links()}}</div>
         @endif
     </div>
+    <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
     <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
-    <script type="text/javascript">
+    <script>
         @if (Session::has('success'))
         Swal.fire(
             '{{ Session::get('success') }}',
@@ -166,6 +167,30 @@
             'success'
         );
         @endif
+        $('th').click(function () {
+            var table = $(this).parents('table').eq(0)
+            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
+            this.asc = !this.asc
+            if (!this.asc) {
+                rows = rows.reverse()
+            }
+            for (var i = 0; i < rows.length; i++) {
+                table.append(rows[i])
+            }
+            $('th i').remove();
+            $(this).append(this.asc ? ' <i class="fa-solid fa-arrow-up-short-wide"></i>' : ' <i class="fa-solid fa-arrow-down-short-wide"></i> ');
+        })
+
+        function comparer(index) {
+            return function (a, b) {
+                var valA = getCellValue(a, index), valB = getCellValue(b, index)
+                return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
+            }
+        }
+
+        function getCellValue(row, index) {
+            return $(row).children('td').eq(index).text()
+        }
 
         $(function (e) {
             $('input[name="ids"]').click(function (e) {

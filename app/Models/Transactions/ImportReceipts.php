@@ -11,6 +11,7 @@ class ImportReceipts extends Model
 
     public const STATUS_PENDING = 0;
     public const STATUS_COMPLETE = 1;
+    public const STATUS_CANCELLED = 2;
 
     public $timestamps = true;
     protected $table = 'import_receipts';
@@ -32,7 +33,8 @@ class ImportReceipts extends Model
     {
         return [
             self::STATUS_PENDING => 'Pending',
-            self::STATUS_COMPLETE => 'Complete'
+            self::STATUS_COMPLETE => 'Complete',
+            self::STATUS_CANCELLED => 'Cancelled',
         ];
     }
 

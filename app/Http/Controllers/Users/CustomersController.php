@@ -227,13 +227,11 @@ class CustomersController extends Controller
             $customer->type = $request->input('type');
             $customer->save();
             if ($request->input('action') === 'save_and_close') {
-                return redirect()->route('customers')->with('success', 'Update Successfully!');
+                return redirect()->route('customers')->with('success', 'Updated Successfully!');
             }
-            return back()->with('success', 'Created Successfully!');
+            return back()->with('success', 'Updated Successfully!');
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
-
-
     }
 }

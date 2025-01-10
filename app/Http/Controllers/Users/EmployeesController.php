@@ -167,9 +167,9 @@ class EmployeesController extends Controller
             $employee->salary = $request->input('salary');
             $employee->save();
             if ($request->input('action') === 'save_and_close') {
-                return redirect()->route('employees')->with('success', 'Update Successfully!');
+                return redirect()->route('employees')->with('success', 'Updated Successfully!');
             }
-            return back()->with('success', 'Update Successfully!');
+            return back()->with('success', 'Updated Successfully!');
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }

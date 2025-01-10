@@ -1,5 +1,6 @@
 @extends('layout.app')
 @section('content')
+    <link rel="stylesheet" href="{{ asset('css/form.css') }}" type="text/css">
     <form enctype="multipart/form-data">
         @csrf
         <div class="row">
@@ -224,7 +225,7 @@
         </div>
         <div class="d-grid gap-2 d-md-flex justify-content-md-between">
             <div class="left-item">
-                <a type="submit" class="link-secondary mx-3" href="{{ route('orders') }}">Cancel</a>
+                <a type="submit" class="link-secondary mx-3" href="{{ route('orders') }}">Return</a>
             </div>
             <div class="right-item">
                 <button class="delete-item" data-id="{{ $order['id'] }}">
@@ -233,6 +234,7 @@
             </div>
         </div>
     </form>
+    <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
     <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script>
         $(document).ready(function () {
