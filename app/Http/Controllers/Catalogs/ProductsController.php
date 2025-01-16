@@ -5,19 +5,19 @@ namespace App\Http\Controllers\Catalogs;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalogs\ProductRequest;
+use App\Http\Resources\ProductsResource;
 use App\Models\Catalogs\Brands;
 use App\Models\Catalogs\Categories;
 use App\Models\Catalogs\Distributors;
 use App\Models\Catalogs\ProductGalleries;
 use App\Models\Catalogs\Products;
-use App\Schema\ProductSchema;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use function back;
-use function compact;
 use function redirect;
+use function request;
 use function response;
 use function view;
 
@@ -52,13 +52,10 @@ class ProductsController extends Controller
     {
         //
         $products = $this->products->paginate(self::PAGE_LIMIT);
-        foreach ($products as $key => $product) {
-            $productSchema = new ProductSchema($product);
-            $products[$key] = $productSchema->convertData();
-        }
         return view('catalogs.products.list', [
-            'products' => $products,
+            'products' => ProductsResource::collection($products)->toArray(request()),
             'magnetics' => $this->products->getMagneticOptions(),
+            'link' => $products->links(),
         ]);
     }
 
@@ -151,10 +148,9 @@ class ProductsController extends Controller
         $categories = $this->categories->pluck('name', 'id');
         $brands = $this->brands->pluck('name', 'id');
         $distributors = $this->distributors->pluck('name', 'id');
-        $product = $this->products->find($id);
-        $productSchema = new ProductSchema($product);
+        $product = new ProductsResource($this->products->find($id));
         return view('catalogs.products.edit', [
-            'product' => $productSchema->convertData(),
+            'product' => $product->toArray(request()),
             'categories' => $categories,
             'brands' => $brands,
             'distributors' => $distributors,
@@ -187,6 +183,15 @@ class ProductsController extends Controller
             $product->image = Helper::setStoragePath('img', $request->file('image'));
             $product->quantity = $request->input('quantity');
             $product->save();
+            $galleryCount = ProductGalleries::where('product_id', $product->id)->count();
+            foreach ($files = $request->file('gallery') as $file) {
+                $productGallery = new ProductGalleries();
+                $productGallery->product_id = $product->id;
+                $filename = $product->slug . '_' . ($galleryCount + 1);
+                $productGallery->image = Helper::setStoragePath('product_gallery', $file, $filename);
+                $productGallery->save();
+                $galleryCount++;
+            }
             $distributor = $this->distributors->find($request->input('distributor_id'));
             $distributor->products()->sync([$product->id]);
             if ($request->input('action') === 'save_and_close') {
@@ -233,14 +238,12 @@ class ProductsController extends Controller
             ->orWhere('price', 'like', '%' . $search . '%')
             ->orWhere('quantity', 'like', '%' . $search . '%')
             ->paginate(self::PAGE_LIMIT);
-        foreach ($products as $key => $product) {
-            $productSchema = new ProductSchema($product);
-            $products[$key] = $productSchema->convertData();
-        }
         if ($products->count() > 0) {
             return response()->json([
-                'products' => view('catalogs.products.search', compact('products'))->render(),
-                'pagination' => $products->links()->render(),
+                'products' => view('catalogs.products.search', [
+                    'products' => ProductsResource::collection($products)->toArray(request()),
+                ])->render(),
+                'pagination' => $products->links()->render()
             ]);
         } else {
             return response()->json([

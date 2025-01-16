@@ -27,7 +27,7 @@ class CsvImportRequest extends FormRequest
         if (request()->routeIs('import.preview')) {
             $rules = [
                 'csv_file' => 'required|mimes:csv|file',
-                'order_number' => 'required|exists:orders,order_number',
+                'order_number' => 'required|exists:orders,order_no',
             ];
         } elseif (request()->routeIs('import.process')) {
             $rules = [

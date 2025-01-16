@@ -40,6 +40,6 @@ class ImportReceipts extends Model
 
     public function order()
     {
-        return $this->belongsTo(Orders::class, 'order_no', 'order_number');
+        return $this->belongsTo(Orders::class, 'order_no', 'order_no');
     }
 }

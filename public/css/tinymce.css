@@ -1,0 +1,65 @@
+/* Style for TinyMCE content area */
+.mce-content-body {
+    font-size: 16px;
+    font-family: 'Arial', sans-serif;
+    line-height: 1.5;
+    color: var(--latte-text);
+    background-color: var(--latte-light);
+    border: 1px solid var(--latte-subtle);
+    border-radius: 35px;
+}
+
+/* Style input fields, selects, and textareas inside TinyMCE content */
+.mce-content-body input[type="text"],
+.mce-content-body input[type="number"],
+.mce-content-body select,
+.mce-content-body textarea {
+    font-size: 16px;
+    padding: 10px 20px;
+    border: 1px solid var(--latte-subtle);
+    background-color: var(--latte-input-bg);
+    color: var(--latte-input-text);
+    border-radius: 35px;
+    transition: all 0.3s ease-in-out;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Style buttons inside TinyMCE editor */
+.mce-content-body button {
+    font-size: 16px;
+    padding: 12px 24px;
+    border-radius: 50px;
+    background-color: var(--latte-primary);
+    color: #fff;
+    border: 1px solid var(--latte-subtle);
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.mce-content-body button:hover {
+    background-color: #5f81d7;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Style TinyMCE toolbar and buttons */
+.tox-toolbar {
+    background-color: var(--latte-light);
+    border: 1px solid var(--latte-subtle);
+    border-radius: 35px;
+    padding: 8px 12px;
+}
+
+.tox-toolbar button {
+    border-radius: 35px;
+    font-size: 16px;
+    padding: 8px 16px;
+    background-color: var(--latte-primary);
+    color: var(--latte-light);
+    border: 1px solid var(--latte-subtle);
+}
+
+.tox-toolbar button:hover {
+    background-color: #5f81d7;
+}

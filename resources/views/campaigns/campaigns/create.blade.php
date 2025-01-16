@@ -21,23 +21,68 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Start Date </label>
-                <input type="datetime-local" class="form-control" value="{{ old('start_date') }}" name="start_date">
+            <div class="col mb-3">
+                <label class="form-label">Type</label>
+                <select class="form-control select2-overwrite" name="type" id="type">
+                    <option value="">Select Type</option>
+                    @foreach($types as $key => $type)
+                        <option value="{{$key}}">
+                            {{ $type }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('type')
+                <span class="text-danger error">{{ $errors->first('type') }}</span>
+                @enderror
             </div>
             <div class="col-md-6 mb-3">
-                <label class="form-label">End Date </label>
-                <input type="datetime-local" class="form-control" value="{{ old('end_date') }}" name="end_date">
+                <label class="form-label">Status <span class="required"> * </span></label>
+                <select class="form-control select2-overwrite" name="status">
+                    <option value="">Select Status</option>
+                    @foreach($statuses as $key => $status)
+                        <option value="{{$key}}">
+                            {{ $status }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('status')
+                <span class="text-danger error">{{ $errors->first('status') }}</span>
+                @enderror
             </div>
         </div>
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label class="form-label">Add Details <span class="required"> * </span></label>
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#productModal">
-                    Add
-                </button>
-                @error('products')
-                <span class="text-danger error">{{ $errors->first('products') }}</span>
+                <label class="form-label">Start Date </label>
+                <input type="date" class="form-control" value="{{ old('start_date') }}" name="start_date">
+                @error('start_date')
+                <span class="text-danger error">{{ $errors->first('start_date') }}</span>
+                @enderror
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">End Date </label>
+                <input type="date" class="form-control" value="{{ old('end_date') }}" name="end_date">
+                @error('end_date')
+                <span class="text-danger error">{{ $errors->first('end_date') }}</span>
+                @enderror
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mb-3" id="discountValueField" style="display: none;">
+                <label class="form-label">Discount Value</label>
+                <input type="text" class="form-control" name="discount_value">
+            </div>
+            <div class="col mb-3" id="bundleField" style="display: none;">
+                <label class="form-label">Bundle Options</label>
+                <select class="form-control select2-overwrite" id="productSelect" name="bundle_value">
+                    <option value="">Select Product</option>
+                </select>
+            </div>
+            <div class="col mb-3">
+                @error('discount_value')
+                <span class="text-danger error">{{ $errors->first('discount_value') }}</span>
+                @enderror
+                @error('bundle_value')
+                <span class="text-danger error">{{ $errors->first('bundle_value') }}</span>
                 @enderror
             </div>
         </div>
@@ -48,61 +93,8 @@
         <span>Or</span>
         <a type="submit" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
            href="{{ route('campaigns') }}">Cancel</a>
-        <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="productModalLabel">Add Product</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="productDropdown" class="form-label">Product <span
-                                    class="required"> * </span></label>
-                            <select class="form-control select2-overwrite" id="productSelect">
-                                <option value="">Select Product</option>
-                            </select>
-                            <span class="text-danger error" id="productSelect-error"></span>
-                            <input type="hidden" name="products" id="products">
-                        </div>
-                        <div class="mb-3">
-                            <label for="productQuantity" class="form-label">Quantity <span
-                                    class="required"> * </span></label>
-                            <input type="number" class="form-control" id="productQuantity">
-                            <span class="text-danger error" id="productQuantity-error"></span>
-                        </div>
-                        <div class="mb-3">
-                            <label for="productPrice" class="form-label">Price <span class="required"> * </span></label>
-                            <input type="number" class="form-control" id="productPrice">
-                            <span class="text-danger error" id="productPrice-error"></span>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="addProduct()">Add Product</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-4">
-            <div class="col-md-12 mb-3">
-                <label class="form-label">Products</label>
-                <table class="table table-bordered table-striped" id="productTable">
-                    <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Type</th>
-                        <th>Discount Percent</th>
-                        <th>Bundle Product</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </form>
+    <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
     <script>
         @if (Session::has('success'))
@@ -113,24 +105,61 @@
         );
         @endif
 
-        function generateSlug(name) {
-            return name
-                .toLowerCase()
-                .replace(/\s+/g, '-')
-        }
+        $(document).ready(function () {
+            const nameInput = $('#name');
+            const slugInput = $('#slug');
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const nameInput = document.getElementById('name');
-            const slugInput = document.getElementById('slug');
-
-            nameInput.addEventListener('input', function () {
-                slugInput.value = generateSlug(nameInput.value);
+            nameInput.on('input', function () {
+                slugInput.val(generateSlug(nameInput.val()));
             });
+
+            $('#type').change(function () {
+                toggleTypeFields();
+            });
+
+            function toggleTypeFields() {
+                const type = $('#type').val();
+                $('#discountValueField').hide();
+                $('#bundleField').hide();
+                if (type === '') {
+                    $('#discountValueField').hide();
+                    $('#bundleField').hide();
+                } else {
+                    if (type == 0) {
+                        $('#discountValueField').show();
+                    } else if (type == 1) {
+                        $('#productSelect').empty().append('<option value="">Select Product</option>');
+                        var url = '{{ url('api/v1/products/get') }}';
+                        $.ajax({
+                            url: url,
+                            type: 'GET',
+                            success: function (response) {
+                                if (response.data && response.data.length > 0) {
+                                    response.data.forEach(function (product) {
+                                        $('#productSelect').append(
+                                            `<option value="${product.id}" data-name="${product.name}">${product.name} - ${product.sku}</option>`
+                                        );
+                                    });
+                                } else {
+                                    $('#productSelect').append('<option value="">No products available</option>');
+                                }
+                            },
+                        });
+                        $('#bundleField').show();
+                    }
+                }
+            }
+
+            function generateSlug(name) {
+                return name
+                    .toLowerCase()
+                    .replace(/\s+/g, '-');
+            }
         });
 
-
         function setAction(action) {
-            document.getElementById('actionType').value = action;
+            $('#actionType').val(action);
         }
+
     </script>
 @endsection

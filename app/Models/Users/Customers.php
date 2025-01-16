@@ -12,9 +12,8 @@ class Customers extends Model
 
     public const TYPE_REGULAR = 0;
     public const TYPE_LOYAL = 1;
-
-    protected $table = 'customers';
     public $timestamps = true;
+    protected $table = 'customers';
     protected $fillable = [
         'identity_number',
         'type'
@@ -23,7 +22,7 @@ class Customers extends Model
         'type' => 0,
     ];
 
-    public function users()
+    public function user()
     {
         return $this->belongsTo(Users::class, 'user_id', 'id');
     }

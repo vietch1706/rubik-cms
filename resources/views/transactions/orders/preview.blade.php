@@ -1,6 +1,50 @@
 @extends('layout.app')
 @section('content')
     <link rel="stylesheet" href="{{ asset('css/form.css') }}" type="text/css">
+    <style>
+        #orderTab.nav-tabs {
+            border-bottom: 2px solid var(--latte-subtle);
+            margin-bottom: 20px;
+        }
+
+        #orderTab .nav-item {
+            margin-right: 5px;
+        }
+
+        #orderTab .nav-link.active {
+            background-color: var(--latte-primary);
+            color: var(--latte-light);
+            border: 1px solid var(--latte-primary);
+            border-bottom-color: transparent;
+        }
+
+        #orderTab .nav-link {
+            background-color: var(--latte-light);
+            color: var(--latte-text);
+            border: 1px solid var(--latte-subtle);
+            transition: all 0.3s ease-in-out;
+        }
+
+        #orderTab .nav-link:hover {
+            color: var(--latte-dark);
+            border-color: var(--latte-dark);
+        }
+
+        #orderTab .nav-link {
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            #orderTab .nav-item {
+                flex: 1;
+            }
+
+            #orderTab .nav-link {
+                text-align: center;
+                font-size: 14px;
+            }
+        }
+    </style>
     <form enctype="multipart/form-data">
         @csrf
         <div class="row">
@@ -30,18 +74,18 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Status </label>
-                <input type="text" class="form-control" value="{{
-                                $order['status'] === 0 ? 'Pending' :
-                                ($order['status'] === 1 ? 'Processing' :
-                                ($order['status'] === 2 ? 'Completed' :
-                                'Canceled'))
-                           }}" readonly>
+                <input type="text" class="form-control"
+                       value=" {{$order['status'] === 0 ? 'Pending' :($order['status'] === 1 ? 'Partially Imported' :($order['status'] === 2 ? 'Fully Imported' :'Canceled'))}}"
+                       readonly>
             </div>
         </div>
         <div class="row">
             <div class="col mb-3">
                 <label class="form-label">Note </label>
-                <textarea class="form-control" rows="5" readonly>{{ $order['note'] }}</textarea>
+                <div class="form-control"
+                     style="white-space: pre-wrap; word-wrap: break-word; background-color: #E9ECEF">
+                    {!! $order['note'] !!}
+                </div>
             </div>
         </div>
         <div class="row">
@@ -54,11 +98,12 @@
                 <input type="datetime-local" class="form-control" value="{{ $order['updated_at'] }}" readonly>
             </div>
         </div>
-        <ul id="orderTab" role="tablist" @class(['nav', 'nav-tabs','d-none' => !$isImported])>
+        <ul id="orderTab" role="tablist" @class(['nav', 'nav-tabs', 'd-none' => !$isImported])>
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="order-details-tab" data-bs-toggle="tab"
                         data-bs-target="#order-details" type="button" role="tab"
-                        aria-controls="order-details" aria-selected="true" href="#">Order Details
+                        aria-controls="order-details" aria-selected="true">
+                    Order Details
                 </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -117,11 +162,11 @@
                                         {{ $orderDetail['sku'] }}
                                     </td>
                                     <td @class([
-                                'h-100',
-                                'text-primary' => $orderDetail['status'] === 0,
-                                'text-warning' => $orderDetail['status'] === 1,
-                                'text-success' => $orderDetail['status'] === 2,
-                            ])>
+                                            'h-100',
+                                            'text-primary' => $orderDetail['status'] === 0,
+                                            'text-warning' => $orderDetail['status'] === 1,
+                                            'text-success' => $orderDetail['status'] === 2,
+                                        ])>
                                         <i class="fa-solid fa-circle"></i>
                                         {{
                                             [
@@ -243,8 +288,6 @@
                 var selectedIds = [];
                 var selectedId = $(this).data('id');
                 selectedIds.push(selectedId);
-                console.log(selectedIds);
-
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You won't be able to revert this action!",

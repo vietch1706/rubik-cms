@@ -5,17 +5,17 @@ namespace App\Http\Controllers\Users;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\CustomerRequest;
+use App\Http\Resources\UsersResource;
 use App\Models\Users\Customers;
 use App\Models\Users\Users;
-use App\Schema\CustomerSchema;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use function back;
-use function compact;
 use function redirect;
+use function request;
 use function response;
 use function view;
 
@@ -42,26 +42,14 @@ class CustomersController extends Controller
     public function index()
     {
         //
-        $search = 'Bre';
-        $test = $this->customers->whereHas('users', function ($query) use ($search) {
-            return $query->where('first_name', 'like', '%' . $search . '%')
-                ->orWhere('last_name', 'like', '%' . $search . '%')
-                ->orWhere('email', 'like', '%' . $search . '%')
-                ->orWhere('phone', 'like', '%' . $search . '%');
-        })
-            ->paginate(self::PAGE_LIMIT);
         $customers = $this->customers
-            ->whereHas('users', function ($query) {
-                return $query->whereNot('deleted_at', '!=', null);
+            ->whereHas('user', function ($query) {
+                return $query->whereNull('deleted_at');
             })
             ->paginate(self::PAGE_LIMIT);
-        foreach ($customers as $key => $customer) {
-            $customerSchema = new CustomerSchema($customer);
-            $customers[$key] = $customerSchema->convertData();
-        }
-//        $customers = (array)(UsersResource::collection($customersPaginate));
         return view('users.customers.list', [
-            'customers' => $customers,
+            'customers' => UsersResource::collection($customers)->toArray(request()),
+            'link' => $customers->links(),
         ]);
     }
 
@@ -80,33 +68,6 @@ class CustomersController extends Controller
         ]);
     }
 
-    public function search(Request $request)
-    {
-        $search = $request->input('search');
-        $customers = $this->customers->whereHas('users', function ($query) use ($search) {
-            return $query->where('first_name', 'like', '%' . $search . '%')
-                ->orWhere('last_name', 'like', '%' . $search . '%')
-                ->orWhere('phone', 'like', '%' . $search . '%')
-                ->orWhere('email', 'like', '%' . $search . '%')
-                ->orWhere('address', 'like', '%' . $search . '%');
-        })
-            ->orWhere('identity_number', 'like', '%' . $search . '%')
-            ->paginate(self::PAGE_LIMIT);
-        foreach ($customers as $key => $customer) {
-            $customerSchema = new CustomerSchema($customer);
-            $customers[$key] = $customerSchema->convertData();
-        }
-        if ($customers->count() > 0) {
-            return response()->json([
-                'customers' => view('users.customers.search', compact('customers'))->render(),
-                'pagination' => $customers->links()->render(),
-            ]);
-        } else {
-            return response()->json([
-                'error' => 'No result found!',
-            ]);
-        }
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -150,17 +111,6 @@ class CustomersController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param int $id
@@ -169,10 +119,9 @@ class CustomersController extends Controller
     public function edit($id)
     {
         //
-        $customer = $this->customers->find($id);
-        $customerSchema = new CustomerSchema($customer);
+        $customer = new UsersResource($this->customers->find($id));
         return view('users.customers.edit', [
-            'customer' => $customerSchema->convertData(),
+            'customer' => $customer->toArray(request()),
             'genders' => $this->users->getGenderOptions(),
             'isActivateds' => $this->users->getIsActivatedOptions(),
             'types' => $this->customers->getTypeOptions(),
@@ -190,7 +139,7 @@ class CustomersController extends Controller
         //
         $ids = $request->ids;
         $this->customers->whereIn('id', $ids)->each(function ($customer) {
-            $customer->users()->delete();
+            $customer->user()->delete();
         });
         return response()->json(
             ["success" => 'Users have been deleted']
@@ -208,7 +157,7 @@ class CustomersController extends Controller
     {
         //
         $customer = $this->customers->find($id);
-        $user = $customer->users()->first();
+        $user = $customer->user()->first();
         if ($request->input('password')) {
             $user->password = Hash::make($request->input('password'));
         }
@@ -232,6 +181,32 @@ class CustomersController extends Controller
             return back()->with('success', 'Updated Successfully!');
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
+        }
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $customers = $this->customers->whereHas('user', function ($query) use ($search) {
+            return $query->where('first_name', 'like', '%' . $search . '%')
+                ->orWhere('last_name', 'like', '%' . $search . '%')
+                ->orWhere('phone', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%')
+                ->orWhere('address', 'like', '%' . $search . '%');
+        })
+            ->orWhere('identity_number', 'like', '%' . $search . '%')
+            ->paginate(self::PAGE_LIMIT);
+        if ($customers->count() > 0) {
+            return response()->json([
+                'customers' => view('users.customers.search', [
+                    'customers' => UsersResource::collection($customers)->toArray(request()),
+                ])->render(),
+                'pagination' => $customers->links()->render()
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'No result found!',
+            ]);
         }
     }
 }

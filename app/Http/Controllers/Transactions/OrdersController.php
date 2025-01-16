@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Transactions;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transactions\OrderRequest;
+use App\Http\Resources\OrderDetailsResource;
+use App\Http\Resources\OrdersResource;
 use App\Models\Catalogs\Distributors;
 use App\Models\Transactions\ImportReceipts;
 use App\Models\Transactions\OrderDetails;
 use App\Models\Transactions\Orders;
-use App\Schema\OrderDetailSchema;
-use App\Schema\OrderSchema;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use function back;
 use function redirect;
+use function request;
 use function response;
 use function view;
 
@@ -49,14 +50,10 @@ class OrdersController extends Controller
     public function index()
     {
         //
-        $orders = $this->orders
-            ->paginate(self::PAGE_LIMIT);
-        foreach ($orders as $key => $order) {
-            $orderSchema = new OrderSchema($order);
-            $orders[$key] = $orderSchema->convertData();
-        }
+        $orders = $this->orders->paginate(self::PAGE_LIMIT);
         return view('transactions.orders.list', [
-            'orders' => $orders,
+            'orders' => OrdersResource::collection($orders)->toArray(request()),
+            'link' => $orders->links(),
         ]);
     }
 
@@ -93,7 +90,7 @@ class OrdersController extends Controller
         $orders = new $this->orders;
         try {
             $orders->distributor_id = $request->input('distributor_id');
-            $orders->user_id = $request->input('employee_id');
+            $orders->employee_id = $request->input('employee_id');
             $orders->date = $request->input('date');
             $orders->status = $request->input('status');
             $orders->note = $request->input('note');
@@ -119,27 +116,24 @@ class OrdersController extends Controller
 
     public function preview($id)
     {
-        $order = $this->orders->find($id);
-        $orderSchema = new OrderSchema($order);
+        $order = new OrdersResource($this->orders->find($id));
         $orderDetails = $order->details()->get();
         $isImported = false;
         foreach ($orderDetails as $key => $orderDetail) {
             if ($orderDetail->status == OrderDetails::STATUS_PARTIALLY_IMPORTED) {
                 $isImported = true;
                 $importedDetails = $this->importReceipts
-                    ->where('order_no', $order->order_number)
+                    ->where('order_no', $order->order_no)
                     ->first()
                     ->details()
                     ->where('product_id', $orderDetail->product_id)
                     ->first();
                 $orderDetail->imported_quantity = $importedDetails->quantity;
             }
-            $orderDetailSchema = new OrderDetailSchema($orderDetail);
-            $orderDetails[$key] = $orderDetailSchema->convertData();
         }
         return view('transactions.orders.preview', [
-            'order' => $orderSchema->convertData(),
-            'orderDetails' => $orderDetails,
+            'order' => $order->toArray(request()),
+            'orderDetails' => OrderDetailsResource::collection($orderDetails)->toArray(request()),
             'isImported' => $isImported,
         ]);
     }

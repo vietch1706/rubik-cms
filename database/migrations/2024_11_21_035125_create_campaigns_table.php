@@ -16,9 +16,11 @@ return new class extends Migration {
             $table->increments('id')->unsigned();
             $table->string('name', 100);
             $table->string('slug', 100)->unique();
+            $table->boolean('type')->default(0);
+            $table->string('type_value', 100);
+            $table->boolean('status')->default(0);
             $table->date('start_date');
             $table->date('end_date');
-            $table->softDeletes();
             $table->timestamps();
         });
     }

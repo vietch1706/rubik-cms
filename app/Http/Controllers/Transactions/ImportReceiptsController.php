@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Transactions;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transactions\CsvImportRequest;
+use App\Http\Resources\ImportReceiptDetailsResource;
+use App\Http\Resources\ImportReceiptsResource;
 use App\Jobs\ProcessProduct;
 use App\Models\Catalogs\Products;
 use App\Models\Transactions\ImportReceiptDetails;
 use App\Models\Transactions\ImportReceipts;
 use App\Models\Transactions\OrderDetails;
 use App\Models\Transactions\Orders;
-use App\Schema\ImportReceiptDetailSchema;
-use App\Schema\ImportReceiptSchema;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -24,6 +24,7 @@ use function back;
 use function fgetcsv;
 use function fopen;
 use function redirect;
+use function request;
 use function response;
 use function view;
 
@@ -58,25 +59,22 @@ class ImportReceiptsController extends Controller
         //
         $importReceipts = $this->importReceipts
             ->paginate(self::PAGE_LIMIT);
-        foreach ($importReceipts as $key => $importReceipt) {
-            $importReceiptSchema = new ImportReceiptSchema($importReceipt);
-            $importReceipts[$key] = $importReceiptSchema->convertData();
-        }
         return view('transactions.import_receipts.list', [
-            'importReceipts' => $importReceipts,
+            'importReceipts' => ImportReceiptsResource::collection($importReceipts)->toArray(request()),
+            'link' => $importReceipts->links(),
         ]);
     }
 
     public function importView()
     {
         $orders = $this->orders
-            ->select('id', 'order_number')
+            ->select('id', 'order_no')
             ->whereNot('status', Orders::STATUS_FULLY_IMPORTED)
             ->whereNot('status', Orders::STATUS_CANCELED)
             ->whereDoesntHave('importReceipts', function ($query) {
                 $query->where('status', $this->importReceipts::STATUS_PENDING);
             })
-            ->pluck('order_number', 'id');
+            ->pluck('order_no', 'id');
         return view('transactions.import_receipts.import', [
             'orders' => $orders,
         ]);
@@ -94,7 +92,7 @@ class ImportReceiptsController extends Controller
         fclose($handle);
         $importReceipt = new $this->importReceipts;
         $importReceipt->order_no = $request->input('order_number');
-        $importReceipt->user_id = Auth::user()->id;
+        $importReceipt->employee_id = Auth::user()->id;
         $importReceipt->date = Carbon::now();
         $importReceipt->status = ImportReceipts::STATUS_PENDING;
         $importReceipt->save();
@@ -202,54 +200,16 @@ class ImportReceiptsController extends Controller
             DB::rollBack();
             throw new Exception($e->getMessage());
         }
-        #TODO: cap nhat product dung queue
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
     }
 
     public function preview($id)
     {
         //
-        $importReceipt = $this->importReceipts->find($id);
-        $importReceiptSchema = new ImportReceiptSchema($importReceipt);
+        $importReceipt = new ImportReceiptsResource($this->importReceipts->find($id));
         $importReceiptDetails = $importReceipt->details()->get();
-        foreach ($importReceiptDetails as $key => $importReceiptDetail) {
-            $importReceiptDetailSchema = new ImportReceiptDetailSchema($importReceiptDetail);
-            $importReceiptDetails[$key] = $importReceiptDetailSchema->convertData();
-        }
         return view('transactions.import_receipts.preview', [
-            'importReceipt' => $importReceiptSchema->convertData(),
-            'importReceiptDetails' => $importReceiptDetails,
+            'importReceipt' => $importReceipt->toArray(request()),
+            'importReceiptDetails' => ImportReceiptDetailsResource::collection($importReceiptDetails)->toArray(request()),
         ]);
     }
 

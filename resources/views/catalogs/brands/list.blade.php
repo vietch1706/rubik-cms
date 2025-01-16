@@ -84,7 +84,7 @@
                     </tbody>
             </table>
         </div>
-        <div class="pagination-container">{{$brands->links()}}</div>
+        <div class="pagination-container">{!! $link !!}</div>
         @endif
     </div>
     <script src="{{ asset('js/sweetalert2@11.js') }}"></script>

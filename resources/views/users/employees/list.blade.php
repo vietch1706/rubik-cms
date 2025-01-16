@@ -98,7 +98,9 @@
                                 {{ $employee['email'] }}
                             </td>
                             <td>
-                                {{ $employee['salary'] }}
+                                @if(array_key_exists('salary', $employee))
+                                    {{ $employee['salary'] }}
+                                @endif
                             </td>
                             <td title="{{ $employee['address'] }}">
                                 {{ Str::limit($employee['address'], 50) }}
@@ -129,7 +131,7 @@
                     </tbody>
             </table>
         </div>
-        <div class="pagination-container">{{$employees->links()}}</div>
+        <div class="pagination-container">{!! $link !!}</div>
         @endif
     </div>
     <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
@@ -239,7 +241,6 @@
                 method: 'GET',
                 data: {'search': searchString},
                 success: function (response) {
-                    console.log(response.error)
                     if (response.error) {
                         $('tbody').html(
                             `<tr><td colspan="16" class="text-danger text-center" style="font-size: 20px;">${response.error}</td></tr>`

@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Catalogs;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalogs\CategoryRequest;
+use App\Http\Resources\CategoriesResource;
 use App\Models\Catalogs\Categories;
-use App\Schema\CategorySchema;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use function back;
-use function compact;
 use function redirect;
+use function request;
 use function response;
 use function view;
 
@@ -34,12 +34,9 @@ class CategoriesController extends Controller
     {
         //
         $categories = $this->categories->paginate(self::PAGE_LIMIT);
-        foreach ($categories as $key => $category) {
-            $categorySchema = new CategorySchema($category);
-            $categories[$key] = $categorySchema->convertData();
-        }
         return view('catalogs.categories.list', [
-            'categories' => $categories,
+            'categories' => CategoriesResource::collection($categories)->toArray(request()),
+            'link' => $categories->links(),
         ]);
     }
 
@@ -103,11 +100,10 @@ class CategoriesController extends Controller
     {
         //
         $parentCategories = $this->categories->pluck('name', 'id');
-        $category = $this->categories->find($id);
-        $categorySchema = new CategorySchema($category);
+        $category = new CategoriesResource($this->categories->find($id));
         return view('catalogs.categories.edit', [
             'parentCategories' => $parentCategories,
-            'category' => $categorySchema->convertData(),
+            'category' => $category->toArray(request()),
         ]);
     }
 
@@ -149,8 +145,9 @@ class CategoriesController extends Controller
         //
         $ids = $request->ids;
         $this->categories->whereIn('id', $ids)->delete();
-        return response()->json(
-            ["success" => 'Categories have been deleted']
+        return response()->json([
+                "success" => 'Categories have been deleted'
+            ]
         );
     }
 
@@ -165,14 +162,12 @@ class CategoriesController extends Controller
             ->orWhere('name', 'like', '%' . $search . '%')
             ->orWhere('slug', 'like', '%' . $search . '%')
             ->paginate(self::PAGE_LIMIT);
-        foreach ($categories as $key => $category) {
-            $categorySchema = new CategorySchema($category);
-            $categories[$key] = $categorySchema->convertData();
-        }
         if ($categories->count() > 0) {
             return response()->json([
-                'categories' => view('catalogs.categories.search', compact('categories'))->render(),
-                'pagination' => $categories->links()->render(),
+                'categories' => view('catalogs.categories.search', [
+                    'categories' => CategoriesResource::collection($categories)->toArray(request()),
+                ])->render(),
+                'pagination' => $categories->links()->render()
             ]);
         } else {
             return response()->json([

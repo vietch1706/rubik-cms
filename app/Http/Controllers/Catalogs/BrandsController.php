@@ -5,14 +5,14 @@ namespace App\Http\Controllers\Catalogs;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalogs\BrandRequest;
+use App\Http\Resources\BrandsResource;
 use App\Models\Catalogs\Brands;
-use App\Schema\BrandSchema;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use function back;
-use function compact;
 use function redirect;
+use function request;
 use function response;
 use function view;
 
@@ -34,12 +34,9 @@ class BrandsController extends Controller
     public function index()
     {
         $brands = $this->brands->paginate(self::PAGE_LIMIT);
-        foreach ($brands as $key => $brand) {
-            $brandSchema = new BrandSchema($brand);
-            $brands[$key] = $brandSchema->convertData();
-        }
         return view('catalogs.brands.list', [
-            'brands' => $brands,
+            'brands' => BrandsResource::collection($brands)->toArray(request()),
+            'link' => $brands->links(),
         ]);
     }
 
@@ -74,7 +71,6 @@ class BrandsController extends Controller
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
-
     }
 
     /**
@@ -97,10 +93,9 @@ class BrandsController extends Controller
     public function edit($id)
     {
         //
-        $brand = $this->brands->find($id);
-        $brandSchema = new BrandSchema($brand);
+        $brand = new BrandsResource($this->brands->find($id));
         return view('catalogs.brands.edit', [
-            'brand' => $brandSchema->convertData(),
+            'brand' => $brand->toArray(request()),
         ]);
     }
 
@@ -140,8 +135,9 @@ class BrandsController extends Controller
         //
         $ids = $request->ids;
         $this->brands->whereIn('id', $ids)->delete();
-        return response()->json(
-            ["success" => 'Brands have been deleted']
+        return response()->json([
+                "success" => 'Brands have been deleted'
+            ]
         );
     }
 
@@ -152,14 +148,12 @@ class BrandsController extends Controller
             ->where('name', 'like', '%' . $search . '%')
             ->orWhere('slug', 'like', '%' . $search . '%')
             ->paginate(self::PAGE_LIMIT);
-        foreach ($brands as $key => $brand) {
-            $brandSchema = new BrandSchema($brand);
-            $brands[$key] = $brandSchema->convertData();
-        }
         if ($brands->count() > 0) {
             return response()->json([
-                'brands' => view('catalogs.brands.search', compact('brands'))->render(),
-                'pagination' => $brands->links()->render(),
+                'brands' => view('catalogs.brands.search', [
+                    'brands' => BrandsResource::collection($brands)->toArray(request()),
+                ])->render(),
+                'pagination' => $brands->links()->render()
             ]);
         } else {
             return response()->json([

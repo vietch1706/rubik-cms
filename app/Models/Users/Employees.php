@@ -17,7 +17,7 @@ class Employees extends Model
         'salary' => 10000000,
     ];
 
-    public function users()
+    public function user()
     {
         return $this->belongsTo(Users::class, 'user_id', 'id');
     }

@@ -45,12 +45,12 @@ class Users extends Authenticatable
         return $this->belongsTo(Roles::class, 'role_id', 'id');
     }
 
-    public function customers()
+    public function customer()
     {
         return $this->hasOne(Customers::class, 'user_id', 'id');
     }
 
-    public function employees()
+    public function employee()
     {
         return $this->hasOne(Employees::class, 'user_id', 'id');
     }
@@ -88,6 +88,16 @@ class Users extends Authenticatable
                 self::ROLE_ADMIN => 'Admin',
                 self::ROLE_CUSTOMER => 'Customer',
                 self::ROLE_EMPLOYEE => 'Employee',
+            },
+        );
+    }
+
+    public function textIsActivated(): Attribute
+    {
+        return new Attribute(
+            get: fn($value, $attribute) => match ($attribute['is_activated']) {
+                self::ACTIVATED => 'Activated',
+                self::INACTIVE => 'Inactive',
             },
         );
     }

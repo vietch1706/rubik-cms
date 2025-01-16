@@ -4,7 +4,7 @@ namespace Database\Factories\Transactions;
 
 use App\Models\Catalogs\Distributors;
 use App\Models\Transactions\Orders;
-use App\Models\Users\Users;
+use App\Models\Users\Employees;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,8 +20,7 @@ class OrdersFactory extends Factory
     public function definition()
     {
         static $usedDistributorIds = [];
-        $employee = Users::select('id')
-            ->where('role_id', Users::ROLE_EMPLOYEE)
+        $employee = Employees::select('id')
             ->inRandomOrder()
             ->first();
         $distributor = Distributors::select('id')
@@ -34,8 +33,8 @@ class OrdersFactory extends Factory
         $endDate = '2024-12-31 23:59:59';
         return [
             'distributor_id' => $distributor->id,
-            'user_id' => $employee->id,
-            'order_number' => Orders::generateUniqueOrderNo('ORD-'),
+            'employee_id' => $employee->id,
+            'order_no' => Orders::generateUniqueOrderNo('ORD-'),
             'date' => $this->faker->dateTimeBetween($startDate, $endDate),
             'status' => Orders::STATUS_PENDING,
             'note' => $this->faker->text(),

@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Catalogs;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalogs\DistributorRequest;
+use App\Http\Resources\DistributorsResource;
 use App\Models\Catalogs\Distributors;
-use App\Schema\DistributorSchema;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use function back;
-use function compact;
 use function redirect;
+use function request;
 use function response;
 use function view;
 
@@ -34,12 +34,9 @@ class DistributorsController extends Controller
     {
         //
         $distributors = $this->distributors->paginate(self::PAGE_LIMIT);
-        foreach ($distributors as $key => $distributor) {
-            $distributorSchema = new DistributorSchema($distributor);
-            $distributors[$key] = $distributorSchema->convertData();
-        }
         return view('catalogs.distributors.list', [
-            'distributors' => $distributors,
+            'distributors' => DistributorsResource::collection($distributors)->toArray(request()),
+            'link' => $distributors->links(),
         ]);
     }
 
@@ -99,10 +96,9 @@ class DistributorsController extends Controller
      */
     public function edit($id)
     {
-        $distributor = $this->distributors->find($id);
-        $distributorSchema = new DistributorSchema($distributor);
+        $distributor = new DistributorsResource($this->distributors->find($id));
         return view('catalogs.distributors.edit', [
-            'distributor' => $distributorSchema->convertData(),
+            'distributor' => $distributor->toArray(request()),
         ]);
     }
 
@@ -144,8 +140,9 @@ class DistributorsController extends Controller
         //
         $ids = $request->ids;
         $this->distributors->whereIn('id', $ids)->delete();
-        return response()->json(
-            ["success" => 'Categories have been deleted']
+        return response()->json([
+                "success" => 'Categories have been deleted'
+            ]
         );
     }
 
@@ -159,14 +156,12 @@ class DistributorsController extends Controller
             ->orWhere('phone', 'like', '%' . $search . '%')
             ->orWhere('email', 'like', '%' . $search . '%')
             ->paginate(self::PAGE_LIMIT);
-        foreach ($distributors as $key => $distributor) {
-            $distributorSchema = new DistributorSchema($distributor);
-            $distributors[$key] = $distributorSchema->convertData();
-        }
         if ($distributors->count() > 0) {
             return response()->json([
-                'distributors' => view('catalogs.distributors.search', compact('distributors'))->render(),
-                'pagination' => $distributors->links()->render(),
+                'distributors' => view('catalogs.distributors.search', [
+                    'distributors' => DistributorsResource::collection($distributors)->toArray(request()),
+                ])->render(),
+                'pagination' => $distributors->links()->render()
             ]);
         } else {
             return response()->json([

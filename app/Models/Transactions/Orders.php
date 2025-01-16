@@ -22,7 +22,7 @@ class Orders extends Model
     public $timestamps = true;
     protected $table = 'orders';
     protected $fillable = [
-        'order_number',
+        'order_no',
         'distributor_id',
         'employee_id',
         'date',
@@ -34,7 +34,7 @@ class Orders extends Model
     {
         parent::boot();
         static::creating(function ($order) {
-            $order->order_number = self::generateUniqueOrderNo('ORD-');
+            $order->order_no = self::generateUniqueOrderNo('ORD-');
         });
     }
 
@@ -43,10 +43,10 @@ class Orders extends Model
         $length = self::ORDER_NO_LENGTH - strlen($prefix ?? '');
 
         do {
-            $order_number = ($prefix ?? '') . Helper::generateRandomString($length, 3);
-        } while (self::where('order_number', $order_number)->exists());
+            $order_no = ($prefix ?? '') . Helper::generateRandomString($length, 3);
+        } while (self::where('order_no', $order_no)->exists());
 
-        return $order_number;
+        return $order_no;
     }
 
     public function details()
@@ -56,7 +56,7 @@ class Orders extends Model
 
     public function importReceipts()
     {
-        return $this->hasOne(ImportReceipts::class, 'order_no', 'order_number');
+        return $this->hasOne(ImportReceipts::class, 'order_no', 'order_no');
     }
 
     public function getStatusOptions()

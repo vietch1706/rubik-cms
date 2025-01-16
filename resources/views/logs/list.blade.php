@@ -4,7 +4,7 @@
     <div class="container-fluid">
         <div class="d-flex justify-content-between mb-3">
             <div class="action-buttons">
-                <button id="delete-record" class="btn btn-danger py-2"><i class="fa-solid fa-trash-can"></i> Delete
+                <button id="clear-logs" class="btn btn-danger py-2"><i class="fa-solid fa-trash-can"></i> Clear Logs
                 </button>
             </div>
             <div class="input-group w-25">
@@ -24,10 +24,6 @@
             <table class="table table-bordered table-striped table-hover ">
                 <thead>
                 <tr class="text-nowrap col-md">
-                    <th scope="col" class="px-3" style="width: 25px; height: 25px; text-align: center;">
-                        <input class="checkbox-size" type="checkbox" name=""
-                               id="select-all-ids">
-                    </th>
                     <th scope="col" class="pe-5">
                         ID
                     </th>
@@ -47,12 +43,7 @@
                 </thead>
                 <tbody>
                 @foreach($logs as $key => $log)
-                    <tr class="text-nowrap hover-pointer" id="delete-id-{{$key}}"
-                        onclick="window.location='{{ route('logs.preview', $key) }}'">
-                        <td class="text-center">
-                            <input type="checkbox" name="ids" class="checkbox-ids"
-                                   value="{{ $key }}">
-                        </td>
+                    <tr class="text-nowrap hover-pointer" onclick="window.location='{{ route('logs.preview', $key) }}'">
                         <td>
                             {{ $key }}
                         </td>
@@ -86,29 +77,8 @@
         @endif
 
         $(function (e) {
-            $('input[name="ids"]').click(function (e) {
-                e.stopPropagation();
-            });
-
-            $('#select-all-ids').click(function () {
-                $('.checkbox-ids').prop('checked', $(this).prop('checked'));
-            });
-
-            $('#delete-record').click(function (e) {
+            $('#clear-logs').click(function (e) {
                 e.preventDefault();
-
-                var selectedIds = [];
-                $('input[name="ids"]:checked').each(function () {
-                    selectedIds.push($(this).val());
-                });
-                if (selectedIds.length === 0) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'No Receipts Selected',
-                        text: 'Please select at least one receipt to delete.',
-                    });
-                    return;
-                }
 
                 Swal.fire({
                     title: 'Are you sure?',
@@ -123,7 +93,6 @@
                             url: "{{ route('logs.destroy') }}",
                             type: "DELETE",
                             data: {
-                                ids: selectedIds,
                                 _token: "{{ csrf_token() }}",
                             },
                             success: function (response) {
@@ -132,9 +101,7 @@
                                     response.message,
                                     'success'
                                 );
-                                $.each(selectedIds, function (key, val) {
-                                    $('#delete-id-' + val).remove();
-                                });
+                                $('#logs-table tbody').empty();
                             },
                             error: function () {
                                 Swal.fire(

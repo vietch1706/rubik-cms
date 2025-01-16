@@ -3,27 +3,30 @@
 namespace App\Http\Controllers\Campaigns;
 
 use App\Http\Controllers\Controller;
-use App\Models\Campaigns\CampaignDetails;
+use App\Http\Requests\Campaigns\CampaignRequest;
+use App\Http\Resources\BrandsResource;
+use App\Http\Resources\CampaignsResource;
 use App\Models\Campaigns\Campaigns;
-use App\Schema\BrandSchema;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use function compact;
+use Illuminate\Support\Facades\DB;
+use function back;
+use function redirect;
+use function request;
 use function response;
 use function view;
 
 class CampaignsController extends Controller
 {
+    public const PAGE_LIMIT = 20;
     private Campaigns $campaigns;
-    private CampaignDetails $campaignDetails;
 
     public function __construct(
-        Campaigns       $campaign,
-        CampaignDetails $campaignDetail,
+        Campaigns $campaign,
     )
     {
         $this->campaigns = $campaign;
-        $this->campaignDetails = $campaignDetail;
     }
 
     /**
@@ -34,8 +37,10 @@ class CampaignsController extends Controller
     public function index()
     {
         //
+        $campaigns = $this->campaigns->paginate(self::PAGE_LIMIT);
         return view('campaigns.campaigns.list', [
-            'types' => $this->campaignDetails->getTypeOptions(),
+            'campaigns' => CampaignsResource::collection($campaigns)->toArray(request()),
+            'link' => $campaigns->links(),
         ]);
     }
 
@@ -47,7 +52,10 @@ class CampaignsController extends Controller
     public function create()
     {
         //
-        return view('campaigns.campaigns.create');
+        return view('campaigns.campaigns.create', [
+            'types' => $this->campaigns->getTypeOptions(),
+            'statuses' => $this->campaigns->getStatusOptions()
+        ]);
     }
 
     /**
@@ -56,9 +64,33 @@ class CampaignsController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function store(Request $request)
+    public function store(CampaignRequest $request)
     {
         //
+        $campaign = new $this->campaigns;
+        DB::beginTransaction();
+        try {
+            $campaign->name = $request->input('name');
+            $campaign->slug = $request->input('slug');
+            $campaign->status = $request->input('status');
+            $campaign->type = $request->input('type');
+            $campaign->start_date = $request->input('start_date');
+            $campaign->end_date = $request->input('end_date');
+            if ($request->input('discount_value')) {
+                $campaign->type_value = $request->input('discount_value');
+            } else {
+                $campaign->type_value = $request->input('bundle_value');
+            }
+            $campaign->save();
+            DB::commit();
+            if ($request->input('action') === 'save_and_close') {
+                return redirect()->route('campaigns')->with('success', 'Created Successfully!');
+            }
+            return back()->with('success', 'Created Successfully!');
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw new Exception(['error' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -105,8 +137,9 @@ class CampaignsController extends Controller
     {
         $ids = $request->ids;
         $this->campaigns->whereIn('id', $ids)->delete();
-        return response()->json(
-            ["success" => 'Camapaigns have been deleted']
+        return response()->json([
+                "success" => 'Camapaigns have been deleted'
+            ]
         );
     }
 
@@ -117,14 +150,12 @@ class CampaignsController extends Controller
             ->where('name', 'like', '%' . $search . '%')
             ->orWhere('slug', 'like', '%' . $search . '%')
             ->paginate(self::PAGE_LIMIT);
-        foreach ($campaigns as $key => $brand) {
-            $brandSchema = new BrandSchema($brand);
-            $campaigns[$key] = $brandSchema->convertData();
-        }
         if ($campaigns->count() > 0) {
             return response()->json([
-                'campaigns' => view('catalogs.campaigns.search', compact('campaigns'))->render(),
-                'pagination' => $campaigns->links()->render(),
+                'campaigns' => view('campaigns.campaigns.search', [
+                    'campaigns' => BrandsResource::collection($campaigns)->toArray(request()),
+                ])->render(),
+                'pagination' => $campaigns->links()->render()
             ]);
         } else {
             return response()->json([

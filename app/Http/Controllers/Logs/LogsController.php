@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Logs;
 use App\Http\Controllers\Controller;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Request;
 use function file;
 use function file_exists;
 use function preg_match;
@@ -86,9 +85,23 @@ class LogsController extends Controller
         return $context;
     }
 
-    public function destroy(Request $request)
+    public function destroy()
     {
+        $logPath = storage_path('logs/laravel.log');
 
+        if (file_exists($logPath)) {
+            file_put_contents($logPath, '');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Log file cleared successfully.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Log file does not exist.',
+        ]);
     }
 
     public function preview($id)

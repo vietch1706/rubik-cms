@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Blogs\BlogsController;
 use App\Http\Controllers\Campaigns\CampaignsController;
 use App\Http\Controllers\Catalogs\BrandsController;
 use App\Http\Controllers\Catalogs\CategoriesController;
@@ -43,8 +44,9 @@ Route::group([
             'prefix' => 'profile',
         ], function () {
             Route::get('/', [ProfileController::class, 'edit'])->name('profile');
-            Route::put('/edit/{id}', [ProfileController::class, 'update'])->name('profile.update');
-            Route::put('/change-password/{id}', [ProfileController::class, 'changePassword'])->name('profile.change-password');
+            Route::get('/change-password', [ProfileController::class, 'changePasswordView'])->name('profile.changePassword');
+            Route::put('/edit', [ProfileController::class, 'update'])->name('profile.update');
+            Route::put('/change-password', [ProfileController::class, 'changePassword'])->name('profile.changePassword.update');
         });
         Route::group([
             'prefix' => 'customers',
@@ -168,7 +170,11 @@ Route::group([
             'prefix' => 'invoices'
         ], function () {
             Route::get('/', [InvoicesController::class, 'index'])->name('invoices');
+            Route::get('/create', [InvoicesController::class, 'create'])->name('invoices.create');
+            Route::post('/create', [InvoicesController::class, 'store'])->name('invoices.store');
+            Route::get('/preview/{id}', [InvoicesController::class, 'preview'])->name('invoices.preview');
             Route::delete('/delete', [InvoicesController::class, 'destroy'])->name('invoices.destroy');
+            Route::get('/search', [InvoicesController::class, 'search'])->name('invoices.search');
         });
     });
     Route::group([
@@ -178,5 +184,21 @@ Route::group([
         Route::get('/logs', [LogsController::class, 'index'])->name('logs');
         Route::get('/logs/preview/{id}', [LogsController::class, 'preview'])->name('logs.preview');
         Route::delete('/logs/delete', [LogsController::class, 'destroy'])->name('logs.destroy');
+    });
+    Route::group([
+        'prefix' => 'blogs',
+        'middleware' => ['auth'],
+    ], function () {
+        Route::group([
+            'prefix' => 'blogs',
+        ], function () {
+            Route::get('/', [BlogsController::class, 'index'])->name('blogs');
+            Route::get('/create', [BlogsController::class, 'create'])->name('blogs.create');
+            Route::post('/create', [BlogsController::class, 'store'])->name('blogs.store');
+            Route::get('/edit/{id}', [BlogsController::class, 'edit'])->name('blogs.edit');
+            Route::put('/edit/{id}', [BlogsController::class, 'update'])->name('blogs.update');
+            Route::delete('/delete', [BlogsController::class, 'destroy'])->name('blogs.destroy');
+            Route::get('/search', [BlogsController::class, 'search'])->name('blogs.search');
+        });
     });
 });

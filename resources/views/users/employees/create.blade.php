@@ -26,8 +26,7 @@
                 <label class="form-label">Gender <span class="required"> * </span></label>
                 <select class="form-control select2-overwrite" name="gender">
                     @foreach($genders as $key => $gender)
-                        <option value="{{$key}}" @if($key== old(
-                'gender')) selected @endif>
+                        <option value="{{$key}}" @if($key== old('gender')) selected @endif>
                             {{ $gender }}
                         </option>
                     @endforeach

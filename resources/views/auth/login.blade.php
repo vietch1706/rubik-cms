@@ -23,14 +23,46 @@
             height: calc(100% - 72px);
         }
 
-        @media (max-width: 450px) {
-            .h-custom {
-                height: 100%;
-            }
-        }
 
         .container-fluid {
             background-color: var(--latte-header);
+        }
+
+        .left-item {
+            background: linear-gradient(135deg, var(--latte-primary), var(--latte-secondary));
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .left-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .left-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .left-item img:hover {
+            transform: scale(1.05);
+        }
+
+        .right-item {
+            background-color: var(--latte-light);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .right-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
         }
 
         .form-label {
@@ -74,12 +106,6 @@
             border-color: var(--latte-secondary);
         }
 
-        .alert {
-            background-color: var(--latte-cancel);
-            color: var(--latte-text);
-            border-radius: 5px;
-        }
-
         .text-body {
             color: var(--latte-primary);
         }
@@ -96,38 +122,30 @@
             color: var(--latte-primary);
         }
 
-        .footer {
-            background-color: var(--latte-primary);
-            color: white;
+        @media (max-width: 450px) {
+            .h-custom {
+                height: 100%;
+            }
         }
 
-        .footer a {
-            color: white;
-        }
-
-        .footer a:hover {
-            color: var(--latte-secondary);
+        @media (max-width: 800px) {
+            .left-item {
+                display: none;
+            }
         }
     </style>
     <section class="vh-100">
         <div class="container-fluid h-custom">
             <div class="row d-flex justify-content-center align-items-center h-100">
-                <div class="col-md-9 col-lg-6 col-xl-5">
+                <div class="left-item col-md-5 col-lg-5 col-xl-4">
                     <img src="{{ asset('img/image.png') }}" alt="">
                 </div>
-                <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+                <div class="right-item col-md-5 col-lg-5 col-xl-4 offset-xl-1">
                     <form method="POST" action="{{ route('login.post') }}">
                         @csrf
                         <div class="divider d-flex align-items-center my-4">
                             <h2 class="text-center fw-bold mx-3 mb-0">Admin Login Channel</h2>
                         </div>
-
-                        @if($errors->any())
-                            {!! implode('', $errors->all('<div class="alert alert-danger" role="alert"><h4 class="text-center alert-heading">:message</h4></div>')) !!}
-                        @endif
-
-
-                        <!-- Email input -->
                         <div data-mdb-input-init class="form-outline mb-4">
                             <label for="email" class="form-label">Email address</label>
                             <input
@@ -135,8 +153,10 @@
                                 class="form-control"
                                 placeholder="Enter a valid email address"
                                 name="email"/>
+                            @error('email')
+                            <span class="text-danger error">{{ $errors->first('email') }}</span>
+                            @enderror
                         </div>
-
                         <div data-mdb-input-init class="form-outline mb-3">
                             <label for="password" class="form-label">Password</label>
                             <div class="input-group password-container">
@@ -147,6 +167,9 @@
                             <i class="fa-solid fa-eye-slash toggle-password"></i>
                         </span>
                             </div>
+                            @error('password')
+                            <span class="text-danger error">{{ $errors->first('password') }}</span>
+                            @enderror
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <a href="" class="text-body">Forgot password?</a>
@@ -186,6 +209,15 @@
             '',
             'success'
         );
+        @endif
+        @if (Session::has('error'))
+        Swal.fire({
+            position: "top-end",
+            icon: "error",
+            title: '{{ Session::get('error') }}',
+            showConfirmButton: false,
+            timer: 1000
+        });
         @endif
         document.addEventListener('DOMContentLoaded', function () {
             const passwordContainers = document.querySelectorAll('.password-container');

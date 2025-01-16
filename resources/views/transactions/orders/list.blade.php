@@ -83,15 +83,9 @@
 
                                 </td>
                             @endif
-                            @if($order['employee'])
-                                <td>
-                                    {{ current($order['employee']) }}
-                                </td>
-                            @else
-                                <td>
-
-                                </td>
-                            @endif
+                            <td>
+                                {{ current($order['employee']) }}
+                            </td>
                             <td>
                                 {{ $order['date'] }}
                             </td>
@@ -124,7 +118,7 @@
                     </tbody>
             </table>
         </div>
-        <div class="pagination-container">{{$orders->links()}}</div>
+        <div class="pagination-container">{!! $link !!}</div>
         @endif
     </div>
     <script src="{{ asset('js/sweetalert2@11.js') }}"></script>

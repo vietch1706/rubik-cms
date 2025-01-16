@@ -5,13 +5,15 @@ namespace App\Http\Controllers\Users;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\UserRequest;
+use App\Http\Resources\UsersResource;
 use App\Models\Users\Users;
-use App\Schema\EmployeeSchema;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use function auth;
 use function back;
+use function dd;
+use function request;
 use function view;
 
 class ProfileController extends Controller
@@ -29,38 +31,39 @@ class ProfileController extends Controller
     {
         //
         $user = auth()->user();
-        $role = $user->textRole;
         $userId = $user->id;
         if ($user->role_id == $this->users::ROLE_EMPLOYEE) {
-            $employeeSchema = new EmployeeSchema($user->employees()->first());
-            $user = $employeeSchema->convertData();
+//            $employeeSchema = new EmployeeSchema($user->employees()->first());
+//            $user = $employeeSchema->convertData();
+            $user = new UsersResource($user->employee()->first());
         }
+        $user = new UsersResource($user);
         return view('users.profile.edit', [
-            'userId' => $userId,
-            'user' => $user,
+            'user' => $user->toArray(request()),
             'genders' => $this->users->getGenderOptions(),
-            'role' => $role,
-            'isActivateds' => $this->users->getIsActivatedOptions(),
         ]);
     }
 
-    public function changePassword(UserRequest $request, $id)
+    public function changePassword(UserRequest $request)
     {
-        dd($request->all());
-        $user = $this->users->find($id);
+        dd($request->user());
+
+    }
+
+    public function changePasswordView()
+    {
+        return view('users.profile.changePassword');
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param int $id
      * @return Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        dd($request->all());
-        $user = $this->users->find($id);
+        $user = $request->user();
         try {
             $user->first_name = $request->input('first_name');
             $user->last_name = $request->input('last_name');
@@ -68,9 +71,9 @@ class ProfileController extends Controller
             $user->phone = $request->input('phone');
             $user->email = $request->input('email');
             $user->address = $request->input('address');
-            $user->avatar = Helper::setStoragePath('avatars', $request->file('avatar'));
-            $user->is_activated = $request->input('is_activated');
-            $user->activated_at = $request->input('activated_at');
+            if ($request->file('avatar')) {
+                $user->avatar = Helper::setStoragePath('avatars', $request->file('avatar'));
+            }
             if ($user->role_id == $this->users::ROLE_EMPLOYEE) {
                 $employee = $user->employees()->first();
                 $employee->salary = $request->input('salary');

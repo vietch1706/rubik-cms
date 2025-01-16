@@ -126,21 +126,6 @@ input[type=number] {
     color: white;
 }
 
-textarea.form-control {
-    width: 100%;
-    max-width: 100%;
-    resize: none;
-    font-family: inherit;
-    font-size: 16px;
-    color: var(--latte-input-text);
-    padding: 10px 20px;
-    border: 1px solid var(--latte-subtle);
-    background-color: var(--latte-input-bg);
-    border-radius: 35px;
-    transition: all 0.3s ease-in-out;
-    box-sizing: border-box;
-}
-
 .required {
     font-size: 18px;
     color: #e22b30;
@@ -226,51 +211,6 @@ button {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.table-responsive {
-    background-color: var(--latte-base);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.table {
-    margin-bottom: 0;
-    border-collapse: separate;
-    width: 100%;
-    background-color: var(--latte-light);
-    border-radius: 8px;
-}
-
-.table thead {
-    background-color: var(--latte-dark);
-    color: var(--latte-light);
-    border-bottom: 2px solid var(--latte-muted);
-}
-
-.table thead th {
-    top: 0;
-    z-index: 2;
-    text-align: left;
-    padding: 12px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.table tbody tr {
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.table tbody tr:hover {
-    background-color: var(--latte-subtle);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.table tbody td {
-    padding: 5px;
-    vertical-align: middle;
-    border-bottom: 1px solid var(--latte-muted);
-}
-
 .form-container {
     background-color: var(--latte-light);
     padding: 40px;
@@ -295,6 +235,12 @@ button {
 .delete-button:hover i {
     color: var(--latte-danger);
     transform: scale(1.1);
+}
+
+.select2-container--readonly .select2-selection {
+    pointer-events: none;
+    background-color: #e9ecef;
+    cursor: not-allowed;
 }
 
 #hidden_div {
@@ -357,7 +303,7 @@ button {
 .modal .select2-container--bootstrap-5 .select2-selection {
     background-color: var(--latte-input-bg);
     border: 1px solid var(--latte-subtle);
-    padding: 10px;
+    padding: 10px 20px;
     border-radius: 35px;
 }
 

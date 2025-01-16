@@ -32,13 +32,24 @@ class UserRequest extends FormRequest
                 'gender' => 'numeric',
                 'avatar' => 'nullable|mimes:jpg,jpeg,png|max:2048'
             ];
-        } elseif (request()->routeIs('profile.change-password')) {
+        } elseif (request()->routeIs('profile.changePassword.update')) {
             $rules = [
                 'password' => 'required',
-                'new_password' => 'required',
-                'confirm_password' => 'required|same:new_password'
+                'new_password' => 'required|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
+                'confirm_password' => 'required|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/|same:new_password'
             ];
         }
         return $rules;
+    }
+
+    public function messages()
+    {
+        return [
+            'password.required' => 'Please enter password.',
+            'new_password.required' => 'Please enter new password.',
+            'new_password.regex' => 'error',
+            'confirm_password.required' => 'Please enter confirm password.',
+            'confirm_password.regex' => 'error',
+        ];
     }
 }

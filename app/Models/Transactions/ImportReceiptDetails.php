@@ -32,8 +32,8 @@ class ImportReceiptDetails extends Model
         return $this->belongsTo(ImportReceipts::class, 'import_receipt_id', 'id');
     }
 
-    public function product()
+    public function products()
     {
-        return $this->belongsTo(Products::class, 'product_id', 'id');
+        return $this->hasMany(Products::class, 'id', 'product_id');
     }
 }

@@ -1,6 +1,8 @@
 @php use Illuminate\Support\Facades\Session; @endphp
 @extends('layout.app')
 @section('content')
+    <link rel="stylesheet" href="{{ asset('css/form.css') }}" type="text/css">
+    
     <form method="POST" action="{{ route('distributors.store') }}" enctype="multipart/form-data">
         @csrf
         <div class="row">

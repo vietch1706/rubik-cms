@@ -29,65 +29,89 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
+                        <a class="nav-link" href="{{ route('dashboard') }}"> <i class="fa-solid fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="usersDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-users"></i> Users
+                            <i class="fa-solid fa-user-group"></i> Users
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="usersDropdown">
                             <li>
-                                <a class="dropdown-item" href="{{ route('customers') }}" data-target="usersSidebar">Customers</a>
+                                <a class="dropdown-item" href="{{ route('customers') }}" data-target="usersSidebar"> <i
+                                        class="fa-solid fa-users"></i> Customers
+                                </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{{ route('employees') }}" data-target="usersSidebar">Employees</a>
+                                <a class="dropdown-item" href="{{ route('employees') }}" data-target="usersSidebar"> <i
+                                        class="fa-solid fa-briefcase"></i> Employees
+                                </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="#" data-target="usersSidebar">Roles</a>
+                                <a class="dropdown-item" href="#" data-target="usersSidebar"> <i
+                                        class="fa-solid fa-user-shield"></i> Roles
+                                </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="#" data-target="usersSidebar">Permissions</a>
+                                <a class="dropdown-item" href="#" data-target="usersSidebar"> <i
+                                        class="fa-solid fa-unlock-alt"></i> Permissions
+                                </a>
                             </li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="productsDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa-solid fa-box"></i> Products
+                            <i class="fa-solid fa-cogs"></i> Products
+
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="productsDropdown">
                             <li>
-                                <a class="dropdown-item" href="{{ route('products') }}" data-target="productsSidebar">Products</a>
+                                <a class="dropdown-item" href="{{ route('products') }}" data-target="productsSidebar">
+                                    <i class="fa-solid fa-box"></i> Products
+                                </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{{ route('brands') }}" data-target="productsSidebar">Brands</a>
+                                <a class="dropdown-item" href="{{ route('brands') }}" data-target="productsSidebar"> <i
+                                        class="fa-solid fa-tag"></i> Brands
+                                </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{{ route('categories') }}" data-target="productsSidebar">Categories</a>
+                                <a class="dropdown-item" href="{{ route('categories') }}" data-target="productsSidebar">
+                                    <i class="fa-solid fa-th-large"></i> Categories
+                                </a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('distributors') }}"
-                                   data-target="productsSidebar">Distributors</a>
+                                   data-target="productsSidebar"> <i class="fa-solid fa-truck"></i> Distributors
+                                </a>
                             </li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="transactionsDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa-solid fa-list-check"></i> Transactions
+                            <i class="fa-solid fa-clipboard-list"></i> Transactions
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="transactionsDropdown">
                             <li>
-                                <a class="dropdown-item" href="{{ route('orders') }}" data-target="transactionsSidebar">Orders</a>
+                                <a class="dropdown-item" href="{{ route('orders') }}" data-target="transactionsSidebar">
+                                    <i class="fa-solid fa-file-invoice"></i> Orders
+                                </a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('receipts') }}"
-                                   data-target="transactionsSidebar">Import Receipts</a>
+                                   data-target="transactionsSidebar"> <i class="fa-solid fa-file-import"></i> Import
+                                    Receipts
+                                </a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('invoices') }}"
-                                   data-target="transactionsSidebar">Invoices</a>
+                                   data-target="transactionsSidebar"> <i class="fa-solid fa-file-invoice-dollar"></i>
+                                    Invoices
+                                </a>
                             </li>
                         </ul>
                     </li>
@@ -98,7 +122,9 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="campaignsDropdown">
                             <li>
-                                <a class="dropdown-item" href="{{ route('campaigns') }}" data-target="campaignsSidebar">Campaigns</a>
+                                <a class="dropdown-item" href="{{ route('campaigns') }}" data-target="campaignsSidebar">
+                                    <i class="fa-solid fa-bullhorn"></i> Campaigns
+                                </a>
                             </li>
                         </ul>
                     </li>
@@ -109,7 +135,22 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="logsDropdown">
                             <li>
-                                <a class="dropdown-item" href="{{ route('logs') }}" data-target="logsSidebar">Logs</a>
+                                <a class="dropdown-item" href="{{ route('logs') }}" data-target="logsSidebar"> <i
+                                        class="fa-solid fa-clock"></i> Logs
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="blogsDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-book"></i> Blogs
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="blogsDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{{ route('blogs') }}" data-target="logsSidebar">
+                                    <i class="fa-solid fa-newspaper"></i> Blogs
+                                </a>
                             </li>
                         </ul>
                     </li>
@@ -117,16 +158,21 @@
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
-                           data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 20px">
+                           data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 22px; text-align: center">
                             <img src="{{ auth()->user()->avatar ?? asset('storage/avatars/default-avatar.png') }}"
                                  alt="Profile Picture"
                                  class="rounded-circle"
-                                 style="width: 25px; height: 25px; object-fit: cover;"> Profile
+                                 style="width: 25px; height: 25px; object-fit: cover;"> {{ auth()->user()->fullName }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                             <li>
                                 <a class="dropdown-item" href="{{ route('profile') }}">
                                     <i class="fas fa-user-edit"></i> Edit Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('profile.changePassword') }}">
+                                    <i class="fas fa-key"></i> Change Password
                                 </a>
                             </li>
                             <li>
@@ -152,14 +198,14 @@
         <a href="">Permissions</a>
     </div>
     <div id="productsSidebar" @class(['sidebar', 'd-block' => Request::is('admin/catalogs/*')])>
+        <a href="{{ route('products') }}"
+            @class(['active-sideitem' => Request::is('admin/catalogs/products/*', 'admin/catalogs/products')])>Products</a>
         <a href="{{ route('brands') }}"
             @class(['active-sideitem' => Request::is('admin/catalogs/brands/*', 'admin/catalogs/brands')])>Brands</a>
         <a href="{{ route('categories') }}"
             @class(['active-sideitem' => Request::is('admin/catalogs/categories/*', 'admin/catalogs/categories')])>Categories</a>
         <a href="{{ route('distributors') }}"
             @class(['active-sideitem' => Request::is('admin/catalogs/distributors/*', 'admin/catalogs/distributors')])>Distributors</a>
-        <a href="{{ route('products') }}"
-            @class(['active-sideitem' => Request::is('admin/catalogs/products/*', 'admin/catalogs/products')])>Products</a>
     </div>
     <div id="transactionsSidebar" @class(['sidebar', 'd-block' => Request::is('admin/transactions/*')])>
         <a href="{{ route('orders') }}"
@@ -178,10 +224,18 @@
         <a href="{{ route('logs') }}"
             @class(['active-sideitem' => Request::is('admin/logs/logs/*', 'admin/logs/logs')])>Logs</a>
     </div>
-    <div id="profileSidebar" @class(['sidebar', 'd-block' => Request::is('admin/users/profile')])>
+    <div id="blogsSidebar" @class(['sidebar', 'd-block' => Request::is('admin/blogs/*')])>
+        <a href="{{ route('blogs') }}"
+            @class(['active-sideitem' => Request::is('admin/blogs/blogs/*', 'admin/blogs/blogs')])>Blogs</a>
+    </div>
+    <div
+        id="profileSidebar" @class(['sidebar', 'd-block' => Request::is('admin/users/profile', 'admin/users/profile/*')])>
         <a href="{{ route('profile') }}"
-            @class(['active-sideitem' => Request::is('admin/users/profile/*', 'admin/users/profile')])>Edit
+            @class(['active-sideitem' => Request::is('admin/users/profile')])>Edit
             Profile</a>
+        <a href="{{ route('profile.changePassword') }}"
+            @class(['active-sideitem' => Request::is('admin/users/profile/change-password')])>Change
+            Password</a>
         <a href="#" onclick="logout()" class="logout">
             Logout
         </a>
@@ -198,6 +252,7 @@
 <script src="{{ asset('/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
 <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
+<script src="{{ asset('js/tinymce/js/tinymce/tinymce.min.js') }}"></script>
 <script src="{{ asset('js/select2.full.min.js') }}"></script>
 <script>
     function toggleSidebar(targetId) {
@@ -221,6 +276,29 @@
         });
     });
     $(document).ready(function () {
+        $('.select2-overwrite').select2({
+            placeholder: "Search and select an option",
+            allowClear: true,
+            theme: 'bootstrap-5',
+            width: '100%'
+        });
+        tinymce.init({
+            selector: '.richeditor',
+            content_css: '{{ asset('css/tinymce.css') }}',
+            menubar: false,
+            toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | link image | bullist numlist | blockquote',
+            branding: false,
+            statusbar: false,
+            height: 300,
+            plugins: 'link image',
+            license_key: 'gpl',
+            setup: function (editor) {
+                editor.on('init', function () {
+                    editor.getDoc().body.style.fontFamily = 'Arial, sans-serif';
+                });
+            }
+        });
+
         $('.logout').on('click', function (e) {
             e.preventDefault();
 

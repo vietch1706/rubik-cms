@@ -40,25 +40,38 @@
         <div class="row">
             <div class="col mb-3">
                 <label class="form-label">Note</label>
-                <textarea class="form-control" name="note">{{ old('note') }}</textarea>
+                <input class="richeditor" name="note" id="note" value="{{ old('note') }}">
                 @error('note')
                 <div class="text-danger error">{{ $errors->first('note') }}</div>
                 @enderror
             </div>
         </div>
         <div class="row">
-            <div class="colmb-3">
-                <label class="form-label">Add Product <span class="required"> * </span></label>
-                <button type="button" class="btn btn-success" id="openModalButton">
-                    Add Product
-                </button>
-                <br>
+            <div class="col mb-3">
+                <div class="d-flex justify-content-start align-items-center mb-2">
+                    <label class="form-label me-5">Products<span class="required"> * </span></label>
+                    <button type="button" class="btn btn-success" id="openModalButton">
+                        Add Product
+                    </button>
+                </div>
                 <span id="validationError" class="text-danger error" style="display: none;">
                      Please select distributor before adding products.
                 </span>
                 @error('products')
                 <span class="text-danger error">{{ $errors->first('products') }}</span>
                 @enderror
+                <table class="table table-bordered table-striped pt-4" id="productTable">
+                    <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
         </div>
         <input type="hidden" name="action" id="actionType" value="save">
@@ -80,7 +93,7 @@
                         <div class="mb-3">
                             <label for="productDropdown" class="form-label">Product <span
                                     class="required"> * </span></label>
-                            <select class="form-control select2-overwrite" id="productSelect">
+                            <select class="form-control" id="productSelect">
                                 <option value="">Select Product</option>
                             </select>
                             <span class="text-danger error" id="productSelect-error"></span>
@@ -106,25 +119,9 @@
             </div>
         </div>
     </form>
-    <div class="row mt-4">
-        <div class="col-md-12 mb-3">
-            <label class="form-label">Products</label>
-            <table class="table table-bordered table-striped" id="productTable">
-                <thead>
-                <tr>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
     <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
-    <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
+
     <script>
         @if (Session::has('success'))
         Swal.fire(
@@ -133,16 +130,21 @@
             'success'
         );
         @endif
+
         $(document).ready(function () {
-            $('.select2-overwrite').select2({
-                placeholder: "Search and select an option",
-                allowClear: true,
-                theme: 'bootstrap-5',
-                width: '100%'
-            });
-        });
-        $(document).ready(function () {
+            const chosenProducts = [];
             let products = [];
+
+            function toggleDistributorDropdown() {
+                const distributorSelect = $('#distributor_id');
+                if (products.length > 0) {
+                    distributorSelect.prop('disabled', false);
+                    distributorSelect.next('.select2-container').addClass('select2-container--readonly');
+                } else {
+                    distributorSelect.next('.select2-container').removeClass('select2-container--readonly');
+                }
+            }
+
             $('#distributor_id').change(function () {
                 var distributorId = $(this).val();
                 if (distributorId) {
@@ -155,7 +157,7 @@
                             if (response.data && response.data.length > 0) {
                                 response.data.forEach(function (product) {
                                     $('#productSelect').append(
-                                        `<option value="${product.id}" data-name="${product.name}">${product.name}</option>`
+                                        `<option value="${product.id}" data-name="${product.name}">${product.name} - ${product.sku}</option>`
                                     );
                                 });
                             } else {
@@ -213,6 +215,11 @@
 
                 let hasError = false;
 
+                if (chosenProducts.includes(productId)) {
+                    $('#productSelect-error').text('This product is already added');
+                    hasError = true;
+                }
+
                 if (!productId) {
                     $('#productSelect-error').text('Please select a product');
                     hasError = true;
@@ -240,33 +247,34 @@
                     quantity: quantity,
                     price: price,
                 };
-
+                chosenProducts.push(productId);
                 products.push(product);
 
                 $('#products').val(JSON.stringify(products));
                 const newRow = `
-            <tr>
-                <td>${productName}</td>
-                <td>${quantity}</td>
-                <td>${price}</td>
-                <td>
-                    <button type="button" class="btn btn-danger btn-sm"
-                            onclick="removeProduct(${products.length - 1})">
-                        Remove
-                    </button>
-                </td>
-            </tr>
-        `;
+                    <tr>
+                        <td>${productName}</td>
+                        <td>${quantity}</td>
+                        <td>${price}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm"
+                                    onclick="removeProduct(${products.length - 1})">
+                                Remove
+                            </button>
+                        </td>
+                    </tr>
+                `;
                 $('#productTable tbody').append(newRow);
                 $('#productSelect').val('').trigger('change');
                 $('#productQuantity').val('');
                 $('#productPrice').val('');
                 $('#productModal').modal('hide');
+                toggleDistributorDropdown();
             };
 
             window.removeProduct = function (index) {
                 products.splice(index, 1);
-
+                chosenProducts.splice(index, 1);
                 $('#products').val(JSON.stringify(products));
                 $('#productTable tbody').empty();
                 products.forEach((product, idx) => {
@@ -285,6 +293,7 @@
             `;
                     $('#productTable tbody').append(row);
                 });
+                toggleDistributorDropdown();
             };
         });
         const now = new Date();

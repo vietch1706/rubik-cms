@@ -39,6 +39,18 @@
                         Slug
                     </th>
                     <th scope="col" class="pe-3 col-2">
+                        Type
+                    </th>
+                    <th scope="col" class="pe-3 col-2">
+                        Discount (Percent)
+                    </th>
+                    <th scope="col" class="pe-3 col-2">
+                        Bundle Product
+                    </th>
+                    <th scope="col" class="pe-3 col-2">
+                        Status
+                    </th>
+                    <th scope="col" class="pe-3 col-2">
                         Start Date
                     </th>
                     <th scope="col" class="pe-3 col-2">
@@ -70,6 +82,23 @@
                                 {{ $campaign['slug'] }}
                             </td>
                             <td>
+                                {{ $campaign['type'] }}
+                            </td>
+                            <td>
+                                {{ $campaign['discount_value'] }}
+                            </td>
+                            <td>
+                                @if($campaign['bundle_value'])
+                                    @foreach($campaign['bundle_value'] as $key => $bundle)
+                                        {{ $bundle }} ({{ $key }})
+                                    @endforeach
+                                @endif
+                            </td>
+                            <td class="h-100 {{ $class = $campaign['status'] != 0 ? 'text-success' : 'text-danger' }}">
+                                <i class="fa-solid fa-circle"></i>
+                                {{ $campaign['status'] != 0 ? 'Activated' : 'Inactive' }}
+                            </td>
+                            <td>
                                 {{ $campaign['start_date'] }}
                             </td>
                             <td>
@@ -86,7 +115,7 @@
                     </tbody>
             </table>
         </div>
-        <div class="pagination-container">{{$campaigns->links()}}</div>
+        <div class="pagination-container">{!! $link !!}</div>
         @endif
     </div>
     <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
@@ -175,8 +204,6 @@
                                 $.each(selectedIds, function (key, val) {
                                     $('#delete-id-' + val).remove();
                                 });
-                                window.location.reload();
-
                             },
                             error: function () {
                                 Swal.fire(
@@ -188,6 +215,29 @@
                         });
                     }
                 });
+            });
+            $('#search').on('keyup', function (e) {
+                e.preventDefault();
+                let searchString = $(this).val();
+                console.log(searchString);
+                $.ajax({
+                    url: "{{ route('campaigns.search') }}",
+                    method: 'GET',
+                    data: {'search': searchString},
+                    success: function (response) {
+                        console.log(response.error)
+                        if (response.error) {
+                            $('tbody').html(
+                                `<tr><td colspan="16" class="text-danger text-center" style="font-size: 20px;">${response.error}</td></tr>`
+                            );
+                            $('.pagination-container').html('');
+                        } else {
+                            $('tbody').html(response.campaigns);
+                            $('.pagination-container').html(response.pagination);
+                        }
+                    },
+
+                })
             });
         });
     </script>

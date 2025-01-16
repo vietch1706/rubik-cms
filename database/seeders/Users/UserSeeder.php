@@ -30,6 +30,10 @@ class UserSeeder extends Seeder
         $admin->password = Hash::make('admin');
         $admin->save();
 
+        $adminEmployee = new Employees();
+        $adminEmployee->user_id = $admin->id;
+        $adminEmployee->salary = 100000;
+        $adminEmployee->save();
         $users = Users::factory(100)->create();
 
         $users = $users->shuffle();

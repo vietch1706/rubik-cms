@@ -16,16 +16,16 @@ return new class extends Migration {
             $table->increments('id')->unsigned();
             $table->string('order_no', 10)
                 ->comment('Linking to a specific purchase order.');
-            $table->integer('user_id')->unsigned()->nullable()
+            $table->integer('employee_id')->unsigned()->nullable()
                 ->comment('Employee who created the inventory receipt for the order.');
             $table->dateTime('date');
             $table->boolean('status')->default(0);
             $table->timestamps();
             $table->foreign('order_no')
-                ->references('order_number')
+                ->references('order_no')
                 ->on('orders')
                 ->onDelete('cascade');
-            $table->foreign('user_id')
+            $table->foreign('employee_id')
                 ->references('id')
                 ->on('employees')
                 ->onDelete('cascade');

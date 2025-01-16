@@ -5,11 +5,13 @@
     <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script>
         @if (Session::has('success'))
-        Swal.fire(
-            '{{ Session::get('success') }}',
-            '',
-            'success'
-        );
+        Swal.fire({
+            position: "bottom-end",
+            icon: "success",
+            title: "{{ Session::get('success') }}",
+            showConfirmButton: false,
+            timer: 1500
+        });
         @endif
     </script>
 @endsection

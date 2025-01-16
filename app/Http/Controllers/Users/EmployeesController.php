@@ -5,17 +5,17 @@ namespace App\Http\Controllers\Users;
 use App\Helper\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\EmployeeRequest;
+use App\Http\Resources\UsersResource;
 use App\Models\Users\Employees;
 use App\Models\Users\Users;
-use App\Schema\EmployeeSchema;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use function back;
-use function compact;
 use function redirect;
+use function request;
 use function response;
 use function view;
 
@@ -43,16 +43,18 @@ class EmployeesController extends Controller
     {
         //
         $employees = $this->employees
-            ->whereHas('users', function ($query) {
+            ->whereHas('user', function ($query) {
                 return $query->whereNot('deleted_at', '!=', null);
             })
             ->paginate(self::PAGE_LIMIT);
-        foreach ($employees as $key => $employee) {
-            $employeeSchema = new EmployeeSchema($employee);
-            $employees[$key] = $employeeSchema->convertData();
-        }
+//        foreach ($employees as $key => $employee) {
+//            $employeeSchema = new EmployeeSchema($employee);
+//            $employees[$key] = $employeeSchema->convertData();
+//        }
         return view('users.employees.list', [
-            'employees' => $employees,
+            'employees' => UsersResource::collection($employees)->toArray(request()),
+            'link' => $employees->links(),
+
         ]);
     }
 
@@ -129,10 +131,9 @@ class EmployeesController extends Controller
     public function edit($id)
     {
         //
-        $employee = $this->employees->find($id);
-        $employeeSchema = new EmployeeSchema($employee);
+        $employee = new UsersResource($this->employees->find($id));
         return view('users.employees.edit', [
-            'employee' => $employeeSchema->convertData(),
+            'employee' => $employee->toArray(request()),
             'genders' => $this->users->getGenderOptions(),
             'isActivateds' => $this->users->getIsActivatedOptions(),
         ]);
@@ -196,7 +197,7 @@ class EmployeesController extends Controller
     public function search(Request $request)
     {
         $search = $request->input('search');
-        $employees = $this->employees->whereHas('users', function ($query) use ($search) {
+        $employees = $this->employees->whereHas('user', function ($query) use ($search) {
             return $query->where('first_name', 'like', '%' . $search . '%')
                 ->orWhere('last_name', 'like', '%' . $search . '%')
                 ->orWhere('phone', 'like', '%' . $search . '%')
@@ -204,14 +205,12 @@ class EmployeesController extends Controller
                 ->orWhere('address', 'like', '%' . $search . '%');
         })
             ->paginate(self::PAGE_LIMIT);
-        foreach ($employees as $key => $employee) {
-            $employeeSchema = new EmployeeSchema($employee);
-            $employees[$key] = $employeeSchema->convertData();
-        }
         if ($employees->count() > 0) {
             return response()->json([
-                'employees' => view('users.employees.search', compact('employees'))->render(),
-                'pagination' => $employees->links()->render(),
+                'employees' => view('users.employees.search', [
+                    'employees' => UsersResource::collection($employees)->toArray(request()),
+                ])->render(),
+                'pagination' => $employees->links()->render()
             ]);
         } else {
             return response()->json([

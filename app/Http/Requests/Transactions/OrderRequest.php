@@ -34,6 +34,7 @@ class OrderRequest extends FormRequest
     public function messages()
     {
         return [
+            'distributor_id.required' => 'Please select distributor',
             'products.required' => 'Please select at least one product',
         ];
     }

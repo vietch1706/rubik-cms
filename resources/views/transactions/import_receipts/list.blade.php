@@ -101,7 +101,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="pagination-container">{{$importReceipts->links()}}</div>
+        <div class="pagination-container">{!! $link !!}</div>
     </div>
     <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
     <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>

@@ -16,9 +16,9 @@ return new class extends Migration {
             $table->increments('id')->unsigned();
             $table->tinyInteger('distributor_id')->unsigned()
                 ->comment('References the distributor who supplies the goods or products.');
-            $table->integer('user_id')->unsigned()
+            $table->integer('employee_id')->unsigned()
                 ->comment('References to current employee who created the order.');
-            $table->string('order_number', 10)->unique();
+            $table->string('order_no', 10)->unique();
             $table->dateTime('date');
             $table->boolean('status')->default(0);
             $table->string('note')->nullable();
@@ -28,9 +28,9 @@ return new class extends Migration {
                 ->references('id')
                 ->on('distributors')
                 ->onDelete('cascade');
-            $table->foreign('user_id')
+            $table->foreign('employee_id')
                 ->references('id')
-                ->on('users')
+                ->on('employees')
                 ->onDelete('cascade');
         });
     }

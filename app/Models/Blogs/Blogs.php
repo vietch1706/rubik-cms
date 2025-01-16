@@ -2,6 +2,7 @@
 
 namespace App\Models\Blogs;
 
+use App\Models\Users\Employees;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,7 +21,9 @@ class Blogs extends Model
         'image',
         'date'
     ];
-    protected $attributes = [
 
-    ];
+    public function employee()
+    {
+        return $this->belongsTo(Employees::class, 'employee_id', 'id');
+    }
 }

@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->dateTime('date');
             $table->boolean('status')->default(0);
             $table->string('note')->nullable();
+            $table->json('campaign')->nullable();
             $table->softDeletes();
             $table->timestamps();
             $table->foreign('customer_id')

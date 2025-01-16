@@ -36,7 +36,7 @@
                 <input type="datetime-local" class="form-control" value="{{ $importReceipt['updated_at'] }}" readonly>
             </div>
         </div>
-        <div @class(['container-fluid', 'pb-4','px-0', 'd-none' => $importReceiptDetails->isEmpty()])>
+        <div @class(['container-fluid', 'pb-4','px-0', 'd-none' => (empty($importReceiptDetails))])>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover ">
                     <thead>
