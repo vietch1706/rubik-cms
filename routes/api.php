@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\Catalogs\ProductsController;
-use App\Http\Controllers\Users\CustomersController;
+use App\Http\Controllers\Api\Users\Get;
+use App\Http\Controllers\Api\Users\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,7 @@ Route::group([
     'prefix' => 'v1',
 ], function () {
     Route::get('/products/get', [ProductsController::class, 'show'])->name('api.products.get');
-    Route::get('customers/get', [CustomersController::class, 'index'])->name('api.customers.get');
+    Route::get('customers/get', Get::class)->name('api.customers.get');
+    Route::post('login', Login::class)->name('api.login');
 
 });

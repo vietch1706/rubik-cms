@@ -18,10 +18,11 @@ class ImportReceiptDetailsResource extends JsonResource
     public function toArray($request)
     {
         parent::toArray($request);
-        $product = $this->products()->pluck('name', 'id')->toArray();
+        $product = $this->products()->select('id', 'name', 'sku');
         return [
             'id' => $this->id,
-            'product' => $product,
+            'product' => $product->pluck('name', 'id')->toArray(),
+            'sku' => $product->first()->sku,
             'import_date' => $this->import_date,
             'price' => $this->price,
             'quantity' => $this->quantity,

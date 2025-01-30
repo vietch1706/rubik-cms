@@ -29,6 +29,10 @@ class ProductsController extends Controller
     private Categories $categories;
     private Brands $brands;
     private Distributors $distributors;
+    private array $__excludedCategories = [
+        Categories::SLUG_BLOG,
+        Categories::SLUG_BRANDS
+    ];
 
     public function __construct(
         Products     $product,
@@ -67,16 +71,27 @@ class ProductsController extends Controller
     public function create()
     {
         //
-        $categories = $this->categories->pluck('name', 'id');
-        $brands = $this->brands->pluck('name', 'id');
-        $distributors = $this->distributors->pluck('name', 'id');
         return view('catalogs.products.create', [
-            'categories' => $categories,
-            'brands' => $brands,
-            'distributors' => $distributors,
+            'categories' => $this->__getExcludedCategories(),
+            'brands' => $this->brands->pluck('name', 'id'),
+            'distributors' => $this->distributors->pluck('name', 'id'),
             'magnetics' => $this->products->getMagneticOptions(),
             'statuses' => $this->products->getStatusOptions(),
         ]);
+
+    }
+
+    /**
+     * @return mixed
+     */
+    private function __getExcludedCategories()
+    {
+        $blogCategoryId = $this->categories->where('slug', $this->__excludedCategories[0])->value('id');
+        $brandsCategoryId = $this->categories->where('slug', $this->__excludedCategories[1])->value('id');
+        return $this->categories
+            ->whereNotIn('slug', $this->__excludedCategories)
+            ->whereNotIn('parent_id', [$blogCategoryId, $brandsCategoryId])
+            ->pluck('name', 'id');
     }
 
     /**
@@ -145,15 +160,12 @@ class ProductsController extends Controller
     public function edit($id)
     {
         //
-        $categories = $this->categories->pluck('name', 'id');
-        $brands = $this->brands->pluck('name', 'id');
-        $distributors = $this->distributors->pluck('name', 'id');
         $product = new ProductsResource($this->products->find($id));
         return view('catalogs.products.edit', [
             'product' => $product->toArray(request()),
-            'categories' => $categories,
-            'brands' => $brands,
-            'distributors' => $distributors,
+            'categories' => $this->__getExcludedCategories(),
+            'brands' => $this->brands->pluck('name', 'id'),
+            'distributors' => $this->distributors->pluck('name', 'id'),
             'magnetics' => $this->products->getMagneticOptions(),
             'statuses' => $this->products->getStatusOptions(),
         ]);

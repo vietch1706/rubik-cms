@@ -39,13 +39,16 @@
                         Title
                     </th>
                     <th scope="col" class="pe-3 col-2">
+                        Category
+                    </th>
+                    <th scope="col" class="pe-3 col-2">
                         Slug
                     </th>
                     <th scope="col" class="pe-3 col-2">
-                        Topic
+                        Date
                     </th>
                     <th scope="col" class="pe-3 col-2">
-                        Date
+                        Thumbnail
                     </th>
                     <th scope="col" class="pe-3 col-2">
                         Created At
@@ -67,19 +70,27 @@
                                 {{ $blog['id'] }}
                             </td>
                             <td>
-                                {{ current($blog['employee_id']) }}
+                                {{ current($blog['employee']) }}
                             </td>
                             <td>
                                 {{ $blog['title'] }}
                             </td>
                             <td>
+                                {{ current($blog['category']) }}
+                            </td>
+                            <td>
                                 {{ $blog['slug'] }}
                             </td>
                             <td>
-                                {{ $blog['topic'] }}
+                                {{ $blog['date'] }}
                             </td>
                             <td>
-                                {{ $blog['date'] }}
+                                @if($blog['thumbnail'])
+                                    <img src="{{ url($blog['thumbnail']) }}"
+                                         alt="{{ str_replace('/storage/thumbnails/', '', $blog['thumbnail']) }}"
+                                         width="75"
+                                         height="50">
+                                @endif
                             </td>
                             <td>
                                 {{ $blog['created_at'] }}
@@ -105,18 +116,31 @@
             'success'
         );
         @endif
+        $('th').each(function () {
+            if (!$(this).find('i').length && !$(this).find('input[type="checkbox"]').length) {
+                $(this).append(' <i class="fa-solid fa-arrow-down-short-wide"></i>');
+            }
+        });
+
         $('th').click(function () {
-            var table = $(this).parents('table').eq(0)
-            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
-            this.asc = !this.asc
+            if ($(this).find('input[type="checkbox"]').length) {
+                return;
+            }
+            var table = $(this).parents('table').eq(0);
+            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
+            this.asc = !this.asc;
+
+            $(this).find('i').remove();
+
+            $(this).append(this.asc ? ' <i class="fa-solid fa-arrow-up-short-wide"></i>' : ' <i class="fa-solid fa-arrow-down-short-wide"></i>');
+
             if (!this.asc) {
-                rows = rows.reverse()
+                rows = rows.reverse();
             }
+
             for (var i = 0; i < rows.length; i++) {
-                table.append(rows[i])
+                table.append(rows[i]);
             }
-            $('th i').remove();
-            $(this).append(this.asc ? ' <i class="fa-solid fa-arrow-up-short-wide"></i>' : ' <i class="fa-solid fa-arrow-down-short-wide"></i> ');
         })
 
         function comparer(index) {

@@ -93,11 +93,10 @@ body {
 
 input[type="checkbox"] {
     transform: scale(1.4);
-    margin-right: 10px;
+    margin: 0;
     width: 100%;
     text-align: center;
 }
-
 
 .hover-pointer {
     cursor: pointer;

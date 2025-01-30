@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Users\Users;
+use App\Helper\Helper;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -19,12 +19,13 @@ class ImportReceiptsResource extends JsonResource
     public function toArray($request)
     {
         parent::toArray($request);
-        $employeeFullname = Users::join('employees', 'users.id', '=', 'employees.user_id')
-            ->select('employees.id as id', 'users.first_name', 'users.last_name')
-            ->where('employees.id', $this->employee_id)
-            ->get(['id', 'first_name', 'last_name'])
-            ->pluck('fullName', 'id')
-            ->toArray();
+//        $employeeFullname = Users::join('employees', 'users.id', '=', 'employees.user_id')
+//            ->select('employees.id as id', 'users.first_name', 'users.last_name')
+//            ->where('employees.id', $this->employee_id)
+//            ->get(['id', 'first_name', 'last_name'])
+//            ->pluck('fullName', 'id')
+//            ->toArray();
+        $employeeFullname = Helper::getUsersFullName('employees', $this->employee_id);
         return [
             'id' => $this->id,
             'order_number' => $this->order->order_no,

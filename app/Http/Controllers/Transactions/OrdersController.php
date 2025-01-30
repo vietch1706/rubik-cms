@@ -139,18 +139,6 @@ class OrdersController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param int $id
@@ -160,17 +148,17 @@ class OrdersController extends Controller
     {
         //
         $ids = $request->ids;
-        $pendingOrders = $this->orders->whereIn('id', $ids)
-            ->whereNot('status', $this->orders::STATUS_PENDING)
+        $orders = $this->orders->whereIn('id', $ids)
+            ->where('status', $this->orders::STATUS_PARTIALLY_IMPORTED)
             ->pluck('id');
-        if ($pendingOrders->isNotEmpty()) {
+        if ($orders->isNotEmpty()) {
             return response()->json([
-                'message' => "Can'\t delete none pending orders:" . $pendingOrders->join(', ')
-            ]);
+                'message' => "Can't delete partially import model:" . $orders->join(', ')
+            ], 404);
         }
-        $this->orders->destroy($ids);
+        $this->orders->delete($ids);
         $this->orders->whereIn('id', $ids)->each(function ($order) {
-            $order->details()->destroy();
+            $order->details()->delete();
         });
         return response()->json([
             "message" => 'Orders have been deleted'

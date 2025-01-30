@@ -10,6 +10,8 @@ class Categories extends Model
 {
     use HasFactory;
 
+    public const SLUG_BLOG = 'blog';
+    public const SLUG_BRANDS = 'brands';
     public $timestamps = true;
     protected $table = 'categories';
     protected $fillable = [

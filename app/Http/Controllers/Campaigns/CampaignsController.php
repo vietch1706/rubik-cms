@@ -113,6 +113,12 @@ class CampaignsController extends Controller
     public function edit($id)
     {
         //
+        $campaign = new CampaignsResource($this->campaigns->find($id));
+        return view('campaigns.campaigns.edit', [
+            'campaign' => $campaign->toArray(request()),
+            'types' => $this->campaigns->getTypeOptions(),
+            'statuses' => $this->campaigns->getStatusOptions(),
+        ]);
     }
 
     /**

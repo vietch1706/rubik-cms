@@ -21,6 +21,7 @@ use function back;
 use function json_decode;
 use function redirect;
 use function request;
+use function response;
 use function view;
 
 class InvoicesController extends Controller
@@ -79,7 +80,7 @@ class InvoicesController extends Controller
                 return $customer;
             })
             ->pluck('full_info', 'customer_id');
-        $products = $this->products->select('id', 'name', 'sku', 'price')->get()->toArray();
+        $products = $this->products->select('id', 'name', 'sku', 'price', 'quantity')->get()->toArray();
         $date = Carbon::now()->format('Y-m-d');
         $campaigns = $this->campaigns
             ->select('id', 'name')
@@ -118,10 +119,19 @@ class InvoicesController extends Controller
             $invoice->customer_id = $request->input('customer_id');
             $invoice->date = $request->input('date');
             $invoice->status = $request->input('status');
-            $invoice->campaign = $campaign->toJson();
+            $invoice->campaign = $campaign != null ? json_encode($campaign) : null;
             $invoice->note = $request->input('note');
             $invoice->save();
             foreach ($products as $product) {
+                $productModel = Products::find($product['id']);
+                if (!$productModel) {
+                    throw new Exception("Product not found");
+                }
+                if ($product['quantity'] > $productModel->quantity) {
+                    throw new Exception("Insufficient stock for product {$productModel->name}. Available: {$productModel->quantity}, Requested: {$product['quantity']}");
+                }
+                $productModel->quantity -= $product['quantity'];
+                $productModel->save();
                 $invoiceDetail = new $this->invoiceDetails;
                 $invoiceDetail->invoice_id = $invoice->id;
                 $invoiceDetail->product_id = $product['id'];
@@ -136,7 +146,8 @@ class InvoicesController extends Controller
             return back()->with('success', 'Created Successfully!');
         } catch (Exception $e) {
             DB::rollBack();
-            throw new Exception($e->getMessage());
+            return back()->with('error', $e->getMessage());
+
         }
     }
 
@@ -156,8 +167,24 @@ class InvoicesController extends Controller
      * @param int $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
         //
+        $ids = $request->ids;
+        $orders = $this->invoices->whereIn('id', $ids)
+            ->whereIn('status', [$this->invoices::STATUS_CANCELLED, $this->invoices::STATUS_COMPLETED])
+            ->pluck('id');
+        if ($this->invoices->isNotEmpty()) {
+            return response()->json([
+                'message' => "Error"
+            ]);
+        }
+        $this->invoices->delete($ids);
+        $this->invoices->whereIn('id', $ids)->each(function ($invoice) {
+            $invoice->details()->delete();
+        });
+        return response()->json([
+            "message" => 'Invoices have been deleted'
+        ]);
     }
 }

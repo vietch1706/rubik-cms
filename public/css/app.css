@@ -256,6 +256,19 @@ th {
     cursor: pointer;
 }
 
+.table tfoot {
+    background-color: var(--latte-light);
+    color: var(--latte-dark);
+    border-top: 2px solid var(--latte-muted);
+    text-align: left;
+    font-weight: bold;
+    padding: 12px;
+}
+
+.table tfoot td {
+    padding: 12px;
+}
+
 @media (max-width: 768px) {
     .sidebar {
         position: absolute;

@@ -68,6 +68,17 @@ class CustomersController extends Controller
         ]);
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function show($id)
+    {
+        $customer = new UsersResource($this->customers->find($id));
+        return $customer->toArray(request());
+    }
 
     /**
      * Store a newly created resource in storage.

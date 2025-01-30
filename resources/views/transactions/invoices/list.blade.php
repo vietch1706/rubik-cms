@@ -1,3 +1,4 @@
+@php use App\Models\ImportReceipt;use App\Models\Transactions\Invoices; @endphp
 @extends('layout.app')
 @section('content')
     <link rel="stylesheet" href="{{ asset('css/list.css') }}" type="text/css">
@@ -77,21 +78,12 @@
                             <td>
                                 {{ $invoice['date'] }}
                             </td>
-                            <td @class([
-                                'h-100',
-                                'text-primary' => $invoice['status'] === 0,
-                                'text-warning' => $invoice['status'] === 1,
-                                'text-success' => $invoice['status'] === 2,
-                                'text-danger' => !in_array($invoice['status'], [0, 1, 2 ]),
-                            ])>
+                            <td @class(['h-100','text-primary' => $invoice['status'] === Invoices::STATUS_PENDING,'text-info' => $invoice['status'] === Invoices::STATUS_PAYMENT_CONFIRM,'text-warning' => $invoice['status'] === Invoices::STATUS_PROCESS,'text-secondary' => $invoice['status'] === Invoices::STATUS_SHIPPED,'text-success' => $invoice['status'] === Invoices::STATUS_DELIVERED,'text-success' => $invoice['status'] === Invoices::STATUS_COMPLETED,'text-danger' => $invoice['status'] === Invoices::STATUS_CANCELLED,'text-danger' => $invoice['status'] === Invoices::STATUS_REFUNDED,])>
                                 <i class="fa-solid fa-circle"></i>
-                                {{
-                                    $invoice['status'] === 0 ? 'Pending' :
-                                    ($invoice['status'] === 1 ? 'Partially Imported' :
-                                    ($invoice['status'] === 2 ? 'Fully Imported' :
-                                    'Canceled'))
+                                {{$invoice['status'] === Invoices::STATUS_PENDING ? 'Pending' :($invoice['status'] === Invoices::STATUS_PAYMENT_CONFIRM ? 'Payment Confirmed' :($invoice['status'] === Invoices::STATUS_PROCESS ? 'Processing' :($invoice['status'] === Invoices::STATUS_SHIPPED ? 'Shipped' :($invoice['status'] === Invoices::STATUS_DELIVERED ? 'Delivered' :($invoice['status'] === Invoices::STATUS_COMPLETED ? 'Completed' :($invoice['status'] === Invoices::STATUS_CANCELLED ? 'Cancelled' : 'Refunded'))))))
                                 }}
                             </td>
+
                             <td>
                                 {{ $invoice['created_at'] }}
                             </td>
@@ -116,18 +108,31 @@
             'success'
         );
         @endif
+        $('th').each(function () {
+            if (!$(this).find('i').length && !$(this).find('input[type="checkbox"]').length) {
+                $(this).append(' <i class="fa-solid fa-arrow-down-short-wide"></i>');
+            }
+        });
+
         $('th').click(function () {
-            var table = $(this).parents('table').eq(0)
-            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
-            this.asc = !this.asc
+            if ($(this).find('input[type="checkbox"]').length) {
+                return;
+            }
+            var table = $(this).parents('table').eq(0);
+            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
+            this.asc = !this.asc;
+
+            $(this).find('i').remove();
+
+            $(this).append(this.asc ? ' <i class="fa-solid fa-arrow-up-short-wide"></i>' : ' <i class="fa-solid fa-arrow-down-short-wide"></i>');
+
             if (!this.asc) {
-                rows = rows.reverse()
+                rows = rows.reverse();
             }
+
             for (var i = 0; i < rows.length; i++) {
-                table.append(rows[i])
+                table.append(rows[i]);
             }
-            $('th i').remove();
-            $(this).append(this.asc ? ' <i class="fa-solid fa-arrow-up-short-wide"></i>' : ' <i class="fa-solid fa-arrow-down-short-wide"></i> ');
         })
 
         function comparer(index) {

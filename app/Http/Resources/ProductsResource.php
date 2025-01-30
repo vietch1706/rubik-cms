@@ -17,6 +17,7 @@ class ProductsResource extends JsonResource
      */
     public function toArray($request)
     {
+        parent::toArray($request);
         $category = null;
         $brand = null;
         if ($this->category_id) {

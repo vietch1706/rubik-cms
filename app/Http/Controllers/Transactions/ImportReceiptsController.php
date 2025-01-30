@@ -168,6 +168,13 @@ class ImportReceiptsController extends Controller
                 if ($importDetails->has($productId)) {
                     $rightOrder = true;
                     $importQuantity = $importDetails[$productId]->quantity;
+                    if ($importQuantity > $orderDetail->quantity) {
+                        $product = $this->products->select('sku')->find($productId);
+                        $importReceipt->status = ImportReceipts::STATUS_CANCELLED;
+                        $importReceipt->save();
+                        DB::commit();
+                        return back()->with('error', "Imported quantity for product {$product->sku} exceeds order quantity.");
+                    }
                     $remainQuantity = $orderDetail->quantity - $importQuantity;
                     $orderDetail->status =
                         $remainQuantity > 0 ?
@@ -176,6 +183,7 @@ class ImportReceiptsController extends Controller
                     $orderDetail->save();
                 }
             }
+
             if (!$rightOrder) {
                 $importReceipt->status = ImportReceipts::STATUS_CANCELLED;
                 $importReceipt->save();
@@ -192,13 +200,14 @@ class ImportReceiptsController extends Controller
                 $order->status = Orders::STATUS_PARTIALLY_IMPORTED;
             }
             $order->save();
-            $importReceipt->status = ImportReceipts::STATUS_COMPLETE;
-            $importReceipt->save();
+            $importReceipt->update([
+                'status' => ImportReceipts::STATUS_COMPLETE
+            ]);
             DB::commit();
-            return back()->with('success', 'Import Successfully!');
+            return back()->with('success', 'Import completed successfully!');
         } catch (Exception $e) {
             DB::rollBack();
-            throw new Exception($e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
     }
 
@@ -223,17 +232,15 @@ class ImportReceiptsController extends Controller
     {
         //
         $ids = $request->ids;
-        $completeReceipts = $this->importReceipts->whereIn('id', $ids)
-            ->where('status', $this->importReceipts::STATUS_COMPLETE)
-            ->pluck('id');
-        if ($completeReceipts->isNotEmpty()) {
+        $receipts = $this->importReceipts->whereIn('id', $ids)->pluck('id');
+        if ($receipts->isNotEmpty()) {
             return response()->json([
-                'message' => "Can'\t delete complete receipts:" . $completeReceipts->join(', ')
-            ]);
+                'message' => "Can't delete receipts:" . $receipts->join(', ')
+            ], 404);
         }
-        $this->importReceipts->destroy($ids);
+        $this->importReceipts->delete($ids);
         $this->importReceipts->whereIn('id', $ids)->each(function ($receipt) {
-            $receipt->details()->destroy();
+            $receipt->details()->delete();
         });
         return response()->json([
             "message" => 'Receipts have been deleted'

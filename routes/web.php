@@ -58,6 +58,7 @@ Route::group([
             Route::put('/edit/{id}', [CustomersController::class, 'update'])->name('customers.update');
             Route::delete('/delete', [CustomersController::class, 'destroy'])->name('customers.destroy');
             Route::get('/search', [CustomersController::class, 'search'])->name('customers.search');
+            Route::post('/show/{id}', [CustomersController::class, 'show'])->name('customers.show');
         });
         Route::group([
             'prefix' => 'employees',

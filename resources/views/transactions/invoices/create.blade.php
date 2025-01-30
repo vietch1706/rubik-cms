@@ -5,25 +5,19 @@
     <form method="POST" action="{{ route('invoices.store') }}" enctype="multipart/form-data" id="orderForm">
         @csrf
         <div class="row">
-            <div class="col-md-4 mb-3">
+            <div class="col-md-6 mb-3">
                 <label class="form-label">Employee <span class="required"> * </span></label>
                 <input type="text" class="form-control" value="{{ $current_employee['full_name'] }}" readonly>
                 <input type="hidden" name="employee_id" value="{{ $current_employee['id'] }}">
             </div>
-            <div class="col-md-4 mb-3">
+            <div class="col-md-6 mb-3">
                 <label class="form-label">Date <span class="required"> * </span></label>
                 <input class="form-control" type="datetime-local" name="date" id="date" readonly>
-            </div>
-            <div class="col-md-4 mb-3 ">
-                <label class="form-label">Status</label>
-                <input class="form-control" type="text"
-                       value="{{ $statuses[Orders::STATUS_PENDING] }}" readonly>
-                <input class="form-control" type="hidden" name="status" value="{{ Orders::STATUS_PENDING }}" readonly>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label class="form-label">Customer</label>
+                <label class="form-label">Customer<span class="required"> * </span></label>
                 <select class="form-control select2-overwrite" name="customer_id">
                     <option value="">Select Customer</option>
                     @foreach($customers as $key => $customer)
@@ -37,7 +31,7 @@
                 @enderror
             </div>
             <div class="col-md-6 mb-3">
-                <label class="form-label">Campaign</label>
+                <label class="form-label">Campaign<span class="required"> * </span></label>
                 <select class="form-control select2-overwrite" name="campaign_id">
                     <option value="">Select Campaign</option>
                     @foreach($campaigns as $key => $campaign)
@@ -49,6 +43,18 @@
                 @error('customer_id')
                 <span class="text-danger error">{{ $errors->first('customer_id') }}</span>
                 @enderror
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3 ">
+                <label class="form-label">Status</label>
+                <input class="form-control" type="text"
+                       value="{{ $statuses[Orders::STATUS_PENDING] }}" readonly>
+                <input class="form-control" type="hidden" name="status" value="{{ Orders::STATUS_PENDING }}" readonly>
+            </div>
+            <div class="col-md-6 mb-3 ">
+                <label class="form-label">Address</label>
+                <input class="form-control" type="text" name="address">
             </div>
         </div>
         <div class="row">
@@ -120,8 +126,10 @@
                                 <option value="">Select Product</option>
                                 @foreach($products as $product)
                                     <option value="{{ $product['id'] }}" data-name="{{ $product['name'] }}"
-                                            data-price="{{ $product['price'] }}">
-                                        {{ $product['name'] }} - {{ $product['sku'] }}
+                                            data-price="{{ $product['price'] }}"
+                                            data-quantity="{{ $product['quantity'] }}">
+                                        {{ $product['name'] }} ({{ $product['sku'] }}) -
+                                        Quantity: {{ $product['quantity'] }}
                                     </option>
                                 @endforeach
                             </select>
@@ -157,6 +165,13 @@
             '{{ Session::get('success') }}',
             '',
             'success'
+        );
+        @endif
+        @if (Session::has('error'))
+        Swal.fire(
+            'Error when created invoice',
+            '{{ Session::get('error') }}',
+            'error'
         );
         @endif
 
@@ -195,9 +210,9 @@
                 const selectedProduct = $('#productSelect option:selected');
                 const productId = selectedProduct.val();
                 const productName = selectedProduct.data('name');
+                const productQuantity = selectedProduct.data('quantity');
                 const quantity = $('#productQuantity').val();
                 const price = $('#productPrice').val();
-
                 let hasError = false;
 
                 if (chosenProducts.includes(productId)) {
@@ -211,6 +226,9 @@
                 }
                 if (!quantity) {
                     $('#productQuantity-error').text('Quantity is required');
+                    hasError = true;
+                } else if (quantity > productQuantity) {
+                    $('#productQuantity-error').text('Out of stocks');
                     hasError = true;
                 } else if (quantity <= 0) {
                     $('#productQuantity-error').text('Quantity must be greater than 0');
@@ -280,6 +298,21 @@
                 });
                 updateTotalPrice();
             };
+            $('select[name="customer_id"]').on('change', function () {
+                var customerId = $(this).val();
+
+                if (customerId) {
+                    let url = '{{ route('customers.show', ['id' => '__customer_id__']) }}'.replace('__customer_id__', customerId);
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: {id: customerId, _token: '{{ csrf_token() }}'},
+                        success: function (response) {
+                            $('input[name="address"]').val(response.address);
+                        },
+                    });
+                }
+            });
         });
         const now = new Date();
         const formattedDate = now.toISOString().slice(0, 16);

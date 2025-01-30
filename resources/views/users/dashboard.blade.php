@@ -6,7 +6,6 @@
     <script>
         @if (Session::has('success'))
         Swal.fire({
-            position: "bottom-end",
             icon: "success",
             title: "{{ Session::get('success') }}",
             showConfirmButton: false,

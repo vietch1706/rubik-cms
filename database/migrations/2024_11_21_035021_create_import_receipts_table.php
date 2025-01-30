@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->dateTime('date');
             $table->boolean('status')->default(0);
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('order_no')
                 ->references('order_no')
                 ->on('orders')

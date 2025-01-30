@@ -19,15 +19,19 @@ return new class extends Migration {
             $table->string('title', 100);
             $table->string('slug', 100)
                 ->comment('Slug from Title');
-            $table->tinyInteger('topic')->default(0)
-                ->comment('Represents the topic category or classification.');
-            $table->text('content');
-            $table->string('image', 100)->nullable();
+            $table->tinyInteger('category_id')->unsigned()
+                ->comment('Only take category with Blogs Parent.');
+            $table->longText('content');
+            $table->string('thumbnail', 100)->nullable();
             $table->dateTime('date');
             $table->timestamps();
             $table->foreign('employee_id')
                 ->references('id')
                 ->on('employees')
+                ->onDelete('cascade');
+            $table->foreign('category_id')
+                ->references('id')
+                ->on('categories')
                 ->onDelete('cascade');
         });
     }

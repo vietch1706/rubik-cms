@@ -47,10 +47,6 @@ class EmployeesController extends Controller
                 return $query->whereNot('deleted_at', '!=', null);
             })
             ->paginate(self::PAGE_LIMIT);
-//        foreach ($employees as $key => $employee) {
-//            $employeeSchema = new EmployeeSchema($employee);
-//            $employees[$key] = $employeeSchema->convertData();
-//        }
         return view('users.employees.list', [
             'employees' => UsersResource::collection($employees)->toArray(request()),
             'link' => $employees->links(),
@@ -109,17 +105,6 @@ class EmployeesController extends Controller
             DB::rollBack();
             throw new Exception($e->getMessage());
         }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
     }
 
     /**

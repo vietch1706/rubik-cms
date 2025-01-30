@@ -1,3 +1,4 @@
+@php use App\Models\Transactions\Invoices; @endphp
 @extends('layout.app')
 @section('content')
     <link rel="stylesheet" href="{{ asset('css/form.css') }}" type="text/css">
@@ -84,7 +85,15 @@
                     </tr>
                     </thead>
                     <tbody>
+                    @php
+                        $totalPrice = 0
+                    @endphp
+
                     @foreach($invoiceDetails as $invoiceDetail)
+                        @php
+                            $totalPrice += $invoiceDetail['price'] * $invoiceDetail['quantity']
+
+                        @endphp
                         <tr class="text-nowrap hover-pointer">
                             <td>
                                 {{ $invoiceDetail['id'] }}
@@ -105,19 +114,37 @@
                                 {{ $invoiceDetail['updated_at'] }}
                             </td>
                         </tr>
-                    @endforeach
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="2" class="text-end fw-bold">Total Price:</td>
+                        <td id="totalPriceCell" class="fw-bold">{{ number_format($totalPrice, 2) }}</td>
+                        <td></td>
+                    </tr>
+                    </tfoot>
+                    @endforeach
                 </table>
             </div>
         </div>
+        <input type="hidden" name="action" id="actionType" value="complete">
         <div class="d-grid gap-2 d-md-flex justify-content-md-between">
             <div class="left-item">
-                <a type="submit" class="link-secondary mx-3" href="{{ route('invoices') }}">Return</a>
-            </div>
-            <div class="right-item">
-                <button class="delete-item" data-id="{{ $invoice['id'] }}">
-                    <i class="fa-solid fa-trash-can"></i>
+                <button
+                    type="submit" @class(['btn', 'btn-primary','me-3', 'd-none' => $invoice['status']== Invoices::STATUS_COMPLETED])>
+                    Complete
                 </button>
+                <button type="submit"
+                        @class(['btn', 'btn-secondary','me-3', 'd-none' => $invoice['status']== Invoices::STATUS_SHIPPED || $invoice['status']== Invoices::STATUS_COMPLETED]) onclick="setAction('ship')">
+                    Ship
+                </button>
+                <span @class(['d-none' => $invoice['status']== Invoices::STATUS_COMPLETED])>Or</span>
+                <a type="submit"
+                   class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                   href="{{ route('invoices') }}">@if($invoice['status'] == Invoices::STATUS_COMPLETED)
+                        Return
+                    @else
+                        Cancel
+                    @endif</a>
             </div>
         </div>
     </form>
@@ -168,5 +195,9 @@
                 });
             });
         });
+
+        function setAction(action) {
+            document.getElementById('actionType').value = action;
+        }
     </script>
 @endsection

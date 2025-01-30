@@ -131,18 +131,31 @@
             'success'
         );
         @endif
+        $('th').each(function () {
+            if (!$(this).find('i').length && !$(this).find('input[type="checkbox"]').length) {
+                $(this).append(' <i class="fa-solid fa-arrow-down-short-wide"></i>');
+            }
+        });
+
         $('th').click(function () {
-            var table = $(this).parents('table').eq(0)
-            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
-            this.asc = !this.asc
+            if ($(this).find('input[type="checkbox"]').length) {
+                return;
+            }
+            var table = $(this).parents('table').eq(0);
+            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
+            this.asc = !this.asc;
+
+            $(this).find('i').remove();
+
+            $(this).append(this.asc ? ' <i class="fa-solid fa-arrow-up-short-wide"></i>' : ' <i class="fa-solid fa-arrow-down-short-wide"></i>');
+
             if (!this.asc) {
-                rows = rows.reverse()
+                rows = rows.reverse();
             }
+
             for (var i = 0; i < rows.length; i++) {
-                table.append(rows[i])
+                table.append(rows[i]);
             }
-            $('th i').remove();
-            $(this).append(this.asc ? ' <i class="fa-solid fa-arrow-up-short-wide"></i>' : ' <i class="fa-solid fa-arrow-down-short-wide"></i> ');
         })
 
         function comparer(index) {
@@ -175,8 +188,8 @@
                 if (selectedIds.length === 0) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'No OrderSeeder Selected',
-                        text: 'Please select at least one customer to delete.',
+                        title: 'No Order Selected',
+                        text: 'Please select at least one order to delete.',
                     });
                     return;
                 }
@@ -200,17 +213,18 @@
                             success: function (response) {
                                 Swal.fire(
                                     'Deleted!',
-                                    'Your selected orders have been deleted.',
+                                    response.message,
                                     'success'
-                                );
+                                )
+
                                 $.each(selectedIds, function (key, val) {
                                     $('#delete-id-' + val).remove();
                                 });
                             },
-                            error: function () {
+                            error: function (error) {
                                 Swal.fire(
                                     'Error!',
-                                    'There was a problem deleting the orders.',
+                                    error.responseJSON.message,
                                     'error'
                                 );
                             }

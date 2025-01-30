@@ -44,14 +44,14 @@ class UserSeeder extends Seeder
         foreach ($employeeUsers as $user) {
             $user->role_id = Users::ROLE_EMPLOYEE;
             $user->save();
-            $user->employees()->save(Employees::factory()->make());
+            $user->employee()->save(Employees::factory()->make());
         }
 
         // Assign the customer role and create customer records
         foreach ($customerUsers as $user) {
             $user->role_id = Users::ROLE_CUSTOMER;
             $user->save();
-            $user->customers()->save(Customers::factory()->make());
+            $user->customer()->save(Customers::factory()->make());
         }
     }
 }

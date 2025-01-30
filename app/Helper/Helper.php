@@ -2,6 +2,7 @@
 
 namespace App\Helper;
 
+use App\Models\Users\Users;
 use function time;
 
 class Helper
@@ -38,5 +39,15 @@ class Helper
                 );
         }
         return null;
+    }
+
+    public static function getUsersFullName($table, $id)
+    {
+        return Users::join($table, 'users.id', '=', $table . '.user_id')
+            ->select($table . '.id as id', 'users.first_name', 'users.last_name')
+            ->where($table . '.id', $id)
+            ->get(['id', 'first_name', 'last_name'])
+            ->pluck('fullName', 'id')
+            ->toArray();
     }
 }

@@ -48,6 +48,9 @@
                             Product
                         </th>
                         <th scope="col" class="pe-5">
+                            SKU
+                        </th>
+                        <th scope="col" class="pe-5">
                             Import Date
                         </th>
                         <th scope="col" class="pe-5">
@@ -72,6 +75,9 @@
                             </td>
                             <td>
                                 {{ current($importReceiptDetail['product']) }}
+                            </td>
+                            <td>
+                                {{ $importReceiptDetail['sku'] }}
                             </td>
                             <td>
                                 {{ $importReceiptDetail['import_date'] }}
