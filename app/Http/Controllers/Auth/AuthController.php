@@ -21,7 +21,7 @@ class AuthController extends Controller
     {
         //
         if (Auth::check()) {
-            return redirect()->intended(route('dashboard'));
+            return redirect()->intended(route('admin.dashboard'));
         }
         return view('auth.login');
     }
@@ -33,9 +33,9 @@ class AuthController extends Controller
             'password' => $request->input("password"),
         ])) {
             $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'))->with('success', 'Login Successfully!');
+            return redirect()->intended(route('admin.dashboard'))->with('success', 'Login Successfully!');
         }
-        return redirect(route('login'))->with('error', 'Wrong email or password!');
+        return redirect(route('admin.login'))->with('error', 'Wrong email or password!');
     }
 
     public function logout(Request $request)
@@ -43,6 +43,6 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login')->with('success', 'Logout!');
+        return redirect()->route('admin.login')->with('success', 'Logout!');
     }
 }

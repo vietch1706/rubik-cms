@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('employees', function (Blueprint $table) {
+        Schema::create('employee', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->integer('user_id')->unsigned()->unique();
             $table->decimal('salary', 15, 2)->unsigned()
@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->foreign('user_id')
                 ->references('id')
-                ->on('users')
+                ->on('user')
                 ->onDelete('cascade');
         });
     }

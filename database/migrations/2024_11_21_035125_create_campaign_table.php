@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('campaigns', function (Blueprint $table) {
+        Schema::create('campaign', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->string('name', 100);
             $table->string('slug', 100)->unique();

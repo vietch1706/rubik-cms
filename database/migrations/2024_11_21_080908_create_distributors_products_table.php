@@ -20,11 +20,11 @@ return new class extends Migration {
             $table->softDeletes();
             $table->foreign('distributor_id')
                 ->references('id')
-                ->on('distributors')
+                ->on('distributor')
                 ->onDelete('cascade');
             $table->foreign('product_id')
                 ->references('id')
-                ->on('products')
+                ->on('product')
                 ->onDelete('cascade');
             $table->primary(['distributor_id', 'product_id']);
         });

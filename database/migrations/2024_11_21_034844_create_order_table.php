@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('order', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->tinyInteger('distributor_id')->unsigned()
                 ->comment('References the distributor who supplies the goods or products.');
@@ -26,11 +26,11 @@ return new class extends Migration {
             $table->timestamps();
             $table->foreign('distributor_id')
                 ->references('id')
-                ->on('distributors')
+                ->on('distributor')
                 ->onDelete('cascade');
             $table->foreign('employee_id')
                 ->references('id')
-                ->on('employees')
+                ->on('employee')
                 ->onDelete('cascade');
         });
     }

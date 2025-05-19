@@ -12,19 +12,20 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('categories', function (Blueprint $table) {
-            $table->tinyIncrements('id')->unsigned();
-            $table->tinyInteger('parent_id')
-                ->unsigned()
-                ->nullable()
-                ->comment('References the parent category ID. Null indicates a root category.');
+        Schema::create('product', function (Blueprint $table) {
+            $table->increments('id')->unsigned();
+            $table->integer('product_id')->unsigned();
             $table->string('name', 100);
-            $table->string('slug', 100)->unique();
+            $table->decimal('price', 15, 2)->unsigned()->nullable();
+            $table->boolean('is_discount')->default(0);
+            $table->float('discount', 10, 2)->default(0);
+            $table->smallInteger('quantity')->unsigned();
+            $table->string('image');
             $table->softDeletes();
             $table->timestamps();
-            $table->foreign('parent_id')
+            $table->foreign('product_id')
                 ->references('id')
-                ->on('categories')
+                ->on('product')
                 ->onDelete('cascade');
         });
     }
@@ -36,6 +37,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('products');
     }
 };

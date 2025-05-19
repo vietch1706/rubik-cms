@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('user', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->tinyInteger('role_id')->unsigned();
             $table->string('first_name', 50);
@@ -29,7 +29,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->foreign('role_id')
                 ->references('id')
-                ->on('roles')
+                ->on('role')
                 ->onDelete('cascade');
         });
     }

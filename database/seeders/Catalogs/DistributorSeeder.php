@@ -21,7 +21,7 @@ class DistributorSeeder extends Seeder
                 'address' => 'No. 699 Wangshang Road, Hangzhou, China',
                 'country' => 'China',
                 'email' => 'contact@alibaba.com',
-                'phone' => '861234567890', // Số điện thoại không có dấu '-'
+                'phone' => '861234567890',
             ],
             [
                 'name' => 'AliExpress',

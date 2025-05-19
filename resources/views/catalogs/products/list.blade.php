@@ -1,295 +1,181 @@
-@extends('layout.app')
+@php
+    use Illuminate\Support\Facades\Request;
+@endphp
+@extends('layouts.app')
+
 @section('content')
-    <link rel="stylesheet" href="{{ asset('css/list.css') }}" type="text/css">
-    <div class="container-fluid">
-        <div class="d-flex justify-content-between mb-3">
-            <div class="action-buttons">
-                <a href="{{ route('products.create') }}" class="btn btn-primary py-2"><i class="fa-solid fa-plus"></i>
-                    Create</a>
-                <button id="delete-record" class="btn btn-danger py-2"><i class="fa-solid fa-trash-can"></i> Delete
+    <div class="flex flex-col space-y-6">
+        <!-- Header -->
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-semibold text-latte-text">Products</h1>
+            <div class="flex space-x-3">
+                <a href="{{ route('admin.catalogs.products.create') }}"
+                    class="bg-latte-blue text-white px-4 py-2 rounded-md hover:bg-latte-sapphire transition-colors duration-200">
+                    <i class="fa-solid fa-plus mr-2"></i>Add Product
+                </a>
+                <button id="delete-selected"
+                    class="hidden bg-latte-red text-white px-4 py-2 rounded-md hover:bg-latte-maroon transition-colors duration-200">
+                    <i class="fa-solid fa-trash mr-2"></i>Delete Selected
                 </button>
             </div>
-            <div class="input-group w-25">
-                <span class="input-group-text" id="basic-addon1">
-                 <i class="fa-solid fa-magnifying-glass"></i>
-                </span>
-                <input
-                    type="text"
-                    id="search"
-                    class="search-box form-control h-100 py-2 pl-5"
-                    placeholder="Search Here ..."
-                    autocomplete="off"
-                    aria-describedby="basic-addon2">
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="bg-latte-surface0 p-4 rounded-md shadow-sm border border-latte-surface1">
+            <div class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                    <input type="text" id="search-input" placeholder="Search products..."
+                        class="w-full px-3 py-2 rounded-md border border-latte-surface1 bg-latte-base text-latte-text focus:outline-none focus:ring-2 focus:ring-latte-lavender placeholder-latte-subtext0">
+                </div>
+                <div class="flex space-x-2">
+                    <button id="search-button"
+                        class="bg-latte-blue text-white px-4 py-2 rounded-md hover:bg-latte-sapphire transition-colors duration-200">
+                        <i class="fa-solid fa-search"></i>
+                    </button>
+                    <button id="clear-search"
+                        class="bg-latte-surface1 text-latte-text px-4 py-2 rounded-md hover:bg-latte-surface2 transition-colors duration-200">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
             </div>
         </div>
-        <div class="table-responsive">
-            <table
-                class="table table-bordered table-striped table-hover">
-                <thead>
-                <tr class="text-nowrap col-md">
-                    <th scope="col" class="px-3">
-                        <input type="checkbox" name="" id="select-all-ids">
-                    </th>
-                    <th scope="col" class="pe-5 ">
-                        ID
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Name
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Image
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Gallery
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        SKU
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Release Date
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Brand
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Distributor
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Category
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Slug
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Status
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Price (thousand)
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Quantity
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Magnetic
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Weight (g)
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Box Weight (g)
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Created At
-                    </th>
-                    <th scope="col" class="pe-5 col-3">
-                        Updated At
-                    </th>
-                </tr>
+
+        <!-- Products Table -->
+        <div class="overflow-x-auto bg-white rounded-lg shadow-sm border border-latte-surface0">
+            <table class="w-full text-sm text-left text-latte-text" id="products-table">
+                <thead class="text-xs uppercase bg-latte-surface0 text-latte-subtext1">
+                    <tr>
+                        <th scope="col" class="px-3 py-3">
+                            <input type="checkbox" id="select-all-ids" class="focus:ring-latte-lavender">
+                        </th>
+                        <th scope="col" class="px-5 py-3">ID</th>
+                        <th scope="col" class="px-5 py-3">Name</th>
+                        <th scope="col" class="px-5 py-3">Image</th>
+                        <th scope="col" class="px-5 py-3">SKU</th>
+                        <th scope="col" class="px-5 py-3">Release Date</th>
+                        <th scope="col" class="px-5 py-3">Brand</th>
+                        <th scope="col" class="px-5 py-3">Distributor</th>
+                        <th scope="col" class="px-5 py-3">Category</th>
+                        <th scope="col" class="px-5 py-3">Slug</th>
+                        <th scope="col" class="px-5 py-3">Status</th>
+                        <th scope="col" class="px-5 py-3">Price (thousand)</th>
+                        <th scope="col" class="px-5 py-3">Quantity</th>
+                        <th scope="col" class="px-5 py-3">Magnetic</th>
+                        <th scope="col" class="px-5 py-3">Weight (g)</th>
+                        <th scope="col" class="px-5 py-3">Box Weight (g)</th>
+                        <th scope="col" class="px-5 py-3">Created At</th>
+                        <th scope="col" class="px-5 py-3">Updated At</th>
+                        <th scope="col" class="px-5 py-3">Actions</th>
+                    </tr>
                 </thead>
-                @if(!empty($products))
-                    <tbody>
-                    @foreach($products as $product)
-                        <tr class="text-nowrap hover-pointer" id="delete-id-{{ $product['id'] }}"
-                            onclick="window.location='{{ route('products.edit', $product['id']) }}'">
-                            <td class="text-center">
-                                <input type="checkbox" name="ids" class="checkbox-ids" value="{{ $product['id'] }}">
-                            </td>
-                            <td>
-                                {{ $product['id'] }}
-                            </td>
-                            <td>
-                                {{ $product['name'] }}
-                            </td>
-                            <td>
-                                @if($product['image'])
-                                    <img src="{{ url($product['image']) }}"
-                                         alt="{{ $product['slug'] }}" width="75"
-                                         height="50">
-                                @endif
-                            </td>
-                            <td>
-                                @if($product['gallery'])
-                                    @foreach(array_slice($product['gallery'], 0, 3) as $gallery)
-                                        <img src="{{ url($gallery) }}"
-                                             alt="{{$product['slug']}}" width="75"
-                                             height="50">
-                                    @endforeach
-                                @endif
-                            </td>
-                            <td>{{ $product['sku'] }}</td>
-                            <td>{{ $product['release_date'] }}</td>
-                            <td>
-                                @if($product['brand'])
-                                    {{ current($product['brand']) }}
-                                @endif
-                            </td>
-                            <td>
-                                @if($product['distributor'])
-                                    {{ current($product['distributor']) }}
-                                @endif
-                            </td>
-                            <td>
-                                @if($product['category'])
-                                    {{ current($product['category']) }}
-                                @endif
-                            </td>
-                            <td>{{ $product['slug'] }}</td>
-                            <td class=" h-100 {{ $class = $product['status'] != 0 ? 'text-success' : 'text-danger' }}">
-                                <i class="fa-solid fa-circle"></i>
-                                {{ $product['status'] != 0 ? 'Available' : 'Unavailable' }}
-                            </td>
-                            <td>{{ $product['price'] }}</td>
-                            <td>{{ $product['quantity'] }}</td>
-                            <td>{{ $product['magnetic'] }}</td>
-                            <td>{{ $product['weight'] }}</td>
-                            <td>{{ $product['box_weight'] }}</td>
-                            <td>
-                                {{ $product['created_at'] }}
-                            </td>
-                            <td>
-                                {{ $product['updated_at'] }}
-                            </td>
-                        </tr>
-                    @endforeach
-                    </tbody>
+                <tbody id="products-tbody">
+                    @include('catalogs.products.table-body')
+                </tbody>
             </table>
         </div>
-        <div class="pagination-container">{!! $link !!}</div>
-        @endif
+
+        <!-- Pagination -->
+        <div class="mt-4" id="pagination">
+            @if (isset($products) && $products->hasPages())
+                {{ $products->links('pagination') }}
+            @endif
+        </div>
     </div>
-    <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
+
+    <!-- Scripts -->
     <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script>
-        @if (Session::has('success'))
-        Swal.fire(
-            '{{ Session::get('success') }}',
-            '',
-            'success'
-        );
-        @endif
-        $('th').each(function () {
-            if (!$(this).find('i').length && !$(this).find('input[type="checkbox"]').length) {
-                $(this).append(' <i class="fa-solid fa-arrow-down-short-wide"></i>');
-            }
-        });
+        $(document).ready(function() {
+            const deleteUrl = '{{ route('admin.catalogs.products.destroy') }}';
+            const csrfToken = '{{ csrf_token() }}';
 
-        $('th').click(function () {
-            if ($(this).find('input[type="checkbox"]').length) {
-                return;
-            }
-            var table = $(this).parents('table').eq(0);
-            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
-            this.asc = !this.asc;
-
-            $(this).find('i').remove();
-
-            $(this).append(this.asc ? ' <i class="fa-solid fa-arrow-up-short-wide"></i>' : ' <i class="fa-solid fa-arrow-down-short-wide"></i>');
-
-            if (!this.asc) {
-                rows = rows.reverse();
+            function toggleDeleteButton() {
+                const anyChecked = $('.product-checkbox:checked').length > 0;
+                $('#delete-selected').toggleClass('hidden', !anyChecked);
             }
 
-            for (var i = 0; i < rows.length; i++) {
-                table.append(rows[i]);
-            }
-        })
-
-        function comparer(index) {
-            return function (a, b) {
-                var valA = getCellValue(a, index), valB = getCellValue(b, index)
-                return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
-            }
-        }
-
-        function getCellValue(row, index) {
-            return $(row).children('td').eq(index).text()
-        }
-
-        $(function (e) {
-            $('input[name="ids"]').click(function (e) {
-                e.stopPropagation();
-            });
-
-            $('#select-all-ids').click(function () {
-                $('.checkbox-ids').prop('checked', $(this).prop('checked'));
-            });
-
-            $('#delete-record').click(function (e) {
-                e.preventDefault();
-
-                var selectedIds = [];
-                $('input[name="ids"]:checked').each(function () {
-                    selectedIds.push($(this).val());
-                });
-                if (selectedIds.length === 0) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'No Products Selected',
-                        text: 'Please select at least one product to delete.',
-                    });
-                    return;
-                }
-
+            function deleteProducts(ids, title, confirmText) {
                 Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this action!",
+                    title: title,
+                    text: confirmText,
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, delete it!',
-                    cancelButtonText: 'No, keep it',
+                    confirmButtonColor: '#1e66f5',
+                    cancelButtonColor: '#d20f39',
+                    confirmButtonText: `Yes, delete ${ids.length > 1 ? 'them' : 'it'}`
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: "{{ route('products.destroy') }}",
-                            type: "DELETE",
-                            data: {
-                                ids: selectedIds,
-                                _token: "{{ csrf_token() }}",
+                            url: deleteUrl,
+                            type: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken
                             },
-                            success: function (response) {
-                                Swal.fire(
-                                    'Deleted!',
-                                    'Your selected products have been deleted.',
-                                    'success'
-                                );
-                                $.each(selectedIds, function (key, val) {
-                                    $('#delete-id-' + val).remove();
+                            data: {
+                                ids: ids
+                            },
+                            success: (response) => {
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: ids.length > 1 ?
+                                        'Selected products have been deleted.' :
+                                        'Product has been deleted.',
+                                    icon: 'success',
+                                    confirmButtonColor: '#1e66f5'
+                                }).then(() => {
+                                    window.location.reload();
+                                    $('#select-all-ids').prop('checked', false);
                                 });
                             },
-                            error: function () {
-                                Swal.fire(
-                                    'Error!',
-                                    'There was a problem deleting the products.',
-                                    'error'
-                                );
+                            error: (xhr) => {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: ids.length > 1 ?
+                                        'Failed to delete selected products.' :
+                                        'Failed to delete product.',
+                                    icon: 'error',
+                                    confirmButtonColor: '#1e66f5'
+                                });
                             }
                         });
                     }
                 });
-            });
-        });
-        $('#search').on('keyup', function (e) {
-            e.preventDefault();
-            let searchString = $(this).val();
-            console.log(searchString);
-            $.ajax({
-                url: "{{ route('products.search') }}",
-                method: 'GET',
-                data: {'search': searchString},
-                success: function (response) {
-                    console.log(response.error)
-                    if (response.error) {
-                        $('tbody').html(
-                            `<tr><td colspan="16" class="text-danger text-center" style="font-size: 20px;">${response.error}</td></tr>`
-                        );
-                        $('.pagination-container').html('');
-                    } else {
-                        $('tbody').html(response.products);
-                        $('.pagination-container').html(response.pagination);
-                    }
-                },
+            }
 
-            })
+            $('#select-all-ids').on('change', function() {
+                $('.product-checkbox').prop('checked', $(this).prop('checked'));
+                toggleDeleteButton();
+            });
+
+            $(document).on('change', '.product-checkbox', function() {
+                toggleDeleteButton();
+                if (!$('.product-checkbox:checked').length) {
+                    $('#select-all-ids').prop('checked', false);
+                }
+            });
+
+            $(document).on('click', '.delete-product', function(e) {
+                const id = $(this).data('id');
+                deleteProducts([id], 'Delete Product', 'Are you sure you want to delete this product?');
+            });
+
+            $('#delete-selected').on('click', function() {
+                const selectedIds = $('.product-checkbox:checked').map((_, el) => $(el).val()).get();
+                if (selectedIds.length === 0) {
+                    Swal.fire({
+                        title: 'No Selection',
+                        text: 'Please select at least one product to delete.',
+                        icon: 'warning',
+                        confirmButtonColor: '#1e66f5'
+                    });
+                    return;
+                }
+                deleteProducts(
+                    selectedIds,
+                    'Delete Selected Products',
+                    `Are you sure you want to delete ${selectedIds.length} product(s)?`
+                );
+            });
         });
     </script>
 @endsection

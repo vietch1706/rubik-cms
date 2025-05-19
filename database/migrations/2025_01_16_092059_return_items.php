@@ -13,7 +13,7 @@ return new class extends Migration {
     public function up()
     {
         //
-        Schema::create('return_items', function (Blueprint $table) {
+        Schema::create('return_item', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->integer('return_id')->unsigned();
             $table->integer('product_id')->unsigned()
@@ -25,11 +25,11 @@ return new class extends Migration {
             $table->timestamps();
             $table->foreign('return_id')
                 ->references('id')
-                ->on('returns')
+                ->on('return')
                 ->onDelete('cascade');
             $table->foreign('product_id')
                 ->references('id')
-                ->on('products')
+                ->on('product')
                 ->onDelete('cascade');
 
         });

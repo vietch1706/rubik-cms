@@ -1,236 +1,121 @@
-@php use Carbon\Carbon; @endphp
-@extends('layout.app')
+@php
+    use Carbon\Carbon;
+@endphp
+@extends('layouts.app')
+
 @section('content')
-    <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            background-color: var(--latte-base);
-            font-family: Arial, sans-serif;
-            color: var(--latte-text);
-        }
-
-        .divider:after,
-        .divider:before {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: var(--latte-subtle);
-        }
-
-        .h-custom {
-            height: calc(100% - 72px);
-        }
-
-
-        .container-fluid {
-            background-color: var(--latte-header);
-        }
-
-        .left-item {
-            background: linear-gradient(135deg, var(--latte-primary), var(--latte-secondary));
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .left-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .left-item img {
-            width: 100%;
-            height: auto;
-            border-radius: 15px;
-            transition: transform 0.3s ease;
-        }
-
-        .left-item img:hover {
-            transform: scale(1.05);
-        }
-
-        .right-item {
-            background-color: var(--latte-light);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .right-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .form-label {
-            color: var(--latte-text);
-        }
-
-        .form-label {
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 5px;
-            display: block;
-            color: var(--latte-text);
-            transition: color 0.2s ease-in-out;
-        }
-
-        .form-control {
-            font-size: 16px;
-            padding: 8px 8px 8px 20px;
-            border: 1px solid var(--latte-subtle);
-            outline: none;
-            background-color: var(--latte-input-bg);
-            color: var(--latte-input-text);
-            border-radius: 35px;
-            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out, transform 0.2s ease-in-out;
-        }
-
-        .form-control:focus {
-            border-color: var(--latte-primary);
-            box-shadow: 0 0 8px rgba(140, 170, 238, 0.5);
-            transform: scale(1.02);
-            outline: none;
-        }
-
-        .btn-primary {
-            background-color: var(--latte-primary);
-            border-color: var(--latte-primary);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--latte-secondary);
-            border-color: var(--latte-secondary);
-        }
-
-        .text-body {
-            color: var(--latte-primary);
-        }
-
-        .text-body:hover {
-            color: var(--latte-secondary);
-        }
-
-        .link-danger {
-            color: var(--latte-secondary);
-        }
-
-        .link-danger:hover {
-            color: var(--latte-primary);
-        }
-
-        @media (max-width: 450px) {
-            .h-custom {
-                height: 100%;
-            }
-        }
-
-        @media (max-width: 800px) {
-            .left-item {
-                display: none;
-            }
-        }
-    </style>
-    <section class="vh-100">
-        <div class="container-fluid h-custom">
-            <div class="row d-flex justify-content-center align-items-center h-100">
-                <div class="left-item col-md-5 col-lg-5 col-xl-4">
-                    <img src="{{ asset('img/image.png') }}" alt="">
+    <section class="min-h-screen flex items-center justify-center bg-latte-base">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex flex-col md:flex-row justify-center items-center gap-8 max-w-4xl mx-auto">
+                <div class="hidden md:block w-full md:w-5/12">
+                    <div
+                        class="relative rounded-2xl overflow-hidden shadow-lg transform transition-transform hover:-translate-y-1 hover:shadow-xl">
+                        <img src="{{ asset('img/image.png') }}" alt="Login Illustration" class="w-full h-auto object-cover">
+                    </div>
                 </div>
-                <div class="right-item col-md-5 col-lg-5 col-xl-4 offset-xl-1">
-                    <form method="POST" action="{{ route('login.post') }}">
+
+                <div
+                    class="w-full md:w-5/12 bg-white rounded-2xl p-8 shadow-lg border border-latte-surface0 transform transition-transform hover:-translate-y-1 hover:shadow-xl">
+                    <form method="POST" action="{{ route('admin.login.post') }}">
                         @csrf
-                        <div class="divider d-flex align-items-center my-4">
-                            <h2 class="text-center fw-bold mx-3 mb-0">Admin Login Channel</h2>
+                        <div class="text-center mb-6">
+                            <h2 class="text-2xl font-bold text-latte-text">Admin Login Channel</h2>
+                            <div class="mt-2 h-1 w-16 bg-latte-blue mx-auto"></div>
                         </div>
-                        <div data-mdb-input-init class="form-outline mb-4">
-                            <label for="email" class="form-label">Email address</label>
-                            <input
-                                type="email"
-                                class="form-control"
-                                placeholder="Enter a valid email address"
-                                name="email"/>
+
+                        <div class="mb-6">
+                            <label for="email" class="block text-sm font-medium text-latte-text mb-2">Email
+                                Address</label>
+                            <input type="email"
+                                class="w-full px-4 py-3 rounded-full border border-latte-surface1 bg-latte-base text-latte-text placeholder-latte-subtext0 focus:outline-none focus:ring-2 focus:ring-latte-lavender focus:border-transparent transition-all duration-200"
+                                placeholder="Enter a valid email address" name="email" id="email">
                             @error('email')
-                            <span class="text-danger error">{{ $errors->first('email') }}</span>
+                                <span class="text-latte-red text-sm mt-2 block">{{ $errors->first('email') }}</span>
                             @enderror
                         </div>
-                        <div data-mdb-input-init class="form-outline mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <div class="input-group password-container">
-                                <input type="password" class="form-control password-field"
-                                       name="password"
-                                       placeholder="Enter password">
-                                <span class="input-group-text">
-                            <i class="fa-solid fa-eye-slash toggle-password"></i>
-                        </span>
+
+                        <!-- Password Field -->
+                        <div class="mb-6">
+                            <label for="password" class="block text-sm font-medium text-latte-text mb-2">Password</label>
+                            <div class="relative">
+                                <input type="password"
+                                    class="password-field w-full px-4 py-3 rounded-full border border-latte-surface1 bg-latte-base text-latte-text placeholder-latte-subtext0 focus:outline-none focus:ring-2 focus:ring-latte-lavender focus:border-transparent transition-all duration-200"
+                                    name="password" id="password" placeholder="Enter password">
+                                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-latte-subtext0 cursor-pointer">
+                                    <i class="fa-solid fa-eye-slash toggle-password"></i>
+                                </span>
                             </div>
                             @error('password')
-                            <span class="text-danger error">{{ $errors->first('password') }}</span>
+                                <span class="text-latte-red text-sm mt-2 block">{{ $errors->first('password') }}</span>
                             @enderror
                         </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <a href="" class="text-body">Forgot password?</a>
+
+                        <!-- Forgot Password -->
+                        <div class="flex justify-between items-center mb-6">
+                            <a href="#"
+                                class="text-latte-blue text-sm hover:text-latte-sapphire transition-colors duration-200">Forgot
+                                password?</a>
                         </div>
-                        <div class="divider d-flex align-items-center my-4">
-                            <p class="text-center fw-bold mx-3 mb-0">Or</p>
+
+                        <!-- Divider -->
+                        <div class="flex items-center justify-center my-6">
+                            <span class="text-latte-subtext0 text-sm px-4">Or</span>
                         </div>
-                        <div class="text-center mx-auto">
+
+                        <!-- Submit Button and Main Website Link -->
+                        <div class="text-center">
                             <button type="submit"
-                                    class="btn btn-primary btn-lg"
-                                    style="width: 100%"
-                            >Login
+                                class="w-full bg-latte-blue text-white py-3 rounded-full font-medium hover:bg-latte-sapphire focus:outline-none focus:ring-2 focus:ring-latte-lavender transition-all duration-200">
+                                Login
                             </button>
-                            <p class="small fw-bold mt-2 pt-1 mb-0">Go to the
-                                <a href="" class="link-danger">Main Website!</a>
+                            <p class="mt-4 text-sm text-latte-text">
+                                Go to the
+                                <a href="#"
+                                    class="text-latte-red hover:text-latte-maroon font-medium transition-colors duration-200">Main
+                                    Website!</a>
                             </p>
                         </div>
                     </form>
                 </div>
             </div>
-        </div>
-        <div
-            class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary">
-            <!-- Copyright -->
-            <div class="text-white mb-3 mb-md-0">
-                Copyright © {{Carbon::now()->format('Y')}}. All rights reserved.
+
+            <!-- Footer -->
+            <div class="mt-8 py-4 px-4 text-center text-latte-subtext0 bg-latte-mantle">
+                <p>Copyright © {{ Carbon::now()->format('Y') }}. All rights reserved.</p>
             </div>
-            <!-- Copyright -->
         </div>
     </section>
+
+    <!-- Scripts -->
     <script src="{{ asset('js/sweetalert2@11.js') }}"></script>
     <script src="{{ asset('/js/jquery-3.7.1.min.js') }}"></script>
     <script>
         @if (Session::has('success'))
-        Swal.fire(
-            '{{ Session::get('success') }}',
-            '',
-            'success'
-        );
+            Swal.fire({
+                title: '{{ Session::get('success') }}',
+                icon: 'success',
+                confirmButtonColor: '#1e66f5'
+            });
         @endif
         @if (Session::has('error'))
-        Swal.fire({
-            position: "top-end",
-            icon: "error",
-            title: '{{ Session::get('error') }}',
-            showConfirmButton: false,
-            timer: 1000
-        });
+            Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: '{{ Session::get('error') }}',
+                showConfirmButton: false,
+                timer: 1000
+            });
         @endif
-        document.addEventListener('DOMContentLoaded', function () {
-            const passwordContainers = document.querySelectorAll('.password-container');
-            passwordContainers.forEach(container => {
-                const toggleButton = container.querySelector('.toggle-password');
-                const passwordInput = container.querySelector('.password-field');
 
-                toggleButton.addEventListener('click', function () {
-                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                    passwordInput.setAttribute('type', type);
-                    this.classList.toggle('fa-eye');
-                    this.classList.toggle('fa-eye-slash');
-                });
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleButton = document.querySelector('.toggle-password');
+            const passwordInput = document.querySelector('.password-field');
+
+            toggleButton.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
             });
         });
     </script>

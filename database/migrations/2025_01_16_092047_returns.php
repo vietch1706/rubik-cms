@@ -13,7 +13,7 @@ return new class extends Migration {
     public function up()
     {
         //
-        Schema::create('returns', function (Blueprint $table) {
+        Schema::create('return', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->integer('invoice_id')->unsigned();
             $table->dateTime('return_date');
@@ -24,7 +24,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->foreign('invoice_id')
                 ->references('id')
-                ->on('invoices')
+                ->on('invoice')
                 ->onDelete('cascade');
         });
     }

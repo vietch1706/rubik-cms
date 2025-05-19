@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('blogs', function (Blueprint $table) {
+        Schema::create('blog', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->integer('employee_id')->unsigned()
                 ->comment('References the employee who authored the blog post.');
@@ -21,17 +21,17 @@ return new class extends Migration {
                 ->comment('Slug from Title');
             $table->tinyInteger('category_id')->unsigned()
                 ->comment('Only take category with Blogs Parent.');
-            $table->longText('content');
             $table->string('thumbnail', 100)->nullable();
+            $table->longText('content');
             $table->dateTime('date');
             $table->timestamps();
             $table->foreign('employee_id')
                 ->references('id')
-                ->on('employees')
+                ->on('employee')
                 ->onDelete('cascade');
             $table->foreign('category_id')
                 ->references('id')
-                ->on('categories')
+                ->on('category')
                 ->onDelete('cascade');
         });
     }

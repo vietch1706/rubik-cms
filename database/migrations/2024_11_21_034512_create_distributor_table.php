@@ -12,12 +12,14 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('distributor', function (Blueprint $table) {
             $table->tinyIncrements('id')->unsigned();
-            $table->string('name', 10);
-            $table->string('code', 10);
-            $table->boolean('is_system')->default(false)
-                ->comment('System role can control every thing');
+            $table->string('name', 100);
+            $table->string('address');
+            $table->string('country', 20);
+            $table->string('phone', 50)->unique();
+            $table->string('email', 100)->unique();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('distributors');
     }
 };

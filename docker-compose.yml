@@ -1,0 +1,28 @@
+version: "3"
+services:
+    db_rubik:
+        container_name: "db_rubik"
+        platform: linux/x86_64
+        image: thanhvocse/mysql:8.0
+        restart: always
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./docker/mysql:/var/lib/mysql:delegated
+            - ./docker/mysqlbackup:/home:delegated
+        environment:
+            MYSQL_ROOT_PASSWORD: 123456
+    php_rubik:
+        container_name: "php_rubik"
+        image: "thanhvocse/php:8.2-apache"
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./:/var/www/html:delegated
+            - ./null:/var/www/html/docker
+            - ~/.ssh:/root/.ssh:delegated
+        links:
+            - "db_rubik:db_rubik"
+        environment:
+            DOCUMENT_ROOT: "/"

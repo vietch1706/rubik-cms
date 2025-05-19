@@ -3,8 +3,6 @@
 namespace App\Models\Catalogs;
 
 use App\Helper\Helper;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -42,15 +40,18 @@ class Products extends Model
         'status' => self::STATUS_AVAILABLE,
     ];
 
-    public static function generateUniqueOrderNo(?string $prefix = null)
+    public static function getMagneticText($magnetic)
     {
-        $length = self::SKU_LENGTH - strlen($prefix ?? '');
+        $data = self::getMagneticOptions();
+        return $data[$magnetic] ?? '';
+    }
 
-        do {
-            $sku = ($prefix ?? '') . Helper::generateRandomString($length, 3);
-        } while (self::where('sku', $sku)->exists());
-
-        return $sku;
+    public static function getMagneticOptions()
+    {
+        return [
+            self::MAGNETIC_NO => 'No',
+            self::MAGNETIC_YES => 'Yes',
+        ];
     }
 
     protected static function booted()
@@ -78,13 +79,6 @@ class Products extends Model
         }
     }
 
-    /**
-     * Scope a query to only include users of a given type.
-     *
-     * @param Builder $query
-     * @param int $id
-     * @return Builder
-     */
     public function scopeGetByDistributorId($query, $id)
     {
         return $query->whereHas('distributors', function ($q) use ($id) {
@@ -112,14 +106,6 @@ class Products extends Model
         return $this->hasMany(ProductGalleries::class, 'product_id', 'id');
     }
 
-    public function getMagneticOptions()
-    {
-        return [
-            self::MAGNETIC_NO => 'No',
-            self::MAGNETIC_YES => 'Yes',
-        ];
-    }
-
     public function getStatusOptions()
     {
         return [
@@ -138,16 +124,6 @@ class Products extends Model
         return $this->belongsTo(Brands::class, 'brand_id', 'id');
     }
 
-    public function textMagnetic(): Attribute
-    {
-        return new Attribute(
-            get: fn($value, $attribute) => match ($attribute['magnetic']) {
-                self::MAGNETIC_YES => 'Yes',
-                self::MAGNETIC_NO => 'No',
-            },
-        );
-    }
-
     public function scopeGetBySlug($query, $slug)
     {
         return $query->with('category', 'brand')->where('slug', $slug);
@@ -156,5 +132,31 @@ class Products extends Model
     public function scopeGetById($query, $id)
     {
         return $query->with('category', 'brand')->where('id', $id);
+    }
+
+    public function convertData()
+    {
+        $this->category_id = $this->category_id ?? null;
+        $this->brand_id = $this->brand_id ?? null;
+        $this->magnetic = $this->magnetic ?? self::MAGNETIC_NO;
+        $this->status = $this->status ?? self::STATUS_AVAILABLE;
+        $this->release_date = $this->release_date ?? null;
+        $this->weight = $this->weight ?? 0;
+        $this->box_weight = $this->box_weight ?? 0;
+        $this->price = $this->price ?? 0;
+        $this->quantity = $this->quantity ?? 0;
+        $this->sku = $this->sku ?? self::generateUniqueOrderNo();
+        $this->image = $this->image ?? null;
+    }
+
+    public static function generateUniqueOrderNo(?string $prefix = null)
+    {
+        $length = self::SKU_LENGTH - strlen($prefix ?? '');
+
+        do {
+            $sku = ($prefix ?? '') . Helper::generateRandomString($length, 3);
+        } while (self::where('sku', $sku)->exists());
+
+        return $sku;
     }
 }

@@ -12,23 +12,25 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('import_receipts', function (Blueprint $table) {
+        Schema::create('invoice', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->string('order_no', 10)
-                ->comment('Linking to a specific purchase order.');
-            $table->integer('employee_id')->unsigned()->nullable()
-                ->comment('Employee who created the inventory receipt for the order.');
+            $table->integer('employee_id')->unsigned()
+                ->comment('References the employee who created the invoice.');
+            $table->integer('customer_id')->unsigned()
+                ->comment('References the customer who is billed in the invoice.');
             $table->dateTime('date');
             $table->boolean('status')->default(0);
-            $table->timestamps();
+            $table->string('note')->nullable();
+            $table->json('campaign')->nullable();
             $table->softDeletes();
-            $table->foreign('order_no')
-                ->references('order_no')
-                ->on('orders')
+            $table->timestamps();
+            $table->foreign('customer_id')
+                ->references('id')
+                ->on('customer')
                 ->onDelete('cascade');
             $table->foreign('employee_id')
                 ->references('id')
-                ->on('employees')
+                ->on('employee')
                 ->onDelete('cascade');
         });
     }
@@ -40,6 +42,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('import_receipts');
+        Schema::dropIfExists('invoices');
     }
 };

@@ -12,25 +12,25 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('import_receipt_details', function (Blueprint $table) {
+        Schema::create('order_detail', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('import_receipt_id')->unsigned()
-                ->comment('Represents the import receipt)');
+            $table->integer('order_id')->unsigned()
+                ->comment('The order to which these details belong.');
             $table->integer('product_id')->unsigned()
-                ->comment('The imported product');
-            $table->date('import_date')->nullable();
+                ->comment('The product being purchased in this order detail.');
             $table->decimal('price', 15, 2)->unsigned()
-                ->comment('Unit of money is thousands');
+                ->comment('The agreed price per unit in purchase order .Unit of money is thousands');
+            $table->boolean('status')->default(0);
             $table->smallInteger('quantity')->unsigned();
             $table->softDeletes();
             $table->timestamps();
-            $table->foreign('import_receipt_id')
+            $table->foreign('order_id')
                 ->references('id')
-                ->on('import_receipts')
+                ->on('order')
                 ->onDelete('cascade');
             $table->foreign('product_id')
                 ->references('id')
-                ->on('products')
+                ->on('product')
                 ->onDelete('cascade');
         });
     }
@@ -42,6 +42,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('import_receipt_details');
+        Schema::dropIfExists('order_details');
     }
 };

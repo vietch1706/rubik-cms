@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('carts', function (Blueprint $table) {
+        Schema::create('cart', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->integer('customer_id')->unsigned()
                 ->comment('Customer who own this cart.');
@@ -21,7 +21,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->foreign('customer_id')
                 ->references('id')
-                ->on('customers')
+                ->on('customer')
                 ->onDelete('cascade');
         });
     }

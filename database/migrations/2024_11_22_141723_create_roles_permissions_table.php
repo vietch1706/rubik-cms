@@ -17,11 +17,11 @@ return new class extends Migration {
             $table->tinyInteger('permission_id')->unsigned();
             $table->foreign('permission_id')
                 ->references('id')
-                ->on('permissions')
+                ->on('permission')
                 ->onDelete('cascade');
             $table->foreign('role_id')
                 ->references('id')
-                ->on('roles')
+                ->on('role')
                 ->onDelete('cascade');
             $table->timestamps();
             $table->primary(['role_id', 'permission_id']);

@@ -11,6 +11,7 @@ use App\Models\Catalogs\Categories;
 use App\Models\Catalogs\Distributors;
 use App\Models\Catalogs\ProductGalleries;
 use App\Models\Catalogs\Products;
+use App\Schema\ProductSchema;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -56,10 +57,12 @@ class ProductsController extends Controller
     {
         //
         $products = $this->products->paginate(self::PAGE_LIMIT);
+        $productSchema = new ProductSchema();
+        foreach ($products as $key => $product) {
+            $products[$key] = $productSchema->convertData($product);
+        }
         return view('catalogs.products.list', [
-            'products' => ProductsResource::collection($products)->toArray(request()),
-            'magnetics' => $this->products->getMagneticOptions(),
-            'link' => $products->links(),
+            'products' => $products,
         ]);
     }
 
@@ -78,7 +81,6 @@ class ProductsController extends Controller
             'magnetics' => $this->products->getMagneticOptions(),
             'statuses' => $this->products->getStatusOptions(),
         ]);
-
     }
 
     /**
@@ -223,44 +225,56 @@ class ProductsController extends Controller
      */
     public function destroy(Request $request)
     {
-        //
-        $ids = $request->ids;
-        $this->products->whereIn('id', $ids)->delete();
-        return response()->json(
-            ["success" => 'Products have been deleted']
-        );
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:products,id'
+        ]);
+
+        $products = Products::whereIn('id', $request->ids)->get();
+
+        // foreach ($products as $product) {
+        //     if ($product->image) {
+        //         Storage::disk('public')->delete($product->image);
+        //     }
+        //     $product->delete();
+        // }
+
+        return response()->json([
+            'message' => count($request->ids) > 1 ? 'Selected products deleted successfully.' : 'Product deleted successfully.'
+        ]);
     }
 
     public function search(Request $request)
     {
         $search = $request->input('search');
-        $products = $this->products
-            ->whereHas('category', function ($query) use ($search) {
-                return $query->where('name', 'like', '%' . $search . '%');
+        $products = Products::with(['brand', 'distributors', 'category'])
+            ->when($search, function ($query) use ($search) {
+                $query->whereHas('category', function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                })
+                    ->orWhereHas('brand', function ($q) use ($search) {
+                        $q->where('name', 'like', '%' . $search . '%');
+                    })
+                    ->orWhereHas('distributors', function ($q) use ($search) {
+                        $q->where('name', 'like', '%' . $search . '%');
+                    })
+                    ->orWhere('name', 'like', '%' . $search . '%')
+                    ->orWhere('slug', 'like', '%' . $search . '%')
+                    ->orWhere('sku', 'like', '%' . $search . '%')
+                    ->orWhere('price', '=', $search)
+                    ->orWhere('quantity', '=', $search);
             })
-            ->orWhereHas('brand', function ($query) use ($search) {
-                return $query->where('name', 'like', '%' . $search . '%');
-            })
-            ->orWhereHas('distributors', function ($query) use ($search) {
-                return $query->where('name', 'like', '%' . $search . '%');
-            })
-            ->orWhere('name', 'like', '%' . $search . '%')
-            ->orWhere('slug', 'like', '%' . $search . '%')
-            ->orWhere('sku', 'like', '%' . $search . '%')
-            ->orWhere('price', 'like', '%' . $search . '%')
-            ->orWhere('quantity', 'like', '%' . $search . '%')
+            ->latest()
             ->paginate(self::PAGE_LIMIT);
-        if ($products->count() > 0) {
+
+        $products->appends(['search' => $search]);
+        if ($request->ajax()) {
             return response()->json([
-                'products' => view('catalogs.products.search', [
-                    'products' => ProductsResource::collection($products)->toArray(request()),
-                ])->render(),
-                'pagination' => $products->links()->render()
-            ]);
-        } else {
-            return response()->json([
-                'error' => 'No result found!',
+                'table' => view('catalogs.products.table-body', compact('products'))->render(),
+                'pagination' => view('pagination', compact('products'))->render(),
             ]);
         }
+
+        return view('admin.catalogs.products.index', compact('products'));
     }
 }
