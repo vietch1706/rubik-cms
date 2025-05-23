@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+    db_rubik:
+        container_name: "db_rubik"
+        platform: linux/x86_64
+        image: mysql:8.0
+        restart: always
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./docker/mysql:/var/lib/mysql:delegated
+        environment:
+            MYSQL_ROOT_PASSWORD: 123456
+    php_rubik:
+        container_name: "php_rubik"
+        build: ./docker
+        ports:
+            - "80:80"
+        volumes:
+            - ./:/var/www/html:delegated
+        links:
+            - "db_rubik:db_rubik"

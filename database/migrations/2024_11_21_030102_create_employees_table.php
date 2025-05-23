@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->integer('user_id')->unsigned()->unique();
             $table->decimal('salary', 15, 2)->unsigned()
                 ->comment('Unit of money is thousands');
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('user_id')
                 ->references('id')

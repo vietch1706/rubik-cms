@@ -23,8 +23,8 @@ return new class extends Migration {
                 ->references('id')
                 ->on('roles')
                 ->onDelete('cascade');
-            $table->timestamps();
             $table->primary(['role_id', 'permission_id']);
+            $table->timestamps();
         });
     }
 

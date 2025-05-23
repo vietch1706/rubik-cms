@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->string('identity_number', 50);
             $table->boolean('type')->default(0)
                 ->comment('0: regular; 1:loyal');
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('user_id')
                 ->references('id')
