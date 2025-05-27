@@ -23,8 +23,14 @@ return new class extends Migration {
             $table->smallInteger('quantity')->unsigned();
             $table->softDeletes();
             $table->timestamps();
-            $table->foreign('invoice_id')->references('id')->on('invoice')->onDelete('cascade');
-            $table->foreign('product_id')->references('id')->on('product')->onDelete('cascade');
+            $table->foreign('invoice_id')
+                ->references('id')
+                ->on('invoices')
+                ->onDelete('cascade');
+            $table->foreign('product_id')
+                ->references('id')
+                ->on('products')
+                ->onDelete('cascade');
         });
     }
 

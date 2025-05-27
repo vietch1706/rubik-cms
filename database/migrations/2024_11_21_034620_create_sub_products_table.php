@@ -12,16 +12,20 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('employee', function (Blueprint $table) {
+        Schema::create('sub_products', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('user_id')->unsigned()->unique();
-            $table->decimal('salary', 15, 2)->unsigned()
-                ->comment('Unit of money is thousands');
+            $table->integer('product_id')->unsigned();
+            $table->string('name', 100);
+            $table->decimal('price', 15, 2)->unsigned()->nullable();
+            $table->boolean('is_discount')->default(0);
+            $table->float('discount', 10, 2)->default(0);
+            $table->smallInteger('quantity')->unsigned();
+            $table->string('image');
             $table->softDeletes();
             $table->timestamps();
-            $table->foreign('user_id')
+            $table->foreign('product_id')
                 ->references('id')
-                ->on('user')
+                ->on('products')
                 ->onDelete('cascade');
         });
     }
@@ -33,6 +37,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('employees');
+        Schema::dropIfExists('products');
     }
 };
