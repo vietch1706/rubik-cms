@@ -12,11 +12,13 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('order', function (Blueprint $table) {
+        Schema::create('order_entities', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->tinyInteger('distributor_id')->unsigned()
+            $table->tinyInteger('distributor_id')
+                ->unsigned()
                 ->comment('References the distributor who supplies the goods or products.');
-            $table->integer('employee_id')->unsigned()
+            $table->integer('employee_id')
+                ->unsigned()
                 ->comment('References to current employee who created the order.');
             $table->string('order_no', 10)->unique();
             $table->dateTime('date');
@@ -26,11 +28,11 @@ return new class extends Migration {
             $table->timestamps();
             $table->foreign('distributor_id')
                 ->references('id')
-                ->on('distributor')
+                ->on('product_distributors')
                 ->onDelete('cascade');
             $table->foreign('employee_id')
                 ->references('id')
-                ->on('employee')
+                ->on('user_employees')
                 ->onDelete('cascade');
         });
     }
@@ -42,6 +44,9 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('orders');
+        Schema::table('order_entities', function (Blueprint $table) {
+            $table->dropForeign(['distributor_id', 'employee_id']);
+        });
+        Schema::dropIfExists('order_entities');
     }
 };

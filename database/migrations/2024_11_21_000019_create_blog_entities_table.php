@@ -12,14 +12,16 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('blog', function (Blueprint $table) {
+        Schema::create('blog_entities', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('employee_id')->unsigned()
+            $table->integer('employee_id')
+                ->unsigned()
                 ->comment('References the employee who authored the blog post.');
             $table->string('title', 100);
             $table->string('slug', 100)
                 ->comment('Slug from Title');
-            $table->tinyInteger('category_id')->unsigned()
+            $table->tinyInteger('category_id')
+                ->unsigned()
                 ->comment('Only take category with Blogs Parent.');
             $table->string('thumbnail', 100)->nullable();
             $table->longText('content');
@@ -27,11 +29,11 @@ return new class extends Migration {
             $table->timestamps();
             $table->foreign('employee_id')
                 ->references('id')
-                ->on('employee')
+                ->on('user_employees')
                 ->onDelete('cascade');
             $table->foreign('category_id')
                 ->references('id')
-                ->on('category')
+                ->on('blog_categories')
                 ->onDelete('cascade');
         });
     }
@@ -43,6 +45,9 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('blogs');
+        Schema::table('blog_entities', function (Blueprint $table) {
+            $table->dropForeign(['category_id', 'employee_id']);
+        });
+        Schema::dropIfExists('blog_entities');
     }
 };

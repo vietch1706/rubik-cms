@@ -9,7 +9,7 @@ class Distributors extends Model
 {
     use HasFactory;
 
-    protected $table = 'distributors';
+    protected $table = 'product_distributors';
     public $timestamps = true;
     protected $fillable = [
         'name',

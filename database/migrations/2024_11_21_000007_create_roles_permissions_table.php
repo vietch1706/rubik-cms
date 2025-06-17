@@ -17,11 +17,11 @@ return new class extends Migration {
             $table->tinyInteger('permission_id')->unsigned();
             $table->foreign('permission_id')
                 ->references('id')
-                ->on('permission')
+                ->on('permission_entities')
                 ->onDelete('cascade');
             $table->foreign('role_id')
                 ->references('id')
-                ->on('role')
+                ->on('permission_roles')
                 ->onDelete('cascade');
             $table->primary(['role_id', 'permission_id']);
             $table->timestamps();
@@ -36,5 +36,8 @@ return new class extends Migration {
     public function down()
     {
         Schema::dropIfExists('roles_permissions');
+        Schema::table('roles_permissions', function (Blueprint $table) {
+            $table->dropForeign(['permission_id', 'role_id']);
+        });
     }
 };

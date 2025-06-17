@@ -10,7 +10,7 @@ class Permissions extends Model
 {
     use HasFactory;
 
-    protected $table = 'permissions';
+    protected $table = 'permissions_entities';
 
     public function roles()
     {

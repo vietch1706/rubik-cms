@@ -12,7 +12,7 @@ class Blogs extends Model
     use HasFactory;
 
     public $timestamps = true;
-    protected $table = 'blogs';
+    protected $table = 'blog_entities';
     protected $fillable = [
         'employee_id',
         'category_id',

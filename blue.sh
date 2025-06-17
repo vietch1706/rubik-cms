@@ -12,6 +12,7 @@ show_help() {
     echo ""
     echo "  clear      - Xóa bộ nhớ cache của Laravel (view, cache, route)"
     echo "  docker     - Truy cập vào bash của container Docker (php_rubik)"
+    echo "  docker-up  - Khởi động các container Docker bằng docker-compose"
     echo "  linux      - Sửa quyền truy cập thư mục Laravel"
     echo "  install    - Cài đặt các phụ thuộc và thiết lập Laravel"
     echo "  migrate    - Chạy các migration cơ sở dữ liệu"
@@ -47,6 +48,12 @@ while true; do
             docker exec -it php_rubik bash
             ;;
 
+        "docker-up")
+            echo "🐳 Đang khởi động các container Docker..."
+            docker-compose up -d
+            echo "✅ Đã khởi động các container thành công!"
+            ;;
+
         "linux")
             echo "🔧 Đang thiết lập quyền truy cập thư mục Laravel..."
             sudo chown -R $USER:www-data storage/
@@ -55,6 +62,8 @@ while true; do
             chmod -R 775 public/
             sudo chown -R $USER:www-data bootstrap/cache/
             chmod -R 775 bootstrap/cache/
+            sudo chown -R $USER:www-data .env
+            chmod -R 775 .env
             echo "✅ Đã thiết lập quyền thành công!"
             ;;
 

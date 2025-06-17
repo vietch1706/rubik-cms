@@ -12,26 +12,21 @@ return new class extends Migration {
      */
     public function up()
     {
-        //
-        Schema::create('return_item', function (Blueprint $table) {
+        Schema::create('product_subs', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('return_id')->unsigned();
-            $table->integer('product_id')->unsigned()
-                ->comment('References the product being purchased in this invoice detail.');
-            $table->decimal('price', 15, 2)->unsigned()
-                ->comment('The actual price per unit at the time of receiving the products .Unit of money is thousands');
+            $table->integer('product_id')->unsigned();
+            $table->string('name', 100);
+            $table->decimal('price', 15, 2)->unsigned()->nullable();
+            $table->boolean('is_discount')->default(0);
+            $table->float('discount', 10, 2)->default(0);
             $table->smallInteger('quantity')->unsigned();
+            $table->string('image');
             $table->softDeletes();
             $table->timestamps();
-            $table->foreign('return_id')
-                ->references('id')
-                ->on('return')
-                ->onDelete('cascade');
             $table->foreign('product_id')
                 ->references('id')
-                ->on('product')
+                ->on('product_entities')
                 ->onDelete('cascade');
-
         });
     }
 
@@ -42,6 +37,9 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('return_items');
+        Schema::table('product_subs', function (Blueprint $table) {
+            $table->dropForeign(['product_id']);
+        });
+        Schema::dropIfExists('product_subs');
     }
 };

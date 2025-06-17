@@ -21,7 +21,7 @@ class Products extends Model
     public const SKU_LENGTH = 10;
 
     public $timestamps = true;
-    protected $table = 'products';
+    protected $table = 'product_entities';
     protected $fillable = [
         'category_id',
         'brand_id',
@@ -73,7 +73,7 @@ class Products extends Model
             ->min('price');
 
         if ($minPrice) {
-            DB::table('products')
+            DB::table('product_entities')
                 ->where('id', $this->product_id)
                 ->update(['price' => $minPrice]);
         }
@@ -132,21 +132,6 @@ class Products extends Model
     public function scopeGetById($query, $id)
     {
         return $query->with('category', 'brand')->where('id', $id);
-    }
-
-    public function convertData()
-    {
-        $this->category_id = $this->category_id ?? null;
-        $this->brand_id = $this->brand_id ?? null;
-        $this->magnetic = $this->magnetic ?? self::MAGNETIC_NO;
-        $this->status = $this->status ?? self::STATUS_AVAILABLE;
-        $this->release_date = $this->release_date ?? null;
-        $this->weight = $this->weight ?? 0;
-        $this->box_weight = $this->box_weight ?? 0;
-        $this->price = $this->price ?? 0;
-        $this->quantity = $this->quantity ?? 0;
-        $this->sku = $this->sku ?? self::generateUniqueOrderNo();
-        $this->image = $this->image ?? null;
     }
 
     public static function generateUniqueOrderNo(?string $prefix = null)

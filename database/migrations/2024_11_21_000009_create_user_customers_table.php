@@ -12,21 +12,20 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('product', function (Blueprint $table) {
+        Schema::create('user_customers', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('product_id')->unsigned();
-            $table->string('name', 100);
-            $table->decimal('price', 15, 2)->unsigned()->nullable();
-            $table->boolean('is_discount')->default(0);
-            $table->float('discount', 10, 2)->default(0);
-            $table->smallInteger('quantity')->unsigned();
-            $table->string('image');
+            $table->integer('user_id')->unsigned()->unique();
+            $table->string('identity_number', 50);
+            $table->boolean('type')
+                ->default(0)
+                ->comment('0: regular; 1:loyal');
             $table->softDeletes();
             $table->timestamps();
-            $table->foreign('product_id')
+            $table->foreign('user_id')
                 ->references('id')
-                ->on('product')
+                ->on('user_entities')
                 ->onDelete('cascade');
+
         });
     }
 
@@ -37,6 +36,9 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('products');
+        Schema::table('user_customers', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
+        Schema::dropIfExists('user_customers');
     }
 };

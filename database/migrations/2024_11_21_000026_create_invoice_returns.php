@@ -12,17 +12,19 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('customer', function (Blueprint $table) {
+        //
+        Schema::create('invoice_returns', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('user_id')->unsigned()->unique();
-            $table->string('identity_number', 50);
-            $table->boolean('type')->default(0)
-                ->comment('0: regular; 1:loyal');
+            $table->integer('invoice_id')->unsigned();
+            $table->dateTime('return_date');
+            $table->string('reason', 255)->nullable();
+            $table->boolean('status')->default(0);
+            $table->decimal('total_refund', 15, 2)->unsigned();
             $table->softDeletes();
             $table->timestamps();
-            $table->foreign('user_id')
+            $table->foreign('invoice_id')
                 ->references('id')
-                ->on('user')
+                ->on('invoice_entities')
                 ->onDelete('cascade');
         });
     }
@@ -34,6 +36,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('invoice_returns');
     }
 };

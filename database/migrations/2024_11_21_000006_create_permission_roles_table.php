@@ -12,11 +12,12 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('role', function (Blueprint $table) {
+        Schema::create('permission_roles', function (Blueprint $table) {
             $table->tinyIncrements('id')->unsigned();
             $table->string('name', 10);
             $table->string('code', 10);
-            $table->boolean('is_system')->default(false)
+            $table->boolean('is_system')
+                ->default(false)
                 ->comment('System role can control every thing');
             $table->timestamps();
         });
@@ -29,6 +30,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('permission_roles');
     }
 };

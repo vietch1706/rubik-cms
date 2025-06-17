@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('user', function (Blueprint $table) {
+        Schema::create('user_entities', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->tinyInteger('role_id')->unsigned();
             $table->string('first_name', 50);
@@ -29,7 +29,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->foreign('role_id')
                 ->references('id')
-                ->on('role')
+                ->on('permission_roles')
                 ->onDelete('cascade');
         });
     }
@@ -41,6 +41,9 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::table('user_entities', function (Blueprint $table) {
+            $table->dropForeign(['role_id']);
+        });
+        Schema::dropIfExists('user_entities');
     }
 };

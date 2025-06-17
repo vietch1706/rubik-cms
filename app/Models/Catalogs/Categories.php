@@ -13,7 +13,7 @@ class Categories extends Model
     public const SLUG_BLOG = 'blog';
     public const SLUG_BRANDS = 'brands';
     public $timestamps = true;
-    protected $table = 'categories';
+    protected $table = 'product_categories';
     protected $fillable = [
         'name',
         'parent_id',

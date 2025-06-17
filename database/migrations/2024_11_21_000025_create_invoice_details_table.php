@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('invoice_detail', function (Blueprint $table) {
+        Schema::create('invoice_details', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->integer('invoice_id')->unsigned()
                 ->comment('References the invoice to which these details belong.');
@@ -25,11 +25,11 @@ return new class extends Migration {
             $table->timestamps();
             $table->foreign('invoice_id')
                 ->references('id')
-                ->on('invoices')
+                ->on('invoice_entities')
                 ->onDelete('cascade');
             $table->foreign('product_id')
                 ->references('id')
-                ->on('products')
+                ->on('product_entities')
                 ->onDelete('cascade');
         });
     }
@@ -41,6 +41,9 @@ return new class extends Migration {
      */
     public function down()
     {
+        Schema::table('invoice_details', function (Blueprint $table) {
+            $table->dropForeign(['invoice_id', 'product_id']);
+        });
         Schema::dropIfExists('invoice_details');
     }
 };

@@ -28,6 +28,7 @@ Dockerfile
 /docker
 
 *.lock
+composer.phar
 composer.lock
 package-lock.json
 yarn.lock

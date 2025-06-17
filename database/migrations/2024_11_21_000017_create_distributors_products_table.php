@@ -15,16 +15,18 @@ return new class extends Migration {
         Schema::create('distributors_products', function (Blueprint $table) {
             $table->tinyInteger('distributor_id')->unsigned();
             $table->integer('product_id')->unsigned();
-            $table->decimal('price', 15, 2)->unsigned()->nullable()
+            $table->decimal('price', 15, 2)
+                ->unsigned()
+                ->nullable()
                 ->comment('Unit of money is thousands');
             $table->softDeletes();
             $table->foreign('distributor_id')
                 ->references('id')
-                ->on('distributor')
+                ->on('product_distributors')
                 ->onDelete('cascade');
             $table->foreign('product_id')
                 ->references('id')
-                ->on('product')
+                ->on('product_entities')
                 ->onDelete('cascade');
             $table->primary(['distributor_id', 'product_id']);
         });

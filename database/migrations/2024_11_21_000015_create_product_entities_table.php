@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('product', function (Blueprint $table) {
+        Schema::create('product_entities', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->string('name', 100);
             $table->string('slug', 100)->unique();
@@ -38,11 +38,11 @@ return new class extends Migration {
             $table->timestamps();
             $table->foreign('category_id')
                 ->references('id')
-                ->on('category')
+                ->on('product_categories')
                 ->onDelete('cascade');
             $table->foreign('brand_id')
                 ->references('id')
-                ->on('brand')
+                ->on('product_brands')
                 ->onDelete('cascade');
         });
     }
@@ -54,6 +54,9 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('products');
+        Schema::table('product_entities', function (Blueprint $table) {
+            $table->dropForeign(['category_id', 'brand_id']);
+        });
+        Schema::dropIfExists('product_entities');
     }
 };

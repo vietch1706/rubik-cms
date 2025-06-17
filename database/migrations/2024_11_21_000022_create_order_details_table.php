@@ -12,13 +12,16 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('order_detail', function (Blueprint $table) {
+        Schema::create('order_details', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('order_id')->unsigned()
+            $table->integer('order_id')
+                ->unsigned()
                 ->comment('The order to which these details belong.');
-            $table->integer('product_id')->unsigned()
+            $table->integer('product_id')
+                ->unsigned()
                 ->comment('The product being purchased in this order detail.');
-            $table->decimal('price', 15, 2)->unsigned()
+            $table->decimal('price', 15, 2)
+                ->unsigned()
                 ->comment('The agreed price per unit in purchase order .Unit of money is thousands');
             $table->boolean('status')->default(0);
             $table->smallInteger('quantity')->unsigned();
@@ -26,11 +29,11 @@ return new class extends Migration {
             $table->timestamps();
             $table->foreign('order_id')
                 ->references('id')
-                ->on('order')
+                ->on('order_entities')
                 ->onDelete('cascade');
             $table->foreign('product_id')
                 ->references('id')
-                ->on('product')
+                ->on('product_entities')
                 ->onDelete('cascade');
         });
     }
@@ -42,6 +45,9 @@ return new class extends Migration {
      */
     public function down()
     {
+        Schema::table('order_details', function (Blueprint $table) {
+            $table->dropForeign(['order_id', 'product_id']);
+        });
         Schema::dropIfExists('order_details');
     }
 };

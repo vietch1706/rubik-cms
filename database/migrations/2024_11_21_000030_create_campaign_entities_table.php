@@ -12,17 +12,16 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('employee', function (Blueprint $table) {
+        Schema::create('campaign_entities', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('user_id')->unsigned()->unique();
-            $table->decimal('salary', 15, 2)->unsigned()
-                ->comment('Unit of money is thousands');
-            $table->softDeletes();
+            $table->string('name', 100);
+            $table->string('slug', 100)->unique();
+            $table->boolean('type')->default(0);
+            $table->string('type_value', 100);
+            $table->boolean('status')->default(0);
+            $table->date('start_date');
+            $table->date('end_date');
             $table->timestamps();
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('user')
-                ->onDelete('cascade');
         });
     }
 
@@ -33,6 +32,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('employees');
+        Schema::dropIfExists('campaign_entities');
     }
 };

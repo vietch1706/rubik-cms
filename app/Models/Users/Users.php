@@ -23,7 +23,7 @@ class Users extends Authenticatable
     public const ROLE_CUSTOMER = 2;
     public const ROLE_EMPLOYEE = 3;
     public $timestamps = true;
-    protected $table = 'users';
+    protected $table = 'users_entity';
     protected $fillable = [
         'first_name',
         'last_name',

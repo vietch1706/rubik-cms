@@ -12,20 +12,15 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('category', function (Blueprint $table) {
+        Schema::create('product_distributors', function (Blueprint $table) {
             $table->tinyIncrements('id')->unsigned();
-            $table->tinyInteger('parent_id')
-                ->unsigned()
-                ->nullable()
-                ->comment('References the parent category ID. Null indicates a root category.');
             $table->string('name', 100);
-            $table->string('slug', 100)->unique();
+            $table->string('address');
+            $table->string('country', 20);
+            $table->string('phone', 50)->unique();
+            $table->string('email', 100)->unique();
             $table->softDeletes();
             $table->timestamps();
-            $table->foreign('parent_id')
-                ->references('id')
-                ->on('category')
-                ->onDelete('cascade');
         });
     }
 
@@ -36,6 +31,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('product_distributors');
     }
 };

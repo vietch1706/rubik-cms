@@ -12,16 +12,17 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('cart', function (Blueprint $table) {
+        Schema::create('cart_entities', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('customer_id')->unsigned()
+            $table->integer('customer_id')
+                ->unsigned()
                 ->comment('Customer who own this cart.');
             $table->json('data')
                 ->comment('Item on the cart save on this using JSON');
             $table->timestamps();
             $table->foreign('customer_id')
                 ->references('id')
-                ->on('customer')
+                ->on('user_customers')
                 ->onDelete('cascade');
         });
     }
@@ -33,6 +34,9 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('carts');
+        Schema::table('cart_entities', function (Blueprint $table) {
+            $table->dropForeign(['customer_id']);
+        });
+        Schema::dropIfExists('cart_entities');
     }
 };

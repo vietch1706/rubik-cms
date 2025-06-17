@@ -12,20 +12,21 @@ return new class extends Migration {
      */
     public function up()
     {
-        //
-        Schema::create('return', function (Blueprint $table) {
+        Schema::create('user_employees', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('invoice_id')->unsigned();
-            $table->dateTime('return_date');
-            $table->string('reason', 255)->nullable();
-            $table->boolean('status')->default(0);
-            $table->decimal('total_refund', 15, 2)->unsigned();
+            $table->integer('user_id')
+                ->unsigned()
+                ->unique();
+            $table->decimal('salary', 15, 2)
+                ->unsigned()
+                ->comment('Unit of money is thousands');
             $table->softDeletes();
             $table->timestamps();
-            $table->foreign('invoice_id')
+            $table->foreign('user_id')
                 ->references('id')
-                ->on('invoice')
+                ->on('user_entities')
                 ->onDelete('cascade');
+
         });
     }
 
@@ -36,6 +37,9 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('returns');
+        Schema::table('user_employees', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
+        Schema::dropIfExists('user_employees');
     }
 };

@@ -13,7 +13,7 @@ class Customers extends Model
     public const TYPE_REGULAR = 0;
     public const TYPE_LOYAL = 1;
     public $timestamps = true;
-    protected $table = 'customers';
+    protected $table = 'users_customers';
     protected $fillable = [
         'identity_number',
         'type'

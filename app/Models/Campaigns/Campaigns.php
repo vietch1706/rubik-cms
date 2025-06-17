@@ -15,7 +15,7 @@ class Campaigns extends Model
     public const STATUS_ACTIVE = 1;
     public const STATUS_INACTIVE = 0;
     public $timestamps = true;
-    protected $table = 'campaigns';
+    protected $table = 'campaign_entities';
     protected $fillable = [
         'name',
         'slug',

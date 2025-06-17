@@ -12,11 +12,13 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('invoice', function (Blueprint $table) {
+        Schema::create('invoice_entities', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('employee_id')->unsigned()
+            $table->integer('employee_id')
+                ->unsigned()
                 ->comment('References the employee who created the invoice.');
-            $table->integer('customer_id')->unsigned()
+            $table->integer('customer_id')
+                ->unsigned()
                 ->comment('References the customer who is billed in the invoice.');
             $table->dateTime('date');
             $table->boolean('status')->default(0);
@@ -26,11 +28,11 @@ return new class extends Migration {
             $table->timestamps();
             $table->foreign('customer_id')
                 ->references('id')
-                ->on('customer')
+                ->on('user_customers')
                 ->onDelete('cascade');
             $table->foreign('employee_id')
                 ->references('id')
-                ->on('employee')
+                ->on('user_employees')
                 ->onDelete('cascade');
         });
     }
@@ -42,6 +44,9 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('invoices');
+        Schema::table('invoice_entities', function (Blueprint $table) {
+            $table->dropForeign(['customer_id', 'employee_id']);
+        });
+        Schema::dropIfExists('invoice_entities');
     }
 };

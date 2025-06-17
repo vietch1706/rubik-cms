@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('permission', function (Blueprint $table) {
+        Schema::create('permission_entities', function (Blueprint $table) {
             $table->tinyIncrements('id')->unsigned();
             $table->string('name', 10);
             $table->string('code', 10);
@@ -28,6 +28,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('permissions');
+        Schema::dropIfExists('permissions_entities');
     }
 };
